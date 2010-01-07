@@ -19,6 +19,7 @@ if test "$with_png" != no; then
   AC_PATH_PROG([LIBPNG_CONFIG], [libpng-config])
   if test -n "$LIBPNG_CONFIG"; then
     # should be --ldopts, but it's currently broken
+    libpng_CPPFLAGS=`libpng-config --cflags`
     libpng_LDFLAGS=`libpng-config --ldflags | sed 's/ -l[[^ ]][[^ ]]*//g'`
   elif test -d "$with_png"; then
     libpng_LDFLAGS="-L$with_png/lib"
@@ -26,6 +27,7 @@ if test "$with_png" != no; then
 
   _ldflags="$LDFLAGS"
   LDFLAGS="$LDFLAGS $libpng_LDFLAGS"
+  CPPFLAGS="$CPPFLAGS $libpng_CPPFLAGS"
 
   AC_CHECK_LIB(png,png_create_write_struct,
     AC_DEFINE(HAVE_LIBPNG,1,[ Define if you have the png library. ]),,[-lz -lm])

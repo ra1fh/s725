@@ -416,6 +416,12 @@ plot_byte_zones ( byte_histogram_t *h,
       if ( h->zone[i].seconds > maxs ) maxs = h->zone[i].seconds;
     }
 
+    /* prevent division by zero */
+    if (maxs == 0) {
+            gdImageDestroy(im);
+            return 0;
+    }
+
     pps = (float)(width-S710_X_MARGIN-x-6)/(1.1 * maxs);
 
     /* actually draw the bars */

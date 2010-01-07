@@ -72,7 +72,15 @@ main ( int argc, char **argv )
 
     while ( 1 ) {
 
-      fgets(request,sizeof(request),stdin);
+	  if (fgets(request,sizeof(request),stdin) == NULL) {
+		  if (feof(stdin)) {
+			  printf("\nExit\n");
+              break;
+		  } else {
+              printf("\nError\n");
+			  break;
+		  }
+	  }
       if ( request == NULL || *request == '\n' ) {
 	printf("s710sh> ");
 	continue;

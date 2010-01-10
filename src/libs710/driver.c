@@ -12,37 +12,29 @@ extern int   optind;
 
 
 int
-driver_init ( int argc, char **argv, S710_Driver *d )
+driver_init (const char *driver_name, const char *device, S710_Driver *d)
 {
   int  init = 0;
   int  needpath = 1;
-  int  ch;
 
   d->type = S710_DRIVER_SERIAL;
-  
-  while ( (ch = getopt(argc,argv,"d:")) != -1 ) {
-    switch (ch) {
-    case 'd':
-      if ( !strcmp(optarg,"serial") ) {
-	d->type = S710_DRIVER_SERIAL;
-      } else if ( !strcmp(optarg,"ir") ) {
-	d->type = S710_DRIVER_IR;
-      } else if ( !strcmp(optarg,"usb") ) {
-	d->type = S710_DRIVER_USB;
-	needpath = 0;
+
+  if (driver_name) {
+      if ( !strcmp(driver_name,"serial") ) {
+		  d->type = S710_DRIVER_SERIAL;
+      } else if ( !strcmp(driver_name,"ir") ) {
+		  d->type = S710_DRIVER_IR;
+      } else if ( !strcmp(driver_name,"usb") ) {
+		  d->type = S710_DRIVER_USB;
+		  needpath = 0;
       }
-      break;
-    }
   }
 
-  argc -= optind;
-  argv += optind;
-
-  if ( needpath != 0 && argv[0] != NULL ) {
-    strncpy(d->path,argv[0],sizeof(d->path)-1);
-    init = 1;
-  } else if ( needpath == 0 && argc == 0 ) {
-    init = 1;
+  if ( needpath != 0 && device != NULL ) {
+	  strncpy(d->path,device,sizeof(d->path)-1);
+	  init = 1;
+  } else if ( needpath == 0 && driver_name == 0 ) {
+	  init = 1;
   }
 
   return init;

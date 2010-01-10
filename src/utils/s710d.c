@@ -18,31 +18,69 @@ static int           gSigFlag;
 
 static void          signal_handler   ( int signum );
 
-/* main program */
+/* usage */
 
+void usage() {
+    printf("usage: s710d [-h] [-d driver] [-f filedir] [device file]\n");
+	printf("       driver       may be either serial, ir, or usb\n");
+	printf("       device file  is required for serial and ir drivers.\n");
+	printf("       filedir      is the directory where output files are written to.\n");
+	printf("                    alternative is S710_FILEDIR environment variable.\n");
+}
+
+/* main program */
 int
 main ( int argc, char **argv )
 {
   pid_t           pid;
   char            path[PATH_MAX];
-  char           *filedir;
+  char           *filedir = NULL;
   files_t         file;
   S710_Driver     driver;
   int             ok;
+  const char     *driver_name = NULL;
+  const char     *device = NULL;
+  int             ch;
 
-  ok = driver_init ( argc, argv, &driver );
+  while ( (ch = getopt(argc,argv,"d:f:h")) != -1 ) {
+	  switch (ch) {
+	  case 'd':
+		  driver_name = optarg;
+		  break;
+	  case 'f':
+		  filedir = optarg;
+		  break;
+	  case 'h':
+		  usage();
+		  exit(0);
+		  break;
+	  default:
+		  usage();
+		  exit(1);
+	  }
+  }
+  argc -= optind;
+  argv += optind;
+  device = argv[0];
+
+  ok = driver_init (driver_name , device, &driver );
 
   if ( ok != 1 ) {
-    printf("usage: %s [-d driver] [device file]\n",argv[0]);
-    printf("\tdriver may be either serial, ir, or usb\n");
-    printf("\tdevice file is required for serial and ir drivers.\n");
-    exit(1);
+	  usage();
+	  exit(1);
   }
 
-  if ( (filedir = getenv("S710_FILEDIR")) != NULL ) {
-    filedir = realpath(filedir,path);
+  if (filedir) {
+	  filedir = realpath(filedir, path);
+  } else if ((filedir = getenv("S710_FILEDIR")) != NULL) {
+	  filedir = realpath(filedir,path);
   } else {
-    filedir = S710_FILEDIR;
+	  filedir = S710_FILEDIR;
+  }
+
+  if (!filedir) {
+	  printf("could not resolve path. check S710_FILEDIR or -f\n");
+	  exit(1);
   }
 
   /* fork */

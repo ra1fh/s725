@@ -602,7 +602,7 @@ extern "C" {
 
   /* driver.c */
 
-  int       driver_init  ( int argc, char **argv, S710_Driver *d );
+  int       driver_init  ( const char *driver_name, const char *device, S710_Driver *d );
   int       driver_open  ( S710_Driver *d, S710_Mode mode );
   int       driver_close ( S710_Driver *d );
 

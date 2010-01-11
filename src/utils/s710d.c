@@ -97,9 +97,9 @@ main ( int argc, char **argv )
 
 	/* enter infinite loop */
 	while (!gSigFlag ) {
-		if (receive_file(&driver,&file,stderr)) {
-			save_files(&file,filedir,stderr);
-			print_files(&file,stderr); 
+		if (receive_file(&driver,&file, s710d_log)) {
+			save_files(&file,filedir, s710d_log);
+			print_files(&file, s710d_log); 
 		}      
 		usleep(10000);
 	}

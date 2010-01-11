@@ -709,10 +709,12 @@ extern "C" {
 
   /* files.c */
 
+  typedef void (log_cb)(unsigned int level, const char *fmt, ...);
+
   int       get_files        ( S710_Driver *d, files_t *files, FILE *fp );
-  int       receive_file     ( S710_Driver *d, files_t *file, FILE *fp );
-  int       save_files       ( files_t *f, char *dir, FILE *fp );
-  void      print_files      ( files_t *f, FILE *fp );
+  int       receive_file     ( S710_Driver *d, files_t *file, log_cb *cb);
+  int       save_files       ( files_t *f, char *dir, log_cb *cb);
+  void      print_files      ( files_t *f, log_cb *cb);
   time_t    file_timestamp   ( unsigned char *data );
 
   /* packet.c */
@@ -854,7 +856,8 @@ extern "C" {
 
   void handle_retrieval ( S710_Driver      *d, 
 			  int               r, 
-			  char             *filedir );
+			  char             *filedir,
+			  log_cb           *cb);
 
   void handle_transfer  ( S710_Driver      *d, 
 			  int               r, 

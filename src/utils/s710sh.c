@@ -15,6 +15,7 @@
 /* static helper function */
 
 static void explain_command  ( int c, attribute_map_t *m );
+static void s710sh_log       (unsigned int level, const char *fmt, ...);
 
 /* usage */
 
@@ -175,7 +176,7 @@ main ( int argc, char **argv )
 
       if ( go ) {
 	if ( i >= S710_GET_OVERVIEW && i <= S710_CLOSE_CONNECTION ) {
-	  handle_retrieval(&d,i,filedir);
+		handle_retrieval(&d, i, filedir, s710sh_log);
 	} else if ( i >= S710_SET_USER && i <= S710_SET_REMINDER_7 ) {
 
 	  /* this is a transfer request.  we need to make sure we've 
@@ -345,4 +346,18 @@ explain_command ( int c, attribute_map_t *m )
   }
 }
 
+static void
+s710sh_log(u_int level, const char *fmt, ...)
+{
+	va_list ap;
+
+#if 0
+	if (level > gVerbose)
+		return;
+#endif
+	va_start(ap, fmt);
+	vfprintf(stderr, fmt, ap);
+	fflush(stderr);
+	va_end(ap);
+}
 

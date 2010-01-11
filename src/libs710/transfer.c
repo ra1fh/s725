@@ -4,7 +4,7 @@
 #include "s710.h"
 
 void
-handle_retrieval ( S710_Driver *d, int r, char *filedir )
+handle_retrieval(S710_Driver *d, int r, char *filedir, log_cb *cb)
 {
   overview_t     ov;
   user_t         user;
@@ -42,8 +42,8 @@ handle_retrieval ( S710_Driver *d, int r, char *filedir )
     if ( get_reminder(d,r,&rm) )      print_reminder(&rm,stdout); break;
   case S710_GET_FILES:
     if ( get_files(d,&files,stdout) ) {
-      save_files(&files,filedir,stdout);
-      print_files(&files,stdout); 
+      save_files(&files, filedir, cb);
+      print_files(&files, cb); 
     }                                                             break;
   case S710_CLOSE_CONNECTION:
     close_connection(d);                                          break;

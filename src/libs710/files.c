@@ -81,7 +81,7 @@ get_files ( S710_Driver *d, files_t *files, FILE *fp )
 
 
 int
-receive_file ( S710_Driver *d, files_t *file, FILE *fp )
+receive_file(S710_Driver *d, files_t *file, log_cb* cb)
 {
   packet_t      *p;
   int            ok = 0;
@@ -109,8 +109,9 @@ receive_file ( S710_Driver *d, files_t *file, FILE *fp )
 
     memcpy(&file->data[offset],&p->data[start],p->length - start);
     offset += p->length - start;
-    if ( fp != NULL && file->bytes > 0 ) 
-      print_hash_marks((float)offset/file->bytes,file->bytes,fp);
+	if (cb) {
+		cb(1, "transferred %d/%d bytes\n", offset, file->bytes);
+	}
 
     /* free this packet and get the next one */
 
@@ -118,7 +119,6 @@ receive_file ( S710_Driver *d, files_t *file, FILE *fp )
     p = recv_packet(d);
   }
 
-  if ( ok && fp != NULL ) fprintf(fp,"\n\n");
   if ( p_remaining != 0 ) ok = 0;
 
   return ok;
@@ -136,7 +136,7 @@ receive_file ( S710_Driver *d, files_t *file, FILE *fp )
 */
 
 void
-print_files ( files_t *f, FILE *fp )
+print_files(files_t *f, log_cb *cb)
 {
   int       offset = 0;
   int       size;
@@ -148,7 +148,6 @@ print_files ( files_t *f, FILE *fp )
   int       fnum = 0;
   char      buf[BUFSIZ];
 
-  fprintf(fp,"\n");
   while ( offset < f->bytes-2 ) {
     size = (f->data[offset+1] << 8) + f->data[offset];
     ft   = file_timestamp(&f->data[offset]);
@@ -157,21 +156,22 @@ print_files ( files_t *f, FILE *fp )
     minutes    = BCD(f->data[offset+17]);
     seconds    = BCD(f->data[offset+16]);
     tenths     = UNIB(f->data[offset+15]);
-    fprintf(fp,"File %2d: %s - %02d:%02d:%02d.%d\n",
-	    ++fnum,
-	    buf,
-	    hours,
-	    minutes,
-	    seconds,
-	    tenths);
+	if (cb) {
+		cb(1, "File %02d: %s - %02d:%02d:%02d.%d\n",
+		   ++fnum,
+		   buf,
+		   hours,
+		   minutes,
+		   seconds,
+		   tenths);
+	}
     offset += size;
   }
-  fprintf(fp,"\n");
 }
 
 
 int
-save_files ( files_t *f, char *dir, FILE *fp )
+save_files ( files_t *f, char *dir, log_cb *cb)
 {
   int         saved  = 0;
   int         offset = 0;
@@ -205,21 +205,24 @@ save_files ( files_t *f, char *dir, FILE *fp )
     sprintf(buf,"%s/%d/%02d/%s.%05d.srd",dir,year,month,tmbuf,size);
     ofd = open(buf,O_CREAT|O_WRONLY,0644);
     if ( ofd != -1 ) {
-      fprintf(fp,"File %2d: Saved as %s\n",saved+1,buf);
-      write(ofd,&f->data[offset],size);
-      fchown(ofd,owner,group);
-      close(ofd);
+		if (cb)
+			cb(0, "File %02d: Saved as %s\n",saved+1,buf);
+		write(ofd,&f->data[offset],size);
+		fchown(ofd,owner,group);
+		close(ofd);
     } else {
-      fprintf(fp,"File %2d: Unable to save %s: %s\n",
-	      saved+1,buf,strerror(errno));
+		if (cb) {
+			cb(0, "File %02d: Unable to save %s: %s\n",
+			   saved+1,buf,strerror(errno));
+		}
     }
 
     offset += size;
     saved++;
   }
 
-  if ( fp != NULL ) 
-    fprintf(fp,"\nSaved %d file%s\n\n",saved,(saved==1)?"":"s");
+  if (cb) 
+    cb(1,"Saved %d file%s\n",saved,(saved==1)?"":"s");
 
   return saved;
 }

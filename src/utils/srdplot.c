@@ -35,6 +35,11 @@ void        do_hist ( workout_t *w,
 		      int        width, 
 		      int        height );
 
+static void
+usage() {
+  fprintf(stderr, "usage: srdplot [-f] [-h] <srd...>\n");
+}
+
 /* main program */
 
 int
@@ -45,10 +50,14 @@ main ( int argc, char **argv )
   int                ch;
   S710_Filter        filter = S710_FILTER_OFF;
 
-  while ( (ch = getopt(argc,argv,"f")) != -1 ) {
+  while ( (ch = getopt(argc,argv,"fh")) != -1 ) {
     switch (ch) {
     case 'f':
       filter = S710_FILTER_ON;
+      break;
+    case 'h':
+      usage();
+      exit(0);
       break;
     }
   }

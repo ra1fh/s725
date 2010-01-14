@@ -12,6 +12,10 @@
 extern char *optarg;
 extern int   optind;
 
+static void
+usage() {
+  fprintf(stderr, "usage: srd2hrm [-f] [-h] <srd>\n");
+}
 
 int
 main ( int argc, char **argv )
@@ -20,10 +24,14 @@ main ( int argc, char **argv )
   int              ch;
   S710_Filter      filter = S710_FILTER_OFF;
 
-  while ( (ch = getopt(argc,argv,"f")) != -1 ) {
+  while ( (ch = getopt(argc,argv,"fh")) != -1 ) {
     switch (ch) {
     case 'f':
       filter = S710_FILTER_ON;
+      break;
+    case 'h':
+      usage();
+      exit(0);
       break;
     }
   }
@@ -31,7 +39,7 @@ main ( int argc, char **argv )
   argv += optind;
 
   if ( argc != 1 ) {
-    fprintf(stderr,"usage: srd2hrm [-f] <SRD file>\n");
+    usage();
     exit(1);
   }
 

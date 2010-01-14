@@ -12,6 +12,11 @@
 extern char *optarg;
 extern int   optind;
 
+static void
+usage() {
+  fprintf(stderr,
+          "usage: srdmerge [-c] [-f] [-h] <srd 1> <srd 2> <output>\n");
+}
 
 int
 main ( int argc, char **argv )
@@ -23,10 +28,11 @@ main ( int argc, char **argv )
   S710_Filter      filter = S710_FILTER_OFF;
   S710_Merge_Type  mtype = S710_MERGE_TRUE;
 
-  while ( (ch = getopt(argc,argv,"cf")) != -1 ) {
+  while ( (ch = getopt(argc,argv,"cfh")) != -1 ) {
     switch (ch) {
     case 'c': mtype  = S710_MERGE_CONCAT; break;
     case 'f': filter = S710_FILTER_ON;    break;
+    case 'h': usage(); exit(0);           break;
     default:                              break;
     }
   }
@@ -34,9 +40,7 @@ main ( int argc, char **argv )
   argv += optind;
 
   if ( argc != 3 ) {
-    fprintf(stderr,
-	    "usage: srdmerge [-c] [-f] "
-	    "<SRD file 1> <SRD file 2> <output SRD file name>\n");
+    usage();
     exit(1);
   }
 

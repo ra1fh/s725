@@ -1,0 +1,99 @@
+
+.PHONY: clean
+
+VERSION= 0.1
+DATE= $(shell date +%Y%m%d-%H%M)
+
+PROGS=   s710d s710sh srd2hrm srdcat srdhead srdmerge srdplot
+LIBS710= libs710.a
+
+PREFIX?= /usr/local
+
+BIN_OWNER= bin
+BIN_GROUP= root
+
+CC= gcc
+
+INCDIRS= -I$(PREFIX)/include
+LDFLAGS= -L$(PREFIX)/lib
+
+INSTALLDIR= install -d
+INSTALLBIN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 555
+INSTALLMAN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 444
+
+LIB_SRCS = add_attr.c alpha_map.c axes.c bike.c byte_map.c comm.c		\
+	crc.c driver.c exercise.c files.c filter.c free_attr.c glob.c		\
+	histogram.c logo.c merge_attr.c overview.c packet.c parse_attr.c	\
+	plot.c print_attr.c reminder.c serial.c time.c transfer.c usb.c		\
+	user.c watch.c workout_merge.c workout_print.c workout_read.c		\
+	workout_util.c workout_write.c
+
+PROG_SRCS= $(patsubst %,%.c,$(PROGS))
+
+LIBS+= 
+
+DEFS+= -DS710_HRM_MAX_HR=206
+DEFS+= -DS710_HRM_REST_HR=60
+DEFS+= -DS710_FILEDIR=\"/var/polar/raw\"
+
+LIB_OBJS= $(patsubst %.c,%.o,$(LIB_SRCS))
+PROG_OBJS= $(patsubst %,%.o,$(PROGS))
+CPPFLAGS+= $(DEFS) -I. -I- $(INCDIRS)
+
+ifdef DEBUG
+CFLAGS+= -g -ggdb -DDEBUG
+LDFLAGS+= -rdynamic
+LIBS+= -ldl
+DEFS+= -DBUILD="\"$(VERSION) ($(DATE))\""
+else
+DEFS+= -DBUILD="\"$(VERSION)\""
+endif
+
+CFLAGS+= -Wno-long-long -Wall -W -Wnested-externs -Wformat=2
+CFLAGS+= -Wmissing-prototypes -Wstrict-prototypes -Wmissing-declarations
+CFLAGS+= -Wwrite-strings -Wshadow -Wpointer-arith -Wcast-qual -Wsign-compare
+CFLAGS+= -Wundef -Wshadow -Wbad-function-cast -Winline -Wcast-align
+
+CLEANFILES= $(LIBS710) $(LIB_OBJS) $(PROGS) $(PROG_OBJS) .depend
+
+all: $(LIBS710) $(PROGS)
+
+$(LIBS710): $(LIB_OBJS)
+	ar cru $@ $+
+	ranlib $@
+
+s710d: s710d.o
+	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
+
+s710sh: s710sh.o
+	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
+
+srd2hrm: srd2hrm.o
+	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
+
+srdcat: srdcat.o
+	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
+
+srdhead: srdhead.o
+	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
+
+srdmerge: srdmerge.o
+	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
+
+srdplot: srdplot.o
+	$(CC) $(LDFLAGS) $(LIBS) -L/usr/X11R6/lib -o $@ $+ $(LIBS710) -lgd -lfreetype
+
+depend: $(LIB_SRCS)
+	$(CC) $(CPPFLAGS) -MM $(LIB_SRCS) > .depend
+
+clean:
+	rm -rf $(CLEANFILES)
+
+install:
+	$(INSTALLDIR) $(DESTDIR)$(PREFIX)/bin
+	$(INSTALLBIN) $(PROGS) $(DESTDIR)$(PREFIX)/bin/
+
+ifeq ($(wildcard .depend),.depend)
+include .depend
+endif
+

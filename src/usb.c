@@ -5,7 +5,6 @@
 #include <sys/time.h>
 #include <string.h>
 #include "s710.h"
-#include "config.h"
 #ifdef HAVE_LIBUSB
 #include <usb.h>
 

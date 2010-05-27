@@ -8,7 +8,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "s710.h"
-#include "config.h"
+
 
 
 static void

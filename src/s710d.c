@@ -8,7 +8,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include "s710.h"
-#include "config.h"
 
 /* globals */
 

@@ -1,7 +1,6 @@
 /* $Id: filter.c,v 1.2 2002/10/08 03:26:58 dave Exp $ */
 
 #include "s710.h"
-#include "config.h"
 
 #ifndef S710_MAX_VALID_HR
 #define S710_MAX_VALID_HR 206

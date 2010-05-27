@@ -19,6 +19,8 @@ driver_init (const char *driver_name, const char *device, S710_Driver *d)
 
   d->type = S710_DRIVER_SERIAL;
 
+  printf("driver_name=%s\n", driver_name);
+
   if (driver_name) {
       if ( !strcmp(driver_name,"serial") ) {
 		  d->type = S710_DRIVER_SERIAL;
@@ -27,13 +29,14 @@ driver_init (const char *driver_name, const char *device, S710_Driver *d)
       } else if ( !strcmp(driver_name,"usb") ) {
 		  d->type = S710_DRIVER_USB;
 		  needpath = 0;
+		  printf("needpath=0\n");
       }
   }
 
   if ( needpath != 0 && device != NULL ) {
 	  strncpy(d->path,device,sizeof(d->path)-1);
 	  init = 1;
-  } else if ( needpath == 0 && driver_name == 0 ) {
+  } else if ( needpath == 0 && device == 0 ) {
 	  init = 1;
   }
 

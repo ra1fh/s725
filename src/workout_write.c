@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "s710.h"
-#include "config.h"
+
 
 
 static void

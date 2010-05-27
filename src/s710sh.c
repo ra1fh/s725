@@ -10,7 +10,6 @@
 #include <ctype.h>
 #include <time.h>
 #include "s710.h"
-#include "config.h"
 
 /* static helper function */
 
@@ -73,6 +72,7 @@ main ( int argc, char **argv )
   ok = driver_init (driver_name , device, &d );
 
   if ( ok != 1 ) {
+	  printf("problem with driver_init\n");
 	  usage();
 	  exit(1);
   }

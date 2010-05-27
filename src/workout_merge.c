@@ -4,8 +4,6 @@
 #include <string.h>
 #include <errno.h>
 #include "s710.h"
-#include "config.h"
-
 
 #ifndef MIN
 #define MIN(a,b) ((a) < (b)) ? (a) : (b);

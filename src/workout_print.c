@@ -2,9 +2,6 @@
 
 #include <string.h>
 #include "s710.h"
-#include "config.h"
-
-
 
 /* 
    "what" is the bitwise or of at least one of:

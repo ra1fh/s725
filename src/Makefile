@@ -46,6 +46,11 @@ ifeq ($(shell pkg-config --exists libusb && echo yes), yes)
 	LIBS   += $(shell pkg-config --libs libusb)	
 endif	
 
+ifneq (, $(filter Linux GNU GNU/%, $(shell uname -s)))
+INCDIRS+= -Icompat
+LIB_SRCS+= compat/strlcpy.c
+endif
+
 ifdef DEBUG
 CFLAGS+= -g -ggdb -DDEBUG
 LDFLAGS+= -rdynamic

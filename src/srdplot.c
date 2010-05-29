@@ -117,14 +117,14 @@ do_hist ( workout_t  *w,
 
 		strftime(tmbuf,sizeof(tmbuf),"%Y%m%dT%H%M%S",localtime(&w->unixtime));
 
-		sprintf(buf,"%s.%05d.%s.h.png",tmbuf,w->bytes,c);
+		snprintf(buf, sizeof(buf), "%s.%05d.%s.h.png",tmbuf,w->bytes,c);
 		gettimeofday(&ti,NULL);
 		ok = plot_byte_histogram(h,r,g,b,min,max,width,height,1,buf);
 		gettimeofday(&tf,NULL);
 		el = tf.tv_sec - ti.tv_sec + (tf.tv_usec-ti.tv_usec)/1000000.0;
 		if ( ok ) printf("Wrote %s in %f seconds\n",buf,el);
 
-		sprintf(buf,"%s.%05d.%s.z.png",tmbuf,w->bytes,c);
+		snprintf(buf, sizeof(buf), "%s.%05d.%s.z.png",tmbuf,w->bytes,c);
 		gettimeofday(&ti,NULL);
 		ok = plot_byte_zones(h,width,height,buf);
 		gettimeofday(&tf,NULL);

@@ -194,9 +194,7 @@ save_files ( files_t *f, const char *dir, log_cb *cb)
 		year  = 2000 + BCD(f->data[offset+14]);
 		month = LNIB(f->data[offset+15]);
 
-		if (snprintf(buf, sizeof(buf), "%s/%d/%02d",dir,year,month) == -1)
-			errx(1, "save_files: internal error");
-			   
+		snprintf(buf, sizeof(buf), "%s/%d/%02d",dir,year,month);
 		mkpath(buf);
 		if ( stat(buf,&sb) != -1 ) {
 			owner   = sb.st_uid;
@@ -206,9 +204,7 @@ save_files ( files_t *f, const char *dir, log_cb *cb)
 
 		strftime(tmbuf,sizeof(tmbuf),"%Y%m%dT%H%M%S", localtime(&ft));
 
-		if (snprintf(buf, sizeof(buf), "%s/%d/%02d/%s.%05d.srd",dir,year,month,tmbuf,size) == -1) 
-			errx(1, "save_files: internal error");
-
+		snprintf(buf, sizeof(buf), "%s/%d/%02d/%s.%05d.srd",dir,year,month,tmbuf,size);
 		ofd = open(buf,O_CREAT|O_WRONLY,0644);
 		if ( ofd != -1 ) {
 			if (cb)

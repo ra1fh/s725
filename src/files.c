@@ -1,5 +1,6 @@
 /* $Id: files.c,v 1.10 2004/11/13 10:53:48 dave Exp $ */
 
+#include <err.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -193,7 +194,9 @@ save_files ( files_t *f, const char *dir, log_cb *cb)
 		year  = 2000 + BCD(f->data[offset+14]);
 		month = LNIB(f->data[offset+15]);
 
-		sprintf(buf,"%s/%d/%02d",dir,year,month);
+		if (snprintf(buf, sizeof(buf), "%s/%d/%02d",dir,year,month) == -1)
+			errx(1, "save_files: internal error");
+			   
 		mkpath(buf);
 		if ( stat(buf,&sb) != -1 ) {
 			owner   = sb.st_uid;
@@ -202,7 +205,10 @@ save_files ( files_t *f, const char *dir, log_cb *cb)
     
 
 		strftime(tmbuf,sizeof(tmbuf),"%Y%m%dT%H%M%S", localtime(&ft));
-		sprintf(buf,"%s/%d/%02d/%s.%05d.srd",dir,year,month,tmbuf,size);
+
+		if (snprintf(buf, sizeof(buf), "%s/%d/%02d/%s.%05d.srd",dir,year,month,tmbuf,size) == -1) 
+			errx(1, "save_files: internal error");
+
 		ofd = open(buf,O_CREAT|O_WRONLY,0644);
 		if ( ofd != -1 ) {
 			if (cb)

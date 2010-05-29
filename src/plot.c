@@ -1,6 +1,5 @@
 /* $Id: plot.c,v 1.7 2004/11/13 10:53:48 dave Exp $ */
 
-#include <math.h>
 #include <gdfonts.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -150,16 +149,16 @@ plot_workout_xy ( workout_t *w,
   
   /* get the min and max values for the x coordinate */
   
-  if ( x_axis == S710_X_AXIS_TIME ) {
-    xmax = w->samples * w->recording_interval;        /* seconds */
-  } else if ( x_axis == S710_X_AXIS_DISTANCE && 
-	      ( w->mode & S710_MODE_SPEED ) ) {
-    xmax = ceil(w->dist_data[w->samples-1] * 1000.0); /* meters */
-  } else {
-    fprintf(stderr,"x_axis [%d] not available in this workout!\n",x_axis);
-    return 0;
-  }
-  if ( xmax > 0 ) ppx = (float)(x1-x0)/xmax;
+	if ( x_axis == S710_X_AXIS_TIME ) {
+		xmax = w->samples * w->recording_interval;        /* seconds */
+	} else if ( x_axis == S710_X_AXIS_DISTANCE && 
+				( w->mode & S710_MODE_SPEED ) ) {
+		xmax = (int)(w->dist_data[w->samples-1] * 1000.0 + 0.5); /* meters */
+	} else {
+		fprintf(stderr,"x_axis [%d] not available in this workout!\n",x_axis);
+		return 0;
+	}
+	if ( xmax > 0 ) ppx = (float)(x1-x0)/xmax;
 
   /* get the min and max values for the y coordinate */
 

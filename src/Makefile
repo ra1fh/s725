@@ -68,25 +68,25 @@ $(LIBS710): $(LIB_OBJS)
 	ar cru $@ $+
 	ranlib $@
 
-s710d: s710d.o
+s710d: s710d.o $(LIBS710)
 	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
 
-s710sh: s710sh.o
+s710sh: s710sh.o $(LIBS710)
 	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
 
-srd2hrm: srd2hrm.o
+srd2hrm: srd2hrm.o $(LIBS710)
 	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
 
-srdcat: srdcat.o
+srdcat: srdcat.o $(LIBS710)
 	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
 
-srdhead: srdhead.o
+srdhead: srdhead.o $(LIBS710)
 	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
 
-srdmerge: srdmerge.o
+srdmerge: srdmerge.o $(LIBS710)
 	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
 
-srdplot: srdplot.o
+srdplot: srdplot.o $(LIBS710)
 	$(CC) $(LDFLAGS) $(LIBS) -L/usr/X11R6/lib -o $@ $+ $(LIBS710) -lgd -lfreetype
 
 depend: $(LIB_SRCS)

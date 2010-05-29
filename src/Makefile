@@ -91,7 +91,7 @@ clean:
 
 install:
 	$(INSTALLDIR) $(DESTDIR)$(PREFIX)/bin
-	$(INSTALLBIN) $(PROGS) $(DESTDIR)$(PREFIX)/bin/
+	$(INSTALLBIN) $(PROGS) $(DESTDIR)$(PREFIX)/bin
 
 ifeq ($(wildcard .depend),.depend)
 include .depend

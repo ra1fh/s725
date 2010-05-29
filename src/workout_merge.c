@@ -17,17 +17,17 @@
 static int
 workouts_overlap ( workout_t *w1, workout_t *w2 )
 {
-  time_t ft1;
-  time_t ft2;
+	time_t ft1;
+	time_t ft2;
 
-  /* workouts overlap if the start time of w1 is earlier than the end
-     time of w2, or vice versa. */
+	/* workouts overlap if the start time of w1 is earlier than the end
+	   time of w2, or vice versa. */
 
-  ft1 = w1->unixtime + s710_time_to_seconds(&w1->duration);
-  ft2 = w2->unixtime + s710_time_to_seconds(&w2->duration);
+	ft1 = w1->unixtime + s710_time_to_seconds(&w1->duration);
+	ft2 = w2->unixtime + s710_time_to_seconds(&w2->duration);
 
-  return ( (w2->unixtime < w1->unixtime && w1->unixtime < ft2) ||
-	   (w1->unixtime < w2->unixtime && w2->unixtime < ft1) );
+	return ( (w2->unixtime < w1->unixtime && w1->unixtime < ft2) ||
+			 (w1->unixtime < w2->unixtime && w2->unixtime < ft1) );
 }
 
 
@@ -37,7 +37,7 @@ workouts_overlap ( workout_t *w1, workout_t *w2 )
 static time_t
 workout_gap ( workout_t *w1, workout_t *w2 )
 {
-  return w2->unixtime - (w1->unixtime + s710_time_to_seconds(&w1->duration));
+	return w2->unixtime - (w1->unixtime + s710_time_to_seconds(&w1->duration));
 }
 
 
@@ -61,189 +61,189 @@ workout_gap ( workout_t *w1, workout_t *w2 )
 workout_t *
 merge_workouts ( workout_t *wa, workout_t *wb, S710_Merge_Type mtype )
 {
-  workout_t * w;
-  workout_t * w1;
-  workout_t * w2;
-  time_t      wg;
-  int         ok;
-  int         recint;
-  int         samp1;
-  int         samp2;
-  int         w1fac;
-  int         w2fac;
-  int         blw1;
-  int         blw2;
-  int         i, j, k;
-  int
-    sum_w1_hr           = 0,
-    sum_w1_cad          = 0,
-    sum_w1_power        = 0,
-    sum_w1_lr_balance   = 0,
-    sum_w1_pedal_index  = 0,
-    sum_w1_speed        = 0,
-    sum_w2_hr           = 0,
-    sum_w2_cad          = 0,
-    sum_w2_power        = 0,
-    sum_w2_lr_balance   = 0,
-    sum_w2_pedal_index  = 0,
-    sum_w2_speed        = 0;
-  int
-    samp_w1_hr          = 0,
-    samp_w1_cad         = 0,
-    samp_w1_power       = 0,
-    samp_w1_lr_balance  = 0,
-    samp_w1_pedal_index = 0,
-    samp_w1_speed       = 0,
-    samp_w2_hr          = 0,
-    samp_w2_cad         = 0,
-    samp_w2_power       = 0,
-    samp_w2_lr_balance  = 0,
-    samp_w2_pedal_index = 0,
-    samp_w2_speed       = 0;
-  int            bpl;
-  int            bps;
-  lap_data_t *   lap1;
-  lap_data_t *   lap2;
-  int            w2lap1;
-  int            w1samp1;
-  int            w2samp1;
-  unsigned long  accum;
+	workout_t * w;
+	workout_t * w1;
+	workout_t * w2;
+	time_t      wg;
+	int         ok;
+	int         recint;
+	int         samp1;
+	int         samp2;
+	int         w1fac;
+	int         w2fac;
+	int         blw1;
+	int         blw2;
+	int         i, j, k;
+	int
+		sum_w1_hr           = 0,
+		sum_w1_cad          = 0,
+		sum_w1_power        = 0,
+		sum_w1_lr_balance   = 0,
+		sum_w1_pedal_index  = 0,
+		sum_w1_speed        = 0,
+		sum_w2_hr           = 0,
+		sum_w2_cad          = 0,
+		sum_w2_power        = 0,
+		sum_w2_lr_balance   = 0,
+		sum_w2_pedal_index  = 0,
+		sum_w2_speed        = 0;
+	int
+		samp_w1_hr          = 0,
+		samp_w1_cad         = 0,
+		samp_w1_power       = 0,
+		samp_w1_lr_balance  = 0,
+		samp_w1_pedal_index = 0,
+		samp_w1_speed       = 0,
+		samp_w2_hr          = 0,
+		samp_w2_cad         = 0,
+		samp_w2_power       = 0,
+		samp_w2_lr_balance  = 0,
+		samp_w2_pedal_index = 0,
+		samp_w2_speed       = 0;
+	int            bpl;
+	int            bps;
+	lap_data_t *   lap1;
+	lap_data_t *   lap2;
+	int            w2lap1;
+	int            w1samp1;
+	int            w2samp1;
+	unsigned long  accum;
 
-  if ( (w = calloc(1,sizeof(workout_t))) == NULL ) {
-    fprintf(stderr,"merge_workouts: calloc(%ld): %s\n",
-	    (long)sizeof(workout_t),strerror(errno));
-    return NULL;
-  }
+	if ( (w = calloc(1,sizeof(workout_t))) == NULL ) {
+		fprintf(stderr,"merge_workouts: calloc(%ld): %s\n",
+				(long)sizeof(workout_t),strerror(errno));
+		return NULL;
+	}
 
-  if ( wa == NULL || wb == NULL ) {
-    fprintf(stderr,"merge_workouts: NULL argument\n");
-    return NULL;
-  }
+	if ( wa == NULL || wb == NULL ) {
+		fprintf(stderr,"merge_workouts: NULL argument\n");
+		return NULL;
+	}
 
-  /* do they overlap? */
+	/* do they overlap? */
 
-  if ( workouts_overlap(wa,wb) ) {
-    fprintf(stderr,"merge_workouts: workouts overlap, bailing out.\n");
-    return NULL;
-  }
+	if ( workouts_overlap(wa,wb) ) {
+		fprintf(stderr,"merge_workouts: workouts overlap, bailing out.\n");
+		return NULL;
+	}
 
-  /* figure out which workout comes first. */
+	/* figure out which workout comes first. */
   
-  wg = workout_gap(wa,wb);
-  if ( wg >= 0 ) {
-    w1 = wa;
-    w2 = wb;
-  } else {
-    w1 = wb;
-    w2 = wa;
-    wg = workout_gap(wb,wa);
-  }
+	wg = workout_gap(wa,wb);
+	if ( wg >= 0 ) {
+		w1 = wa;
+		w2 = wb;
+	} else {
+		w1 = wb;
+		w2 = wa;
+		wg = workout_gap(wb,wa);
+	}
 
-  /* what sample interval are we going to use?  use the finer of the two. */
+	/* what sample interval are we going to use?  use the finer of the two. */
 
-  recint = MIN(w1->recording_interval,w2->recording_interval);
+	recint = MIN(w1->recording_interval,w2->recording_interval);
 
-  /* if the merge type is S710_MERGE_TRUE, ensure that the sample gap isn't
-     too large. */
+	/* if the merge type is S710_MERGE_TRUE, ensure that the sample gap isn't
+	   too large. */
 
-  if ( mtype == S710_MERGE_TRUE && wg/recint > S710_BLANK_SAMPLE_LIMIT ) {
-    fprintf(stderr,"merge_workouts: too many blank samples, bailing out.\n");
-    free(w);
-    return NULL;
-  }
+	if ( mtype == S710_MERGE_TRUE && wg/recint > S710_BLANK_SAMPLE_LIMIT ) {
+		fprintf(stderr,"merge_workouts: too many blank samples, bailing out.\n");
+		free(w);
+		return NULL;
+	}
 
-  /* OK, we're good to go.  DO IT. */
+	/* OK, we're good to go.  DO IT. */
 
-  /* Begin by copying w1's data over into w2. */
+	/* Begin by copying w1's data over into w2. */
 
-  memcpy(w,w1,sizeof(workout_t));
+	memcpy(w,w1,sizeof(workout_t));
 
-  /* Make the pointers in w be NULL, we'll handle that stuff later... */
+	/* Make the pointers in w be NULL, we'll handle that stuff later... */
 
-  w->lap_data   = NULL;
-  w->hr_data    = NULL;
-  w->alt_data   = NULL;
-  w->speed_data = NULL;
-  w->dist_data  = NULL;
-  w->cad_data   = NULL;
-  w->power_data = NULL;
+	w->lap_data   = NULL;
+	w->hr_data    = NULL;
+	w->alt_data   = NULL;
+	w->speed_data = NULL;
+	w->dist_data  = NULL;
+	w->cad_data   = NULL;
+	w->power_data = NULL;
 
-  /* 
-     The output HRM type corresponds to the more recent or feature-rich
-     model of the two. 
-  */
+	/* 
+	   The output HRM type corresponds to the more recent or feature-rich
+	   model of the two. 
+	*/
 
-  if ( w1->type == S710_HRM_S625X || w2->type == S710_HRM_S625X ) {
-    w->type = S710_HRM_S625X;
-  } else if ( w1->type == S710_HRM_S710 || w2->type == S710_HRM_S710 ) {
-    w->type = S710_HRM_S710;
-  } else {
-    w->type = S710_HRM_S610;
-  }
+	if ( w1->type == S710_HRM_S625X || w2->type == S710_HRM_S625X ) {
+		w->type = S710_HRM_S625X;
+	} else if ( w1->type == S710_HRM_S710 || w2->type == S710_HRM_S710 ) {
+		w->type = S710_HRM_S710;
+	} else {
+		w->type = S710_HRM_S610;
+	}
 
-  /* Set the recording interval. */
+	/* Set the recording interval. */
 
-  w->recording_interval = recint;
+	w->recording_interval = recint;
 
-  /* The mode is the bitwise OR of the two modes. */
+	/* The mode is the bitwise OR of the two modes. */
 
-  w->mode = w1->mode | w2->mode;
+	w->mode = w1->mode | w2->mode;
 
-  /* Compute the correct duration. */
+	/* Compute the correct duration. */
 
-  /* Set cumulative counters to their w2 values. */
+	/* Set cumulative counters to their w2 values. */
 
-  w->cumulative_exercise = w2->cumulative_exercise;
-  w->cumulative_ride     = w2->cumulative_ride;
-  w->odometer            = w2->odometer;
-  w->total_energy        = w2->total_energy;
+	w->cumulative_exercise = w2->cumulative_exercise;
+	w->cumulative_ride     = w2->cumulative_ride;
+	w->odometer            = w2->odometer;
+	w->total_energy        = w2->total_energy;
 
-  /* Set min and max values correctly. */
+	/* Set min and max values correctly. */
 
-  w->min_alt             = MIN(w1->min_alt,w2->min_alt);
-  w->min_temp            = MIN(w1->min_temp,w2->min_temp);
-  w->max_cad             = MAX(w1->max_cad,w2->max_cad);
-  w->max_alt             = MAX(w1->max_alt,w2->max_alt);
-  w->max_temp            = MAX(w1->max_temp,w2->max_temp);
-  w->max_power           = (w1->max_power.power > w2->max_power.power) 
-    ? w1->max_power 
-    : w2->max_power;
-  w->max_speed           = MAX(w1->max_speed,w2->max_speed);
-  w->highest_speed       = MAX(w1->highest_speed,w2->highest_speed);
+	w->min_alt             = MIN(w1->min_alt,w2->min_alt);
+	w->min_temp            = MIN(w1->min_temp,w2->min_temp);
+	w->max_cad             = MAX(w1->max_cad,w2->max_cad);
+	w->max_alt             = MAX(w1->max_alt,w2->max_alt);
+	w->max_temp            = MAX(w1->max_temp,w2->max_temp);
+	w->max_power           = (w1->max_power.power > w2->max_power.power) 
+		? w1->max_power 
+		: w2->max_power;
+	w->max_speed           = MAX(w1->max_speed,w2->max_speed);
+	w->highest_speed       = MAX(w1->highest_speed,w2->highest_speed);
 
-  /* Certain values are the sums of the two workouts' values. */
+	/* Certain values are the sums of the two workouts' values. */
 
-  w->exercise_distance   = w1->exercise_distance + w2->exercise_distance;
-  w->ascent              = w1->ascent + w2->ascent;
-  w->energy              = w1->energy + w2->energy;
+	w->exercise_distance   = w1->exercise_distance + w2->exercise_distance;
+	w->ascent              = w1->ascent + w2->ascent;
+	w->energy              = w1->energy + w2->energy;
 
-  /* 
-     Now let's figure out how many samples we're going to need.  This depends
-     on the user's choice of merge mode.  If they want a "true" merge, then 
-     we're going to insert a bunch of blank samples.  We'll also insert a 
-     fake lap for the empty data. 
-  */
+	/* 
+	   Now let's figure out how many samples we're going to need.  This depends
+	   on the user's choice of merge mode.  If they want a "true" merge, then 
+	   we're going to insert a bunch of blank samples.  We'll also insert a 
+	   fake lap for the empty data. 
+	*/
 
-  samp1                  = w1->samples;
-  samp2                  = w2->samples;
-  w1fac                  = w1->recording_interval / w->recording_interval;
-  w2fac                  = w2->recording_interval / w->recording_interval;
+	samp1                  = w1->samples;
+	samp2                  = w2->samples;
+	w1fac                  = w1->recording_interval / w->recording_interval;
+	w2fac                  = w2->recording_interval / w->recording_interval;
 
-  samp1 *= w1fac;
-  samp2 *= w2fac;
+	samp1 *= w1fac;
+	samp2 *= w2fac;
   
-  w->samples = samp1 + samp2;
-  w->laps = w1->laps + w2->laps;
-  if ( mtype == S710_MERGE_TRUE ) {
-    w->samples += wg/recint;
-    w->laps    += 1;
-  }
+	w->samples = samp1 + samp2;
+	w->laps = w1->laps + w2->laps;
+	if ( mtype == S710_MERGE_TRUE ) {
+		w->samples += wg/recint;
+		w->laps    += 1;
+	}
 
-  /* For average temperature and altitude, we compute a weighted mean of
-     the data that we have. */
+	/* For average temperature and altitude, we compute a weighted mean of
+	   the data that we have. */
 
-  w->avg_temp = (w1->avg_temp*samp1+w2->avg_temp*samp2)/(samp1+samp2);
-  w->avg_alt  = (w1->avg_alt*samp1+w2->avg_alt*samp2)/(samp1+samp2);
+	w->avg_temp = (w1->avg_temp*samp1+w2->avg_temp*samp2)/(samp1+samp2);
+	w->avg_alt  = (w1->avg_alt*samp1+w2->avg_alt*samp2)/(samp1+samp2);
 
   /* Average HR, cadence, power and speed have to be computed for the
      data for which those values were nonzero.  This is consistent 
@@ -265,18 +265,18 @@ merge_workouts ( workout_t *wa, workout_t *wb, S710_Merge_Type mtype )
     }                                                     \
   } while ( 0 )
 
-  SAMPLESUM(w1,hr,hr,R);
-  SAMPLESUM(w1,cad,cad,R);
-  SAMPLESUM(w1,speed,speed,R);
-  SAMPLESUM(w1,power,power,P);
-  SAMPLESUM(w1,power,lr_balance,P);
-  SAMPLESUM(w1,power,pedal_index,P);
-  SAMPLESUM(w2,hr,hr,R);
-  SAMPLESUM(w2,cad,cad,R);
-  SAMPLESUM(w2,speed,speed,R);
-  SAMPLESUM(w2,power,power,P);
-  SAMPLESUM(w2,power,lr_balance,P);
-  SAMPLESUM(w2,power,pedal_index,P);
+	SAMPLESUM(w1,hr,hr,R);
+	SAMPLESUM(w1,cad,cad,R);
+	SAMPLESUM(w1,speed,speed,R);
+	SAMPLESUM(w1,power,power,P);
+	SAMPLESUM(w1,power,lr_balance,P);
+	SAMPLESUM(w1,power,pedal_index,P);
+	SAMPLESUM(w2,hr,hr,R);
+	SAMPLESUM(w2,cad,cad,R);
+	SAMPLESUM(w2,speed,speed,R);
+	SAMPLESUM(w2,power,power,P);
+	SAMPLESUM(w2,power,lr_balance,P);
+	SAMPLESUM(w2,power,pedal_index,P);
 #undef SAMPLESUM
 
   /* Sorry about that.  OK, we're ready to compute the new averages. */
@@ -304,9 +304,9 @@ merge_workouts ( workout_t *wa, workout_t *wb, S710_Merge_Type mtype )
   blw2 = s710_time_to_tenths(&w2->bestlap_split);
 
   if ( blw1 <= blw2 ) {
-    w->bestlap_split = w1->bestlap_split;
+	  w->bestlap_split = w1->bestlap_split;
   } else {
-    w->bestlap_split = w2->bestlap_split;
+	  w->bestlap_split = w2->bestlap_split;
   }
 
   /* 
@@ -317,7 +317,7 @@ merge_workouts ( workout_t *wa, workout_t *wb, S710_Merge_Type mtype )
 
   sum_s710_time(&w1->duration,&w2->duration,&w->duration);
   if ( mtype == S710_MERGE_TRUE ) {
-    increment_s710_time(&w->duration,wg);
+	  increment_s710_time(&w->duration,wg);
   }
 
   /* 
@@ -329,35 +329,35 @@ merge_workouts ( workout_t *wa, workout_t *wb, S710_Merge_Type mtype )
 
   memset(&w->hr_zone[0][0],0,sizeof(w->hr_zone));
   for ( i = 0; i < 3; i++ ) {
-    if ( w1->hr_data != NULL ) {
-      for ( j = 0; j < w1->samples; j++ ) {
-	if ( w1->hr_data[j] > w->hr_limit[i].upper ) {
-	  increment_s710_time(&w->hr_zone[i][2],w1->recording_interval);
-	} else if ( w1->hr_data[j] >= w->hr_limit[i].lower ) {
-	  increment_s710_time(&w->hr_zone[i][1],w1->recording_interval);
-	} else {
-	  increment_s710_time(&w->hr_zone[i][0],w1->recording_interval);
-	}
-      }
-    }
-    if ( w2->hr_data != NULL ) {
-      for ( j = 0; j < w2->samples; j++ ) {
-	if ( w2->hr_data[j] > w->hr_limit[i].upper ) {
-	  increment_s710_time(&w->hr_zone[i][2],w2->recording_interval);
-	} else if ( w2->hr_data[j] >= w->hr_limit[i].lower ) {
-	  increment_s710_time(&w->hr_zone[i][1],w2->recording_interval);
-	} else {
-	  increment_s710_time(&w->hr_zone[i][0],w2->recording_interval);
-	}	
-      }
-    }
-    if ( mtype == S710_MERGE_TRUE ) {
-      if ( w->hr_limit[i].lower > 0 ) {
-	increment_s710_time(&w->hr_zone[i][0],wg);
-      } else {
-	increment_s710_time(&w->hr_zone[i][1],wg);
-      }
-    }
+	  if ( w1->hr_data != NULL ) {
+		  for ( j = 0; j < w1->samples; j++ ) {
+			  if ( w1->hr_data[j] > w->hr_limit[i].upper ) {
+				  increment_s710_time(&w->hr_zone[i][2],w1->recording_interval);
+			  } else if ( w1->hr_data[j] >= w->hr_limit[i].lower ) {
+				  increment_s710_time(&w->hr_zone[i][1],w1->recording_interval);
+			  } else {
+				  increment_s710_time(&w->hr_zone[i][0],w1->recording_interval);
+			  }
+		  }
+	  }
+	  if ( w2->hr_data != NULL ) {
+		  for ( j = 0; j < w2->samples; j++ ) {
+			  if ( w2->hr_data[j] > w->hr_limit[i].upper ) {
+				  increment_s710_time(&w->hr_zone[i][2],w2->recording_interval);
+			  } else if ( w2->hr_data[j] >= w->hr_limit[i].lower ) {
+				  increment_s710_time(&w->hr_zone[i][1],w2->recording_interval);
+			  } else {
+				  increment_s710_time(&w->hr_zone[i][0],w2->recording_interval);
+			  }	
+		  }
+	  }
+	  if ( mtype == S710_MERGE_TRUE ) {
+		  if ( w->hr_limit[i].lower > 0 ) {
+			  increment_s710_time(&w->hr_zone[i][0],wg);
+		  } else {
+			  increment_s710_time(&w->hr_zone[i][1],wg);
+		  }
+	  }
   }
 
   /* 
@@ -381,31 +381,31 @@ merge_workouts ( workout_t *wa, workout_t *wb, S710_Merge_Type mtype )
   w->lap_data = calloc(w->laps,sizeof(lap_data_t));
   memcpy(w->lap_data,w1->lap_data,w1->laps * sizeof(lap_data_t));
   if ( mtype == S710_MERGE_TRUE ) {
-    w->lap_data[w1->laps].cumulative = 
-      w1->duration;
-    w->lap_data[w1->laps].cumul_ascent = 
-      w->lap_data[w1->laps-1].cumul_ascent;
-    w->lap_data[w1->laps].cumul_distance = 
-      w->lap_data[w1->laps-1].cumul_distance;
-    increment_s710_time(&w->lap_data[w1->laps].split,wg);
-    increment_s710_time(&w->lap_data[w1->laps].cumulative,wg);
-    memcpy(&w->lap_data[w1->laps+1],
-	   w2->lap_data,w2->laps * sizeof(lap_data_t));
-    w2lap1 = w1->laps + 1;
+	  w->lap_data[w1->laps].cumulative = 
+		  w1->duration;
+	  w->lap_data[w1->laps].cumul_ascent = 
+		  w->lap_data[w1->laps-1].cumul_ascent;
+	  w->lap_data[w1->laps].cumul_distance = 
+		  w->lap_data[w1->laps-1].cumul_distance;
+	  increment_s710_time(&w->lap_data[w1->laps].split,wg);
+	  increment_s710_time(&w->lap_data[w1->laps].cumulative,wg);
+	  memcpy(&w->lap_data[w1->laps+1],
+			 w2->lap_data,w2->laps * sizeof(lap_data_t));
+	  w2lap1 = w1->laps + 1;
   } else {
-    memcpy(&w->lap_data[w1->laps],
-	   w2->lap_data,w2->laps * sizeof(lap_data_t));
-    w2lap1 = w1->laps;
+	  memcpy(&w->lap_data[w1->laps],
+			 w2->lap_data,w2->laps * sizeof(lap_data_t));
+	  w2lap1 = w1->laps;
   }
 
   /* Adjust the cumulative quantities in the laps from the second workout. */
 
   lap2 = &w->lap_data[w2lap1-1];
   for ( i = 0; i < w2->laps; i++ ) {
-    lap1 = &w->lap_data[w2lap1+i];
-    lap1->cumul_distance += lap2->cumul_distance;
-    lap1->cumul_ascent   += lap2->cumul_ascent;
-    sum_s710_time(&lap1->cumulative,&lap2->cumulative,&lap1->cumulative);
+	  lap1 = &w->lap_data[w2lap1+i];
+	  lap1->cumul_distance += lap2->cumul_distance;
+	  lap1->cumul_ascent   += lap2->cumul_ascent;
+	  sum_s710_time(&lap1->cumulative,&lap2->cumulative,&lap1->cumulative);
   }
   
   /* Allocate the sample data arrays. */
@@ -415,8 +415,8 @@ merge_workouts ( workout_t *wa, workout_t *wb, S710_Merge_Type mtype )
   /* Never let a partially allocated workout get through. */
 
   if ( !ok ) {
-    free_workout(w);
-    return NULL;
+	  free_workout(w);
+	  return NULL;
   }
 
   /* 
@@ -437,7 +437,7 @@ merge_workouts ( workout_t *wa, workout_t *wb, S710_Merge_Type mtype )
   w1samp1 = 0;
   w2samp1 = w1->samples * w1fac;
   if ( mtype == S710_MERGE_TRUE ) {
-    w2samp1 += wg / w->recording_interval;
+	  w2samp1 += wg / w->recording_interval;
   }
 
 #define WD(a,b,Z)     XD##Z(w,a,b)
@@ -493,11 +493,11 @@ merge_workouts ( workout_t *wa, workout_t *wb, S710_Merge_Type mtype )
   /* now compute the distance data. */
 
   if ( w->speed_data != NULL ) {
-    accum = 0;
-    for ( i = 0; i < w->samples; i++ ) {
-      w->dist_data[i] = accum / 57600.0;
-      accum += w->speed_data[i] * w->recording_interval;
-    }
+	  accum = 0;
+	  for ( i = 0; i < w->samples; i++ ) {
+		  w->dist_data[i] = accum / 57600.0;
+		  accum += w->speed_data[i] * w->recording_interval;
+	  }
   }
 
   return w;

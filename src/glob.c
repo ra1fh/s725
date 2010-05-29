@@ -29,70 +29,70 @@
 */
 
 int
-is_like ( char *given, char *wanted )
+is_like ( const char *given, const char *wanted )
 {
-  char *p;
-  char *q;
-  int   ok = 1;
+	const char *p;
+	const char *q;
+	int   ok = 1;
 
-  p = given;
-  q = wanted;
+	p = given;
+	q = wanted;
 
-  /* early exit if *p == '\n' */
+	/* early exit if *p == '\n' */
 
-  while ( isspace(*p) ) p++;
+	while ( isspace(*p) ) p++;
 
-  /* loop through both the given and the wanted strings, side by side. */
+	/* loop through both the given and the wanted strings, side by side. */
 
-  while ( *p && *q && *p != '{' ) {
+	while ( *p && *q && *p != '{' ) {
 
-    if ( *p == *q ) {
+		if ( *p == *q ) {
 
-      /* continue past identical characters */
+			/* continue past identical characters */
 
-      p++;
-      q++;
+			p++;
+			q++;
 
-    } else {
+		} else {
 
-      /* oh, dear.  we've got a character mismatch. */
+			/* oh, dear.  we've got a character mismatch. */
 
-      if ( isspace(*p) ) {
+			if ( isspace(*p) ) {
 
-	/* if the given string has fallen over to whitespace at a point 
-	   where the wanted string is not in whitespace, then the user
-	   is abbreviating.  scan the wanted string to the first whitespace,
-	   then scan both strings to the first non-whitespace, then see
-	   if the characters match up. */
+				/* if the given string has fallen over to whitespace at a point 
+				   where the wanted string is not in whitespace, then the user
+				   is abbreviating.  scan the wanted string to the first whitespace,
+				   then scan both strings to the first non-whitespace, then see
+				   if the characters match up. */
 
-	while ( *q && !isspace(*q) )  q++;
-	while (  isspace(*p) )  p++;
-	while (  isspace(*q) )  q++;	
+				while ( *q && !isspace(*q) )  q++;
+				while (  isspace(*p) )  p++;
+				while (  isspace(*q) )  q++;	
 
-	if ( !*p && *q ) {
+				if ( !*p && *q ) {
 
-	  /* bail out if there's nothing left in the given string and we
-	     still have non-whitespace chars in the wanted string. */
+					/* bail out if there's nothing left in the given string and we
+					   still have non-whitespace chars in the wanted string. */
 
-	  ok = 0;
-	  break;
+					ok = 0;
+					break;
+				}
+			} else {
+
+				if ( *p != '\n' ) ok = 0;
+				break;
+			}
+		}
 	}
-      } else {
 
-	if ( *p != '\n' ) ok = 0;
-	break;
-      }
-    }
-  }
+	if ( *p ) {
+		while ( *p == ' ' || *p == '\t' ) p++;
+	}
 
-  if ( *p ) {
-    while ( *p == ' ' || *p == '\t' ) p++;
-  }
+	/* if the remaining characters in the given string are not newline or '{',
+	   and there are no characters left in the wanted string, the match fails. */
 
-  /* if the remaining characters in the given string are not newline or '{',
-     and there are no characters left in the wanted string, the match fails. */
+	if ( *p && *p != '\n' && *p != '{' && !*q ) ok = 0;
 
-  if ( *p && *p != '\n' && *p != '{' && !*q ) ok = 0;
-
-  return ok;
+	return ok;
 }

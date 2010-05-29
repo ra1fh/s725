@@ -7,7 +7,7 @@
 
 void
 add_string_attribute ( attribute_map_t *m, 
-					   char            *name, 
+					   const char      *name, 
 					   void            *ptr, 
 					   int              length )
 {
@@ -21,7 +21,7 @@ add_string_attribute ( attribute_map_t *m,
 
 void
 add_integer_attribute ( attribute_map_t *m, 
-						char            *name, 
+						const char      *name, 
 						void            *ptr, 
 						int              min, 
 						int              max,
@@ -39,7 +39,7 @@ add_integer_attribute ( attribute_map_t *m,
 
 void
 add_boolean_attribute ( attribute_map_t *m, 
-						char            *name,
+						const char      *name,
 						void            *ptr )
 {
 	m->pairs = add_attribute(&m->pairs,S710_ATTRIBUTE_TYPE_BOOLEAN,name,ptr);
@@ -57,7 +57,7 @@ add_byte_attribute ( attribute_map_t *m,
 
 void 
 add_enum_integer_attribute ( attribute_map_t *m, 
-							 char            *name,
+							 const char      *name,
 							 void            *ptr,
 							 ... )
 {
@@ -86,7 +86,7 @@ add_enum_integer_attribute ( attribute_map_t *m,
 
 void 
 add_enum_string_attribute ( attribute_map_t *m, 
-							char            *name, 
+							const char      *name, 
 							void            *ptr,
 							... )
 {
@@ -116,7 +116,7 @@ add_enum_string_attribute ( attribute_map_t *m,
 attribute_pair_t *
 add_attribute ( attribute_pair_t     **p, 
 				S710_Attribute_Type    type, 
-				char                  *name,
+				const char            *name,
 				void                  *ptr)
 {
 	attribute_pair_t *a, *v = *p;

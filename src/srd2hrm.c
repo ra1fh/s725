@@ -7,49 +7,52 @@
 #include <string.h>
 #include "s710.h"
 
+static void usage(void);
+
+
 /* externs */
 
 extern char *optarg;
 extern int   optind;
 
 static void
-usage() {
-  fprintf(stderr, "usage: srd2hrm [-f] [-h] <srd>\n");
+usage(void) {
+	fprintf(stderr, "usage: srd2hrm [-f] [-h] <srd>\n");
 }
 
 int
 main ( int argc, char **argv )
 {
-  workout_t *      w;
-  int              ch;
-  S710_Filter      filter = S710_FILTER_OFF;
+	workout_t *      w;
+	int              ch;
+	S710_Filter      filter = S710_FILTER_OFF;
 
-  while ( (ch = getopt(argc,argv,"fh")) != -1 ) {
-    switch (ch) {
-    case 'f':
-      filter = S710_FILTER_ON;
-      break;
-    case 'h':
-      usage();
-      exit(0);
-      break;
-    }
-  }
-  argc -= optind;
-  argv += optind;
+	while ( (ch = getopt(argc,argv,"fh")) != -1 ) {
+		switch (ch) {
+		case 'f':
+			filter = S710_FILTER_ON;
+			break;
+		case 'h':
+			usage();
+			exit(0);
+			break;
+		}
+	}
+	argc -= optind;
+	argv += optind;
 
-  if ( argc != 1 ) {
-    usage();
-    exit(1);
-  }
+	if ( argc != 1 ) {
+		usage();
+		exit(1);
+	}
 
-  w = read_workout(argv[0],filter,S710_HRM_AUTO);
-  if ( w != NULL ) {
-    print_workout_as_hrm(w,stdout);
-    free_workout(w);
-  } else {
-    fprintf(stderr,"%s: unable to read workout\n",argv[0]);
-  }
+	w = read_workout(argv[0],filter,S710_HRM_AUTO);
+	if ( w != NULL ) {
+		print_workout_as_hrm(w,stdout);
+		free_workout(w);
+	} else {
+		fprintf(stderr,"%s: unable to read workout\n",argv[0]);
+	}
 
-  return 0;
+	return 0;
 }

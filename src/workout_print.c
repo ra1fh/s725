@@ -16,7 +16,7 @@
 void
 print_workout ( workout_t * w, FILE * fp, int what )
 {
-  char *       hrm_type = "Unknown";
+  const char*  hrm_type = "Unknown";
   int          i;
   int          j;
   float        vam;

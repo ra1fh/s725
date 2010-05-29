@@ -8,13 +8,15 @@
 #include <sys/time.h>
 #include "s710.h"
 
+static void usage(void);
+
 /* externs */
 
 extern char *optarg;
 extern int   optind;
 
 static void
-usage() {
+usage(void) {
   fprintf(stderr, "usage: srdhead [-f] [-h] <srd...>\n");
 }
 

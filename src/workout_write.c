@@ -335,12 +335,12 @@ write_workout_header ( workout_t * w, unsigned char * buf )
 /* This function writes a workout lap to the buffer. */
 
 static int
-write_workout_lap ( workout_t * w, int index, unsigned char * buf )
+write_workout_lap ( workout_t * w, int idx, unsigned char * buf )
 {
   int           pos = 0;
   int           alt;
   int           dist;
-  lap_data_t *  l = &w->lap_data[index];
+  lap_data_t *  l = &w->lap_data[idx];
 
   buf[pos+2]  = l->cumulative.hours;
   buf[pos+1]  = l->cumulative.minutes & 0x3f;
@@ -401,14 +401,14 @@ write_workout_lap ( workout_t * w, int index, unsigned char * buf )
 /* This function writes a workout sample to the buffer */
 
 static int
-write_workout_sample ( workout_t * w, int index, unsigned char * buf )
+write_workout_sample ( workout_t * w, int idx, unsigned char * buf )
 {
   int pos = 0;
   int alt;
 
-  buf[pos++] |= w->hr_data[index];
+  buf[pos++] |= w->hr_data[idx];
   if ( S710_HAS_ALTITUDE(w->mode) ) {
-    alt = w->alt_data[index];
+    alt = w->alt_data[idx];
     if ( w->units.system == S710_UNITS_ENGLISH ) alt /= 5;
     alt += 0x200; /* 512 */
     buf[pos++] |= (alt & 0xff);
@@ -416,17 +416,17 @@ write_workout_sample ( workout_t * w, int index, unsigned char * buf )
   }
   if ( S710_HAS_SPEED(w->mode) ) {
     if ( S710_HAS_ALTITUDE(w->mode) ) pos--;
-    buf[pos++] |= (((w->speed_data[index] >> 8) & 0x07) << 5);
-    buf[pos++] |= (w->speed_data[index] & 0xff);
+    buf[pos++] |= (((w->speed_data[idx] >> 8) & 0x07) << 5);
+    buf[pos++] |= (w->speed_data[idx] & 0xff);
   }
   if ( S710_HAS_POWER(w->mode) ) {
-    buf[pos++] = (w->power_data[index].power & 0xff);
-    buf[pos++] = ((w->power_data[index].power >> 8) & 0xff);
-    buf[pos++] = w->power_data[index].lr_balance;
-    buf[pos++] = w->power_data[index].pedal_index;
+    buf[pos++] = (w->power_data[idx].power & 0xff);
+    buf[pos++] = ((w->power_data[idx].power >> 8) & 0xff);
+    buf[pos++] = w->power_data[idx].lr_balance;
+    buf[pos++] = w->power_data[idx].pedal_index;
   }
   if ( S710_HAS_CADENCE(w->mode) ) {
-    buf[pos++] = w->cad_data[index];
+    buf[pos++] = w->cad_data[idx];
   }
 
   return pos;

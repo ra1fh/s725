@@ -16,7 +16,6 @@ draw_x_axis ( gdImagePtr    im,
 			  int           xi,     /* x coordinate of start of x axis */
 			  int           yi,     /* y coordinate of start of y axis */
 			  int           xf,     /* x coord of end of x axis */
-			  int           yf,     /* y coord of end of y axis */
 			  int           pixel ) /* color of tics and axis labels */
 {
 	float        ts;
@@ -95,12 +94,9 @@ draw_x_axis ( gdImagePtr    im,
 void
 draw_y_axis( gdImagePtr  im,
 			 int         side,
-			 char       *units,
+			 const char *units,
 			 float       ymin,
 			 float       ymax,
-			 int         r,
-			 int         g,
-			 int         b,
 			 int         tic_opts,
 			 int         xi,
 			 int         yi,
@@ -151,7 +147,7 @@ draw_y_axis( gdImagePtr  im,
 	else if ( ts < 3000 ) tic =  400;
 	else                  tic =  500;
 
-	st  = floor(ymin-((int)floor(ymin))%tic);
+	st  = (int) lrintf(floor(ymin-(lrintf(floor(ymin)))%tic));
 
 	ppy = (float)(yi-yf)/ts;
 	tdx = gdFontSmall->w;

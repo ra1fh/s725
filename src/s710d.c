@@ -19,19 +19,19 @@ static unsigned int          gVerbose   = 0;
 
 static void          s710d_signal_handler ( int signum );
 static void          s710d_log            (u_int level, const char *fmt, ...);
-static void          s710d_usage          ();
+static void          s710d_usage          (void);
 
 /* main program */
 int
 main ( int argc, char **argv )
 {
-	char            path[PATH_MAX];
-	char           *filedir = NULL;
-	files_t         file;
-	S710_Driver     driver;
-	const char     *driver_name = NULL;
-	const char     *device = NULL;
-	int             ch;
+	char			path[PATH_MAX];
+	const char	   *filedir = NULL;
+	files_t			file;
+	S710_Driver		driver;
+	const char	   *driver_name = NULL;
+	const char	   *device = NULL;
+	int				ch;
 
 	while ( (ch = getopt(argc,argv,"d:f:hnv")) != -1 ) {
 		switch (ch) {
@@ -99,7 +99,7 @@ main ( int argc, char **argv )
 		if (receive_file(&driver,&file, s710d_log)) {
 			save_files(&file,filedir, s710d_log);
 			print_files(&file, s710d_log); 
-		}      
+		}	   
 		usleep(10000);
 	}
 
@@ -109,7 +109,7 @@ main ( int argc, char **argv )
 	s710d_log(0, "ended: received signal %d\n",gSigFlag);
 
 	if (gDaemonize) {
-		closelog();   /* optional */
+		closelog();	  /* optional */
 	}
 
 	return 0;
@@ -118,12 +118,12 @@ main ( int argc, char **argv )
 static void
 s710d_usage()
 {
-    printf("usage: s710d [-h] [-n] [-d driver] [-f filedir] [device file]\n");
-	printf("       -d driver    may be either serial, ir, or usb\n");
-	printf("       -f filedir   is the directory where output files are written to\n");
-	printf("       -n           do not fork and log to stdout\n");
-	printf("       device file  is required for serial and ir drivers\n");
-	printf("                    alternative is S710_FILEDIR environment variable\n");
+	printf("usage: s710d [-h] [-n] [-d driver] [-f filedir] [device file]\n");
+	printf("	   -d driver	may be either serial, ir, or usb\n");
+	printf("	   -f filedir	is the directory where output files are written to\n");
+	printf("	   -n			do not fork and log to stdout\n");
+	printf("	   device file	is required for serial and ir drivers\n");
+	printf("					alternative is S710_FILEDIR environment variable\n");
 }
 
 static void

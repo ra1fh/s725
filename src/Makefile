@@ -40,6 +40,12 @@ LIB_OBJS= $(patsubst %.c,%.o,$(LIB_SRCS))
 PROG_OBJS= $(patsubst %,%.o,$(PROGS))
 CPPFLAGS+= $(DEFS) -I. -I- $(INCDIRS)
 
+ifeq ($(shell pkg-config --exists libusb && echo yes), yes)
+	CPPFLAGS += -D HAVE_LIBUSB
+	CFLAGS += $(shell pkg-config --cflags libusb)
+	LIBS   += $(shell pkg-config --libs libusb)	
+endif	
+
 ifdef DEBUG
 CFLAGS+= -g -ggdb -DDEBUG
 LDFLAGS+= -rdynamic

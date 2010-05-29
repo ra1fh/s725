@@ -105,7 +105,7 @@ void
 print_user ( user_t *u, FILE *fp )
 {
   char  buf[BUFSIZ];
-  char *a;
+  const char *a;
 
   fprintf(fp,"\nUser ID:               %d\n",u->user_id);
   fprintf(fp,"Name:                  %s\n",u->name);

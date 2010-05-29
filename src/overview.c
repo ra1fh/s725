@@ -8,18 +8,18 @@
 int
 get_overview ( S710_Driver *d, overview_t *overview )
 {
-  packet_t *p;
-  int       ok = 0;
+	packet_t *p;
+	int       ok = 0;
 
-  p = get_response ( S710_GET_OVERVIEW, d );
-  if ( p != NULL) {
-    overview->files = BCD(p->data[2]);
-    overview->bytes = (p->data[4] << 8) + p->data[5];
-    ok = 1;
-    free ( p );
-  }
+	p = get_response ( S710_GET_OVERVIEW, d );
+	if ( p != NULL) {
+		overview->files = BCD(p->data[2]);
+		overview->bytes = (p->data[4] << 8) + p->data[5];
+		ok = 1;
+		free ( p );
+	}
 
-  return ok;
+	return ok;
 }
 
 

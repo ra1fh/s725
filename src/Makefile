@@ -38,7 +38,7 @@ DEFS+= -DS710_FILEDIR=\"/var/polar/raw\"
 
 LIB_OBJS= $(patsubst %.c,%.o,$(LIB_SRCS))
 PROG_OBJS= $(patsubst %,%.o,$(PROGS))
-CPPFLAGS+= $(DEFS) -I. -I- $(INCDIRS)
+CPPFLAGS+= $(DEFS) -I. $(INCDIRS)
 
 ifeq ($(shell pkg-config --exists libusb && echo yes), yes)
 	CPPFLAGS += -D HAVE_LIBUSB

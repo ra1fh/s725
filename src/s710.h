@@ -506,6 +506,37 @@ typedef struct workout_t {
 #define S710_HAS_ALTITUDE(x)  S710_HAS_FIELD(x,ALTITUDE)
 #define S710_HAS_BIKE1(x)     S710_HAS_FIELD(x,BIKE1)
 
+struct cmd {
+	const char *name;
+	int minargs;
+	int maxargs;
+	const char *args;
+	int (*func)(struct cmd *, char **);
+	int packet_type;
+};
+
+#define CMDS	{							\
+		{ "get overview", 0, 0, NULL, NULL, S710_GET_OVERVIEW },		\
+		{ "get user", 0, 0, NULL, NULL, S710_GET_USER },				\
+		{ "get watch", 0, 0, NULL, NULL, S710_GET_WATCH },				\
+		{ "get logo", 0, 0, NULL, NULL, S710_GET_LOGO},					\
+		{ "get bike", 0, 0, NULL, NULL, -1},							\
+		{ "get exercise 1", 0, 0, NULL, NULL, S710_GET_EXERCISE_1 },	\
+		{ "get exercise 2", 0, 0, NULL, NULL, S710_GET_EXERCISE_2 },	\
+		{ "get exercise 3", 0, 0, NULL, NULL, S710_GET_EXERCISE_3 },	\
+		{ "get exercise 4", 0, 0, NULL, NULL, S710_GET_EXERCISE_4 },	\
+		{ "get exercise 5", 0, 0, NULL, NULL, S710_GET_EXERCISE_5 },	\
+		{ "get reminder 1", 0, 0, NULL, NULL, S710_GET_REMINDER_1 },	\
+		{ "get reminder 2", 0, 0, NULL, NULL, S710_GET_REMINDER_2 },	\
+		{ "get reminder 3", 0, 0, NULL, NULL, S710_GET_REMINDER_3 },	\
+		{ "get reminder 4", 0, 0, NULL, NULL, S710_GET_REMINDER_4 },	\
+		{ "get reminder 5", 0, 0, NULL, NULL, S710_GET_REMINDER_5 },	\
+		{ "get reminder 6", 0, 0, NULL, NULL, S710_GET_REMINDER_6 },	\
+		{ "get reminder 7", 0, 0, NULL, NULL, S710_GET_REMINDER_7 },	\
+		{ "get files", 0, 0, NULL, NULL, S710_GET_FILES }, 				\
+		{ "help", 0, 0, NULL, s710sh_help, -1},							\
+		{ NULL, 0, 0, NULL, NULL, -1}									\
+}
 
 /* structs used in rendering images using GD */
 

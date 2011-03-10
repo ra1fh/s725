@@ -9,15 +9,46 @@
 #include <stdarg.h>
 #include <ctype.h>
 #include <time.h>
+
+#include <readline/readline.h>
+#include <readline/history.h>
+
 #include "s710.h"
 
-/* static helper function */
+static volatile int quit;
 
-static void usage(void);
-static void explain_command	 ( int c, attribute_map_t *m );
-static void s710sh_log		 (unsigned int level, const char *fmt, ...);
+static void     usage(void);
+static void     explain_command	(int c, attribute_map_t *m);
+#if 0
+static char   **s710sh_argextra(char **argv, int argc, int off, struct cmd *cmdp);
+#endif
+static int      s710sh_checkarg(char *arg);
+static int      s710sh_checkcmd(int argc, char **argv, int *off, struct cmd *cmd);
+static char    *s710sh_completion(const char *str, int state);
+static int      s710sh_help(struct cmd *c, char **argv);
+static void     s710sh_log(unsigned int level, const char *fmt, ...);
+static ssize_t  s710sh_strip(char *str);
+static char   **s710sh_arg2argv(char *arg, int *argc);
 
-/* usage */
+static struct cmd cmds[] = CMDS;
+
+static void hexdump(void *ptr, int buflen) { 
+	unsigned char *buf = (unsigned char*)ptr; 
+	int i, j; 
+	for (i=0; i<buflen; i+=16) { 
+		fprintf(stderr, "%06x: ", i); 
+		for (j=0; j<16; j++)  
+			if (i+j < buflen) 
+				fprintf(stderr, "%02x ", buf[i+j]); 
+			else 
+				fprintf(stderr, "   "); 
+		fprintf(stderr, " "); 
+		for (j=0; j<16; j++)  
+			if (i+j < buflen) 
+				fprintf(stderr, "%c", isprint(buf[i+j]) ? buf[i+j] : '.'); 
+		fprintf(stderr, "\n"); 
+	} 
+} 
 
 static void
 usage(void) {
@@ -28,8 +59,212 @@ usage(void) {
 	printf("					alternative is S710_FILEDIR environment variable.\n");
 }
 
+static int
+s710sh_help(struct cmd *c, char **argv) {
+	u_int i;
+
+	printf("valid commands:\n");
+	for (i = 0; c[i].name != NULL; i++) {
+		printf("  %s", c[i].name);
+		if (c[i].minargs > 0)
+			printf(" { arg }");
+		else if (c[i].maxargs > 0)
+			printf(" [ arg ]");
+		printf("\n");
+	}
+	return (0);
+}
+
 int
-main ( int argc, char **argv )
+s710sh_checkarg(char *arg)
+{
+	size_t len;
+	u_int i;
+
+	if (!(len = strlen(arg)))
+		return (0);
+
+#define allowed_in_string(_x)                                           \
+	((isalnum(_x) || isprint(_x)) &&				\
+	(_x != '%' && _x != '\\' && _x != ';' && _x != '&' && _x != '|'))
+
+	for (i = 0; i < len; i++) {
+		if (!allowed_in_string(arg[i])) {
+			fprintf(stderr, "invalid character in input\n");
+			return (EPERM);
+		}
+	}
+
+	return (0);
+}
+
+static char *
+s710sh_completion(const char *str, int state) {
+	static int s710sh_complidx, len;
+	const char *name;
+
+#ifdef DEBUG
+	printf("completion entry: > text=%s state=%d idx=%d\n", str, state, s710sh_complidx);
+#endif
+
+	if (state == 0) {
+		len = strlen(str);
+		s710sh_complidx = 0;
+	}
+	while ((name = cmds[s710sh_complidx].name) != NULL) {
+		s710sh_complidx++;
+		if (strncmp(name, str, len) == 0) {
+#ifdef DEBUG
+			printf("completion entry: < %s\n", name);
+#endif
+			return (strdup(name));
+		}
+	}
+
+#ifdef DEBUG
+	printf("completion entry: < NULL\n");
+#endif
+	return (NULL);
+}
+
+int
+s710sh_checkcmd(int argc, char **argv, int *off, struct cmd *cmd)
+{
+	char **cmdp = NULL, *cmdstr = NULL;
+	int i, ncmd, v, ret = -1;
+
+	if ((cmdstr = strdup(cmd->name)) == NULL)
+		goto done;
+	if ((cmdp = s710sh_arg2argv(cmdstr, &ncmd)) == NULL)
+		goto done;
+	if (ncmd > argc || argc > (ncmd + cmd->maxargs))
+		goto done;
+
+	for (i = 0; i < ncmd; i++)
+		if (strcmp(argv[i], cmdp[i]) != 0)
+			goto done;
+
+	if ((v = argc - ncmd) < 0 ||
+	    (*off != -1 && *off < v))
+		goto done;
+	if (cmd->minargs && v < cmd->minargs) {
+		ret = EINVAL;
+		goto done;
+	}
+	*off = v;
+	ret = 0;
+
+ done:
+	if (cmdp != NULL)
+		free(cmdp);
+	if (cmdstr != NULL)
+		free(cmdstr);
+	return (ret);
+}
+
+char **
+s710sh_arg2argv(char *arg, int *argc)
+{
+	char **argv, *ptr = arg;
+	size_t len;
+	u_int i, c = 1;
+
+	if (s710sh_checkarg(arg) != 0)
+		return (NULL);
+	if (!(len = strlen(arg)))
+		return (NULL);
+
+	/* Count elements */
+	for (i = 0; i < len; i++) {
+		if (isspace(arg[i])) {
+			/* filter out additional options */
+			if (arg[i + 1] == '-') {
+				printf("invalid input\n");
+				return (NULL);
+			}
+			arg[i] = '\0';
+			c++;
+		}
+	}
+	if (arg[0] == '\0')
+		return (NULL);
+
+	/* Generate array */
+	if ((argv = calloc(c + 1, sizeof(char *))) == NULL) {
+		printf("fatal error: %s\n", strerror(errno));
+		return (NULL);
+	}
+
+	argv[c] = NULL;
+	*argc = c;
+
+	/* Fill array */
+	for (i = c = 0; i < len; i++) {
+		if (arg[i] == '\0' || i == 0) {
+			if (i != 0)
+				ptr = &arg[i + 1];
+			argv[c++] = ptr;
+		}
+	}
+
+	return (argv);
+}
+
+#if 0
+char **
+s710sh_argextra(char **argv, int argc, int off, struct cmd *cmdp)
+{
+	char **new_argv;
+	int i, c = 0, n;
+
+	if ((n = argc - off) < 0)
+		return (NULL);
+
+	/* Count elements */
+	for (i = 0; cmdp->earg[i] != NULL; i++)
+		c++;
+
+	/* Generate array */
+	if ((new_argv = calloc(c + n + 1, sizeof(char *))) == NULL) {
+		printf("fatal error: %s\n", strerror(errno));
+		return (NULL);
+	}
+
+	/* Fill array */
+	for (i = c = 0; cmdp->earg[i] != NULL; i++)
+		new_argv[c++] = cmdp->earg[i];
+
+	/* Append old array */
+	for (i = n; i < argc; i++)
+		new_argv[c++] = argv[i];
+
+	new_argv[c] = NULL;
+
+	if (argv != NULL)
+		free(argv);
+
+	return (new_argv);
+}
+#endif 
+
+ssize_t
+s710sh_strip(char *str)
+{
+	size_t len;
+
+	if ((len = strlen(str)) < 1)
+		return (0);
+
+	if (isspace(str[len - 1])) {
+		str[len - 1] = '\0';
+		return (s710sh_strip(str));
+	}
+
+	return (strlen(str));
+}
+
+int
+main(int argc, char **argv)
 {
 	int				  i;
 	int				  j;
@@ -49,6 +284,10 @@ main ( int argc, char **argv )
 	const char		 *driver_name = NULL;
 	const char		 *device = NULL;
 	int				  ch;
+
+	struct cmd *cmd = NULL;
+	int ncmd, ret, v = -1;
+	char *line, **argp = NULL;
 
 	while ( (ch = getopt(argc,argv,"d:f:h")) != -1 ) {
 		switch (ch) {
@@ -92,7 +331,98 @@ main ( int argc, char **argv )
 		exit(1);
 	}
 
+	if ( driver_open ( &d, S710_MODE_RDWR ) < 0 ) {
+		fprintf(stderr,"unable to open port: %s\n",strerror(errno));
+		exit(1);
+	}
+
+	memset(map,0,sizeof(map));
+
+	load_user_attributes(&map[S710_MAP_TYPE_USER]);
+	load_watch_attributes(&map[S710_MAP_TYPE_WATCH]);
+	load_logo_attributes(&map[S710_MAP_TYPE_LOGO]);
+	load_bike_attributes(&map[S710_MAP_TYPE_BIKE]);
+	load_exercise_attributes(&map[S710_MAP_TYPE_EXERCISE]);
+	load_reminder_attributes(&map[S710_MAP_TYPE_REMINDER]);
+
 	setvbuf(stdout,NULL,_IONBF,0);
+
+	rl_readline_name = "s710sh";
+	rl_completion_entry_function = s710sh_completion;
+
+	/* Ignore the whitespace character */
+	/* the default is (space!!!):   " \t\n\"\\'`@$><=;|&{(" */
+	rl_basic_word_break_characters = "\t\n\"\\'`@$><=;|&{(";
+	while (!quit) {
+		v = -1;
+
+		if ((line = readline("s710sh> ")) == NULL) {
+			printf("\n");
+			quit = 1;
+			goto next;
+		}
+		if (!s710sh_strip(line))
+			goto next;
+		if ((strcmp(line, "exit") == 0) || (strcmp(line, "quit") == 0)) {
+			quit = 1;
+			goto next;
+		}
+
+		add_history(line);
+
+		if ((argp = s710sh_arg2argv(line, &ncmd)) == NULL) {
+			printf("arg2argv return NULL\n");
+			goto next;
+		}
+
+		for (i = 0; cmds[i].name != NULL; i++) {
+			ret = s710sh_checkcmd(ncmd, argp, &v, &cmds[i]);
+			if (ret == 0)
+				cmd = &cmds[i];
+			else if (ret == EINVAL) {
+				printf("invalid number of arguments\n");
+				goto next;
+			}
+		}
+
+		printf("cmd: %d\n", (int) cmd);
+		if (cmd) {
+			printf("func: %d\n", (int) cmd->func);
+			printf("name: %s\n", cmd->name);
+		}
+		if (cmd == NULL) {
+			printf("invalid command\n");
+		} else if (cmd->func != NULL) {
+			cmd->func(cmds, argp);
+		} else if (cmd->packet_type >= S710_GET_OVERVIEW &&
+				   cmd->packet_type <= S710_CLOSE_CONNECTION) {
+			handle_retrieval(&d, cmd->packet_type, filedir, s710sh_log);
+		}
+/*
+		} else {
+			if ((argp = lg_argextra(argp, ncmd, v, cmd)) == NULL)
+				goto next;
+			lg_exec(cmd->earg[0], argp);
+		}
+*/
+
+ next:
+		if (argp != NULL) {
+			free(argp);
+			argp = NULL;
+		}
+		if (line != NULL) {
+			free(line);
+			line = NULL;
+		}
+		cmd = NULL;
+	}
+
+	driver_close(&d);
+	for ( i = 0; i < S710_MAP_TYPE_COUNT; i++ ) {
+		clear_attribute_map(&map[i]);
+	}
+	exit(0);
 
 	if ( driver_open ( &d, S710_MODE_RDWR ) != -1 ) {
 
@@ -108,7 +438,7 @@ main ( int argc, char **argv )
 		load_reminder_attributes(&map[S710_MAP_TYPE_REMINDER]);
 
 		printf("\ns710sh> ");
-
+		
 		/* main loop */
 
 		while ( 1 ) {

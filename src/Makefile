@@ -77,7 +77,7 @@ s710d: s710d.o $(LIBS710)
 	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
 
 s710sh: s710sh.o $(LIBS710)
-	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
+	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710) -ledit -lncurses
 
 srd2hrm: srd2hrm.o $(LIBS710)
 	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)

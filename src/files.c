@@ -204,7 +204,7 @@ save_files ( files_t *f, const char *dir, log_cb *cb)
 
 		strftime(tmbuf,sizeof(tmbuf),"%Y%m%dT%H%M%S", localtime(&ft));
 
-		snprintf(buf, sizeof(buf), "%s/%d/%02d/%s.%05d.srd",dir,year,month,tmbuf,size);
+		snprintf(buf, sizeof(buf), "%s/%s.%05d.srd",dir,tmbuf,size);
 		ofd = open(buf,O_CREAT|O_WRONLY,0644);
 		if ( ofd != -1 ) {
 			if (cb)
@@ -266,6 +266,7 @@ prep_hash_marks ( FILE *fp )
 	for ( i = 0; i < HASH_MARKS; i++ )
 		fputc(' ',fp);
 	fprintf(fp,"] [%5.1f%%]",0.0);
+	fflush(fp);
 }
 
 
@@ -284,6 +285,7 @@ print_hash_marks ( float pct, int bytes, FILE *fp )
 		else              fputc(' ',fp);
 	}
 	fprintf(fp,"] [%5.1f%%]",pct * 100.0);
+	fflush(fp);
 }
 
 		  

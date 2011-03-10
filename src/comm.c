@@ -21,7 +21,6 @@ static int  recv_byte         ( unsigned char  *byte,  S710_Driver *d );
 static int  recv_short        ( unsigned short *s,     S710_Driver *d );
 static unsigned short packet_checksum ( packet_t *p );
 static int  serialize_packet  ( packet_t *p, unsigned char *buf );
-static void hexdump           (void *ptr, int buflen);
 
 /* send a packet via the S710 driver */
 
@@ -87,16 +86,12 @@ recv_packet ( S710_Driver *d ) {
 	r = recv_byte ( &c, d );
 	crc_process ( &crc, c );
 
-	fprintf(stderr, "recv_byte: com %hhx\n", c);
 	if ( c == S710_RESPONSE ) {
 		r = recv_byte ( &id, d );
-		fprintf(stderr, "recv_byte: id  %hhx\n", id);
 		crc_process ( &crc, id );
 		r = recv_byte ( &c, d );
-		fprintf(stderr, "recv_byte: ??  %hhx\n", id);
 		crc_process ( &crc, c );
 		r = recv_short ( &len, d );
-		fprintf(stderr, "recv_byte: len %hx\n", len);
 		crc_process ( &crc, len >> 8 );
 		crc_process ( &crc, len & 0xff );
 		if ( r ) {
@@ -138,8 +133,6 @@ recv_packet ( S710_Driver *d ) {
 								  p->id, p->length );
 						free ( p );
 						p = NULL;
-					} else {
-						hexdump(p->data, p->length);
 					}
 				}
 			}
@@ -240,28 +233,5 @@ serialize_packet ( packet_t *p, unsigned char *buf )
 	buf[l]   = p->checksum >> 8;
 	buf[l+1] = p->checksum & 0xff;
 
-	fprintf(stderr, "\nserialize: type=%hhx\n", p->type);
-	fprintf(stderr, "serialize: id=  %hhx\n", p->id);
-	fprintf(stderr, "serialize: len= %hx\n", p->length);
-	hexdump(p->data, p->length);
-  
 	return l+2;
 }
-
-static void hexdump(void *ptr, int buflen) { 
-	unsigned char *buf = (unsigned char*)ptr; 
-	int i, j; 
-	for (i=0; i<buflen; i+=16) { 
-		fprintf(stderr, "%06x: ", i); 
-		for (j=0; j<16; j++)  
-			if (i+j < buflen) 
-				fprintf(stderr, "%02x ", buf[i+j]); 
-			else 
-				fprintf(stderr, "   "); 
-		fprintf(stderr, " "); 
-		for (j=0; j<16; j++)  
-			if (i+j < buflen) 
-				fprintf(stderr, "%c", isprint(buf[i+j]) ? buf[i+j] : '.'); 
-		fprintf(stderr, "\n"); 
-	} 
-} 

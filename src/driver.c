@@ -19,8 +19,6 @@ driver_init (const char *driver_name, const char *device, S710_Driver *d)
 
 	d->type = S710_DRIVER_SERIAL;
 
-	printf("driver_name=%s\n", driver_name);
-
 	if (driver_name) {
 		if ( !strcmp(driver_name,"serial") ) {
 			d->type = S710_DRIVER_SERIAL;

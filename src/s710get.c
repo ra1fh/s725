@@ -1,0 +1,103 @@
+/* $Id: s710sh.c,v 1.7 2004/09/21 08:16:05 dave Exp $ */
+
+#include <stdio.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <stdarg.h>
+#include <ctype.h>
+#include <time.h>
+
+#include "s710.h"
+
+static void     usage(void);
+static void     s710sh_log(unsigned int level, const char *fmt, ...);
+
+static void
+usage(void) {
+	printf("usage: s710get [-h] [-d driver] [-f filedir] [device file]\n");
+	printf("       driver       may be either serial, ir, or usb. default: ir.\n");
+	printf("       filedir      is the directory where output files are written to.\n");
+	printf("                    alternative is S710_FILEDIR environment variable.\n");
+	printf("                    default: current working directory\n");
+	printf("       device file  is required for serial and ir drivers.\n");
+}
+
+int
+main(int argc, char **argv)
+{
+	const char		 *filedir = NULL;
+	char			  path[PATH_MAX];
+	int				  ok;
+	S710_Driver		  d;
+	const char		 *driver_name = "ir";
+	const char		 *device = NULL;
+	int				  ch;
+
+	while ( (ch = getopt(argc,argv,"d:f:h")) != -1 ) {
+		switch (ch) {
+		case 'd':
+			driver_name = optarg;
+			break;
+		case 'f':
+			filedir = optarg;
+			break;
+		case 'h':
+			usage();
+			return 0;
+			break;
+		default:
+			usage();
+			return 1;
+		}
+	}
+	argc -= optind;
+	argv += optind;
+	device = argv[0];
+
+	ok = driver_init (driver_name , device, &d );
+
+	if ( ok != 1 ) {
+		printf("problem with driver_init\n");
+		usage();
+		return 1;
+	}
+
+	if (filedir) {
+		filedir = realpath(filedir, path);
+	} else if ((filedir = getenv("S710_FILEDIR")) != NULL) {
+		filedir = realpath(filedir,path);
+	} else {
+		getcwd(path, sizeof(path));
+		filedir = path;
+	}
+
+	if (!filedir) {
+		printf("could not resolve path. check S710_FILEDIR or -f\n");
+		return 1;
+	}
+
+	if ( driver_open ( &d, S710_MODE_RDWR ) < 0 ) {
+		fprintf(stderr,"unable to open port: %s\n",strerror(errno));
+		return 1;
+	}
+
+	handle_retrieval(&d, S710_GET_FILES, filedir, s710sh_log);
+
+	driver_close(&d);
+	return 0;
+}
+
+static void
+s710sh_log(u_int level, const char *fmt, ...)
+{
+	va_list ap;
+
+	(void) level;
+	va_start(ap, fmt);
+	vfprintf(stderr, fmt, ap);
+	fflush(stderr);
+	va_end(ap);
+}

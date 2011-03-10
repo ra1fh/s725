@@ -4,7 +4,7 @@
 VERSION= 0.1
 DATE= $(shell date +%Y%m%d-%H%M)
 
-PROGS=   s710d s710sh srd2hrm srdcat srdhead srdmerge srdplot
+PROGS=   s710d s710get s710sh srd2hrm srdcat srdhead srdmerge srdplot
 LIBS710= libs710.a
 
 PREFIX?= /usr/local
@@ -74,6 +74,9 @@ $(LIBS710): $(LIB_OBJS)
 	ranlib $@
 
 s710d: s710d.o $(LIBS710)
+	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
+
+s710get: s710get.o $(LIBS710)
 	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
 
 s710sh: s710sh.o $(LIBS710)

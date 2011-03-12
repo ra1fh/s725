@@ -1,0 +1,403 @@
+#!/usr/bin/env ruby
+
+#
+# generate some webpages from polar srd files
+#
+
+require 'find'
+require 'time'
+require 'date'
+require 'optparse'
+require 'fileutils'
+
+class SrdInfo
+    attr_accessor :time, :basename, :destdir, :text, :html
+end
+
+def html_img(file,alt)
+    if File.exists?(file)
+        "<img src=\"#{File.basename(file)}\" alt=\"#{alt}\" />"
+    else
+        ""
+    end
+end
+
+STYLE='
+<style type="text/css">
+body {
+  background-color: #FFFFFF;
+  text-align:Center;
+}
+
+table.calendar {
+  width: 100%;
+  border-color: #000000;
+  border-width: 5pt;
+  border-style: Solid;
+  text-align:Center;
+  border-collapse: collapse;
+  background-color: #FFFFFF;
+  margin: 0px;
+}
+
+.monthcaption {
+  /* background: URL(\'Caption.jpg\'); */
+  background-color: #fe2400;
+  background-color: #e85d5d;
+  background-color: #e82a2a;
+  font-family: Arial;
+  font-size: 35pt;
+  font-weight: Bold;
+  font-style: Normal;
+  color: #000000;
+  text-decoration: None;
+  border-color: #000000;
+  border-width: 5pt;
+  border-style: Solid;
+  text-align: Right;
+  padding: 5px;
+  margin: -3px;
+}
+
+.weekdays {
+  /* background: URL(\'Weekday.jpg\'); */
+  background-color: #000000;
+  background-color: #ffd866;
+  background-color: #ffca2f;
+  font-family: Arial;
+  font-size: 14pt;
+  font-weight: Normal;
+  font-style: Normal;
+  color: #000000;
+  text-decoration: None;
+  border-color: #000000;
+  border-width: 1pt;
+  border-style: Solid;
+  text-align: Center;
+}
+
+.date {
+  font-family: Arial;
+  font-size: 12pt;
+  font-weight: Bold;
+  font-style: Normal;
+  color: #000000;
+  text-decoration: None;
+  text-align: Left;
+}
+
+.events {
+  font-family: Arial;
+  font-size: 8pt;
+  font-weight: Normal;
+  font-style: Normal;
+  color: #000000;
+  text-decoration: None;
+  border-color: #000000;
+  border-width: 1pt;
+  border-style: Solid;
+  text-align: Left;
+  padding: 5px;
+  background-color: #FFFFFF;
+}
+
+/*
+.itr:hover .bpop {	background-color: #FCFFE0; } 
+.itr:hover .bpopleft {	background-color: #FCFFE0; } 
+.itr:hover .bpopupright {	background-color: #FCFFE0; } 
+.itr:hover .bpopupleft {	background-color: #FCFFE0; } 
+*/
+
+td.events a:link    { font-family:Arial; font-weight:Bold; color: #000000; font-size: 8pt; text-decoration: none;}
+td.events a:visited { font-family:Arial; font-weight:Bold; color: #000000; font-size: 8pt; text-decoration: none;}
+td.events a:hover   { font-family:Arial; font-weight:Bold; color: #000000; font-size: 8pt; text-decoration: none;}
+td.events a:active  { font-family:Arial; font-weight:Bold; color: #000000; font-size: 8pt; text-decoration: none;}
+td.events { font-family:Arial; font-weight:Bold; color: #000000; font-size: 8pt; text-decoration: none;}
+td.events .dt { font-family:Arial; font-weight:Normal; color: #808080; font-size: 7pt; font-style: Normal; }
+
+.bpop {
+    display: none;
+    font-size: 8pt;
+    text-decoration: none;
+    z-index : auto;
+    text-decoration: none;
+}
+
+a.itr:hover {
+    border-width: 0; /* IE */
+    color: #000;
+    font-size: 8pt;  
+    z-index : 1004;
+    text-decoration: none;
+    position: relative;
+}
+ 
+.itr {
+    text-decoration: none;
+    color: #000;      
+    font-size: 8pt;
+    z-index : 0; 
+    width:98%;
+}
+
+.itr:active { 
+    font-size: 8pt;
+    color: black;
+    font-weight: normal; 
+    text-decoration: none;  
+    z-index : 1001;     
+   
+}
+
+.itr:link { 
+    font-size: 8pt;
+    font-weight: normal; 
+    color: black;
+    text-decoration: none;   
+    z-index : 1002;
+}
+
+.itr:visited { 
+   
+    font-size: 8pt;
+    color: black;
+    font-weight: normal;     
+    z-index : 1003;
+    text-decoration: none;
+}
+
+.itr:hover {
+    text-decoration: none;
+}
+
+.itr:hover .bpop {
+    display: block;
+    position: absolute;
+    background-color: #FCFFE0;
+    padding: 5px 5px 5px 5px;
+    border: 1px #000 solid;
+    white-space: normal;
+    width : 35em;
+    font-size: 8pt;
+    left: -15em;
+    top: 2.5em;
+    text-align : center;
+    text-decoration: none;
+    z-index : 1005;
+} 
+</style>'
+
+
+def process_srd(srd, dest)
+    puts "processing #{srd}"
+    info = SrdInfo.new
+    info.basename = File.basename(srd, ".srd")
+    info.time = Time.parse(info.basename.split('.').first)
+    info.destdir  = "#{dest}/#{info.time.strftime("%Y%m")}/"
+    info.html = info.destdir + "/" + info.basename + ".html"
+
+    if not File.directory? info.destdir
+        FileUtils.mkdir_p info.destdir
+    end
+
+    if (File.exists?(info.html)) and false
+        return info
+    end
+
+    head = `srdhead #{srd}`
+    command = "cd #{info.destdir}; srdplot #{srd}"
+    system(command)
+
+    File.open(info.html, "w") do | h |
+        h.puts html_head(info.basename)
+        h.puts "<h1>#{info.time}</h1>"
+        h.puts "<h2>Summary</h2>"
+        h.puts "<pre>"
+        h.puts info.text
+        h.puts head
+        h.puts "</pre>"
+        h.puts "<h2>Histogram</h2>"
+        h.puts "<p>"
+        s = ".hr.h.png"; h.puts html_img(info.destdir + "/" + info.basename + s, s)
+        s = ".hr.z.png"; h.puts html_img(info.destdir + "/" + info.basename + s, s)
+        h.puts "</p>"
+        h.puts "<h2>Distance</h2>"
+        h.puts "<p>"
+        s = ".alt.d.png"; h.puts html_img(info.destdir + "/" + info.basename + s, s)
+        s = ".hr.d.png";  h.puts html_img(info.destdir + "/" + info.basename + s, s)
+        s = ".spd.d.png"; h.puts html_img(info.destdir + "/" + info.basename + s, s)
+        h.puts "</p>"
+        h.puts "<h2>Time</h2>"
+        h.puts "<p>"
+        s = ".alt.t.png"; h.puts html_img(info.destdir + "/" + info.basename + s, s)
+        s = ".hr.t.png";  h.puts html_img(info.destdir + "/" + info.basename + s, s)
+        s = ".spd.t.png"; h.puts html_img(info.destdir + "/" + info.basename + s, s)
+        h.puts "</p>"
+        h.puts html_foot()
+    end
+    return info
+end
+
+def html_head(title, opt={})
+    h = []
+    h << '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'
+    h << '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">'
+    h << '<head>'
+    h << '<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1" />'
+    h << '<title>' + title + '</title>'
+    h << opt[:head] if opt[:head]
+    h << '</head><body>'
+    h.join("\n")
+end
+
+def html_foot()
+    h = []
+    h << '</body></html>'
+    h.join("\n")
+end    
+
+def generate_overview(overview, path)
+    File.open(path + "/index.html", "w") do | f |
+        title = "Polar Overview"
+        f.puts html_head(title)
+        f.puts "<h1>#{title}</h1>"
+        f.puts "<ul>"
+        overview.each do | o |
+            f.puts "<li><a href=\"#{o.last}\">#{o.first}</a></li>"
+        end
+        f.puts "</ul>"
+        f.puts html_foot()
+    end
+end
+
+def generate_index(info)
+    result = []
+    container = {}
+    info.each do | i |
+        if not container[i.destdir]
+            container[i.destdir] = []
+        end
+        container[i.destdir] << i
+    end
+    # puts "container: #{container.inspect}"
+    container.keys.sort.each do | dir |
+        index_path = dir + "/index.html"
+        puts "generating index: #{index_path}"
+        File.open(index_path, "w") do | index |
+            entries = {}
+            month = container[dir].first.time.month
+            year  = container[dir].first.time.year
+            container[dir].each do | i |
+                entries[i.time.day] ||= []
+                entries[i.time.day] << '<a class="itr"  href="' + i.basename + '.html">' + 
+                    '<b>' + i.time.hour.to_s + ':' + i.time.min.to_s + '</b>' + 
+                    '<span class="bpop" style="left:-6em; width:16em; top:-4.5em; ">' + 
+                    'Workout: ' + i.time.hour.to_s + ':' + i.time.min.to_s +
+                    '<br/>' + i.text.to_s + '<br/></span></a>'
+
+            end
+            title = "#{Date::MONTHNAMES[month]} #{year}"
+            index.puts html_head(title, :head => STYLE)
+            index.puts generate_calendar(year, month, entries)
+            index.puts html_foot()
+            result << [title, index_path]
+        end
+    end
+    result
+end
+
+def generate_calendar(year,month,entries={})
+    firstwday = Date.civil(year,month,1).wday
+    lastday   = (Date.civil(year,(month + 1) % 12,1) - 1).day
+    c = []
+
+    c << '<table class="calendar" cellspacing="0">'
+    c << "<caption class=\"monthcaption\"> #{Date::MONTHNAMES[month]} #{year}</caption>"
+
+    # header
+    c << "<tr>"
+    ths = '<th style="width: 14%;" valign="middle" align="center" class="weekdays">'
+    the = '</th>'
+    c << ths + Date::DAYNAMES[0] + the 
+    c << ths + Date::DAYNAMES[1] + the
+    c << ths + Date::DAYNAMES[2] + the
+    c << ths + Date::DAYNAMES[3] + the
+    c << ths + Date::DAYNAMES[4] + the
+    c << ths + Date::DAYNAMES[5] + the
+    c << ths + Date::DAYNAMES[6] + the
+    c << "</tr>"
+
+    cellcount = 1
+    daycount = 1
+    loop do
+        c << '<tr class="events">'
+        # generate row
+        1.upto(7) do | wday |
+            # generate cell
+            if (cellcount > firstwday and daycount <= lastday)
+                if [1,7].include?(wday)
+                    c << '<td class="events" valign="top" align="left" style="background-color:#FFFFEC;">'
+                    color='color:#C00000;'
+                else
+                    c << '<td class="events" valign="top" align="left">'
+                    color='color:#000000;'
+                end
+                if entries[daycount]
+                    bold = "font-weight:bold;"
+                else
+                    bold = ""
+                end
+                c << '<div class="date">' + daycount.to_s + '</div><br />'
+                if entries[daycount]
+                    content = entries[daycount]
+                    content = [content] if content.class == String
+                    0.upto 2 do | i |
+                        c << content[i].to_s + '<br />'
+                    end
+                else
+                    c << '<br /><br /><br />'
+                end
+                daycount += 1
+            else
+                c << '<td class="events" valign="top" align="left" style="background-color:#E9E9E9;">'
+                c << '&nbsp;<br /><br /><br /><br />'
+            end
+            c << '</td>'
+            cellcount += 1
+        end
+        c << '</tr>'
+        break if daycount > lastday
+    end
+    c << "</table>"
+    return c.join("\n")
+end
+
+OPT = {}
+OPT[:print] = false
+
+ARGV.options do | opts |
+    opts.banner = "Usage: s710html <dir>"
+	opts.on("-h", "print help") do 
+		puts opts
+		exit
+	end
+end
+
+ARGV.parse!
+
+if !ARGV[0]
+    puts ARGV.options
+end
+
+home = ENV['HOME']
+source = "#{home}/polar/#{ARGV[0]}/data"
+dest   = "#{home}/polar/#{ARGV[0]}/html"
+
+info = []
+Find.find(source) do | file |
+    next unless File.file?(file)
+    next unless file =~ /\.srd$/
+    info << process_srd(file, dest)
+end
+overview = generate_index(info)
+generate_overview(overview, dest)

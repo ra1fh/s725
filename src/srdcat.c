@@ -17,7 +17,7 @@ extern int   optind;
 
 static void
 usage(void) {
-	fprintf(stderr, "usage: srdcat [-f] [-h] <srd...>\n");
+	fprintf(stderr, "usage: srdcat [-fh] <srd...>\n");
 }
 
 int

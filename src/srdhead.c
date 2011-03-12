@@ -17,7 +17,7 @@ extern int   optind;
 
 static void
 usage(void) {
-  fprintf(stderr, "usage: srdhead [-f] [-h] <srd...>\n");
+  fprintf(stderr, "usage: srdhead [-fh] <srd...>\n");
 }
 
 int

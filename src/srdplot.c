@@ -38,7 +38,7 @@ void        do_hist ( workout_t  *w,
 
 static void
 usage(void) {
-	fprintf(stderr, "usage: srdplot [-f] [-h] <srd...>\n");
+	fprintf(stderr, "usage: srdplot [-fh] <srd...>\n");
 }
 
 /* main program */

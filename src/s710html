@@ -377,7 +377,7 @@ OPT[:print] = false
 
 
 ARGV.options do | opts |
-    opts.banner = "Usage: s710html <dir>"
+    opts.banner = "Usage: s710html [options]"
 	opts.on("-s SOURCE", "source directory") do | arg |
         OPT[:source] = arg
     end
@@ -392,19 +392,16 @@ end
 
 ARGV.parse!
 
-if !ARGV[0]
-    puts ARGV.options
-end
-
 source   = OPT[:source] 
 source ||= Dir.pwd
-dest     = OPT[:dest]
+dest     = File.expand_path(OPT[:dest])
 dest   ||= Dir.pwd
 
 info = []
 Find.find(source) do | file |
     next unless File.file?(file)
     next unless file =~ /\.srd$/
+    file = File.expand_path(file)
     info << process_srd(file, dest)
 end
 overview = generate_index(info)

@@ -28,6 +28,18 @@ LIB_SRCS = add_attr.c alpha_map.c axes.c bike.c byte_map.c comm.c		\
 	user.c watch.c workout_merge.c workout_print.c workout_read.c		\
 	workout_util.c workout_write.c
 
+S710GET_SRCS = driver.c files.c byte_map.c serial.c usb.c packet.c  \
+	comm.c crc.c
+
+SRDCAT_SRCS = alpha_map.c filter.c time.c \
+	workout_print.c workout_read.c workout_util.c
+
+SRDHEAD_SRCS = alpha_map.c filter.c time.c \
+	workout_print.c workout_read.c workout_util.c
+
+SRDPLOT_SRCS = alpha_map.c filter.c axes.c histogram.c plot.c time.c \
+	workout_print.c workout_read.c workout_util.c
+
 PROG_SRCS= $(patsubst %,%.c,$(PROGS))
 
 LIBS+= 
@@ -37,6 +49,10 @@ DEFS+= -DS710_HRM_REST_HR=60
 DEFS+= -DS710_FILEDIR=\"/var/polar/raw\"
 
 LIB_OBJS= $(patsubst %.c,%.o,$(LIB_SRCS))
+S710GET_OBJS= $(patsubst %.c,%.o,$(S710GET_SRCS))
+SRDCAT_OBJS= $(patsubst %.c,%.o,$(SRDCAT_SRCS))
+SRDHEAD_OBJS= $(patsubst %.c,%.o,$(SRDHEAD_SRCS))
+SRDPLOT_OBJS= $(patsubst %.c,%.o,$(SRDPLOT_SRCS))
 PROG_OBJS= $(patsubst %,%.o,$(PROGS))
 CPPFLAGS+= $(DEFS) -I. $(INCDIRS)
 
@@ -65,7 +81,7 @@ CFLAGS+= -Wmissing-prototypes -Wstrict-prototypes -Wmissing-declarations
 CFLAGS+= -Wwrite-strings -Wshadow -Wpointer-arith -Wcast-qual -Wsign-compare
 CFLAGS+= -Wundef -Wshadow -Wbad-function-cast -Winline -Wcast-align
 
-CLEANFILES= $(LIBS710) $(LIB_OBJS) $(PROGS) $(PROG_OBJS) .depend
+CLEANFILES= $(LIBS710) $(LIB_OBJS) $(S710GET_OBJS) $(PROGS) $(PROG_OBJS) .depend
 
 all: $(LIBS710) $(PROGS)
 
@@ -76,8 +92,8 @@ $(LIBS710): $(LIB_OBJS)
 s710d: s710d.o $(LIBS710)
 	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
 
-s710get: s710get.o $(LIBS710)
-	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
+s710get: s710get.o $(S710GET_OBJS)
+	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ 
 
 s710sh: s710sh.o $(LIBS710)
 	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710) -ledit -lncurses
@@ -85,17 +101,17 @@ s710sh: s710sh.o $(LIBS710)
 srd2hrm: srd2hrm.o $(LIBS710)
 	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
 
-srdcat: srdcat.o $(LIBS710)
-	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
+srdcat: srdcat.o $(SRDCAT_OBJS)
+	$(CC) $(LDFLAGS) -o $@ $+ 
 
-srdhead: srdhead.o $(LIBS710)
-	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
+srdhead: srdhead.o $(SRDHEAD_OBJS)
+	$(CC) $(LDFLAGS) -o $@ $+
 
 srdmerge: srdmerge.o $(LIBS710)
 	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
 
-srdplot: srdplot.o $(LIBS710)
-	$(CC) $(LDFLAGS) $(LIBS) -L/usr/X11R6/lib -o $@ $+ $(LIBS710) -lgd -lfreetype
+srdplot: srdplot.o $(SRDPLOT_OBJS)
+	$(CC) $(LDFLAGS) $(LIBS) -L/usr/X11R6/lib -o $@ $+ -lgd -lfreetype
 
 depend: $(LIB_SRCS)
 	$(CC) $(CPPFLAGS) -MM $(LIB_SRCS) > .depend

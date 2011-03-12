@@ -375,8 +375,15 @@ end
 OPT = {}
 OPT[:print] = false
 
+
 ARGV.options do | opts |
     opts.banner = "Usage: s710html <dir>"
+	opts.on("-s SOURCE", "source directory") do | arg |
+        OPT[:source] = arg
+    end
+	opts.on("-d DEST", "destination directory") do | arg |
+        OPT[:dest] = arg
+    end
 	opts.on("-h", "print help") do 
 		puts opts
 		exit
@@ -389,9 +396,10 @@ if !ARGV[0]
     puts ARGV.options
 end
 
-home = ENV['HOME']
-source = "#{home}/polar/#{ARGV[0]}/data"
-dest   = "#{home}/polar/#{ARGV[0]}/html"
+source   = OPT[:source] 
+source ||= Dir.pwd
+dest     = OPT[:dest]
+dest   ||= Dir.pwd
 
 info = []
 Find.find(source) do | file |

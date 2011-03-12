@@ -35,6 +35,7 @@ main(int argc, char **argv)
 	const char		 *driver_name = "ir";
 	const char		 *device = NULL;
 	int				  ch;
+	files_t           files;
 
 	while ( (ch = getopt(argc,argv,"d:f:h")) != -1 ) {
 		switch (ch) {
@@ -84,7 +85,10 @@ main(int argc, char **argv)
 		return 1;
 	}
 
-	handle_retrieval(&d, S710_GET_FILES, filedir, s710sh_log);
+	if (get_files(&d,&files,stdout)) {
+		save_files(&files, filedir, s710sh_log);
+		print_files(&files, s710sh_log); 
+	}
 
 	driver_close(&d);
 	return 0;

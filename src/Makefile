@@ -69,8 +69,6 @@ endif
 
 ifdef DEBUG
 CFLAGS+= -g -ggdb -DDEBUG
-LDFLAGS+= -rdynamic
-LIBS+= -ldl
 DEFS+= -DBUILD="\"$(VERSION) ($(DATE))\""
 else
 DEFS+= -DBUILD="\"$(VERSION)\""

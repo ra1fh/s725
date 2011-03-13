@@ -120,6 +120,7 @@ clean:
 install:
 	$(INSTALLDIR) $(DESTDIR)$(PREFIX)/bin
 	$(INSTALLBIN) $(PROGS) $(DESTDIR)$(PREFIX)/bin
+	$(INSTALLBIN) s710html $(DESTDIR)$(PREFIX)/bin
 
 ifeq ($(wildcard .depend),.depend)
 include .depend

@@ -194,14 +194,6 @@ save_files ( files_t *f, const char *dir, log_cb *cb)
 		year  = 2000 + BCD(f->data[offset+14]);
 		month = LNIB(f->data[offset+15]);
 
-		snprintf(buf, sizeof(buf), "%s/%d/%02d",dir,year,month);
-		mkpath(buf);
-		if ( stat(buf,&sb) != -1 ) {
-			owner   = sb.st_uid;
-			group   = sb.st_gid;
-		}
-    
-
 		strftime(tmbuf,sizeof(tmbuf),"%Y%m%dT%H%M%S", localtime(&ft));
 
 		snprintf(buf, sizeof(buf), "%s/%s.%05d.srd",dir,tmbuf,size);

@@ -392,10 +392,17 @@ end
 
 ARGV.parse!
 
-source   = OPT[:source] 
-source ||= Dir.pwd
-dest     = File.expand_path(OPT[:dest])
-dest   ||= Dir.pwd
+if OPT[:source]
+    source = OPT[:source] 
+else
+    source = Dir.pwd
+end
+
+if OPT[:dest]
+    dest = File.expand_path(OPT[:dest])
+else
+    dest = Dir.pwd
+end
 
 info = []
 Find.find(source) do | file |

@@ -92,6 +92,20 @@ main ( int argc, char **argv )
 	return 0;
 }
 
+static byte_zone_t personalZones[] = 
+{
+	/* min,max,   red,green,blue,pixel,  seconds */
+
+	{   0, 138,  {   0,   0,  0xdd,  0},   0 },  /* zone 1 = blue   */
+	{ 138, 146,  {   0,  0xdd,   0,  0},   0 },  /* zone 2 = green  */
+	{ 146, 153,  { 0xdd, 0xdd,   0,  0},   0 },  /* zone 3 = yellow */
+	{ 153, 158,  { 0xff, 0xa5,   0,  0},   0 },  /* zone 4 = orange */
+	{ 158, 185,  { 0xdd,   0,   0,  0},   0 },  /* zone 5a = red   */
+	{ 185, 190,  { 0xee,   0,   0,  0},   0 },  /* zone 5b = red   */
+	{ 190, 255,  { 0xff,   0,   0,  0},   0 }   /* zone 5c = red   */
+};
+
+static int nPersonalZones = (sizeof(personalZones))/sizeof(byte_zone_t);
 
 void
 do_hist ( workout_t  *w, 
@@ -113,7 +127,9 @@ do_hist ( workout_t  *w,
 	byte_histogram_t *h;
 	int               ok = 0;
 
-	if ( (h = make_byte_histogram(w,NULL,0,what)) != NULL ) {
+
+
+	if ( (h = make_byte_histogram(w,&personalZones[0],nPersonalZones,what)) != NULL ) {
 
 		strftime(tmbuf,sizeof(tmbuf),"%Y%m%dT%H%M%S",localtime(&w->unixtime));
 

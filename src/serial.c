@@ -1,5 +1,3 @@
-/* $Id: serial.c,v 1.9 2007/02/24 20:16:39 dave Exp $ */
-
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>

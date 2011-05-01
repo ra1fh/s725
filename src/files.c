@@ -1,5 +1,3 @@
-/* $Id: files.c,v 1.10 2004/11/13 10:53:48 dave Exp $ */
-
 #include <err.h>
 #include <string.h>
 #include <stdlib.h>

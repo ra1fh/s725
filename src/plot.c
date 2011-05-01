@@ -1,5 +1,3 @@
-/* $Id: plot.c,v 1.7 2004/11/13 10:53:48 dave Exp $ */
-
 #include <gdfonts.h>
 #include <stdlib.h>
 #include <errno.h>

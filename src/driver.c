@@ -1,5 +1,3 @@
-/* $Id: driver.c,v 1.1 2002/10/10 10:11:09 dave Exp $ */
-
 #include <unistd.h>
 #include <string.h>
 #include "s710.h"

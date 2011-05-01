@@ -1,5 +1,3 @@
-/* $Id: workout_print.c,v 1.2 2007/05/09 17:27:54 dave Exp $ */
-
 #include <string.h>
 #include "s710.h"
 

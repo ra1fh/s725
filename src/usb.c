@@ -1,5 +1,3 @@
-/* $Id: usb.c,v 1.6 2004/11/13 10:53:48 dave Exp $ */
-
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/time.h>

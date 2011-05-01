@@ -1,5 +1,3 @@
-/* $Id: histogram.c,v 1.5 2004/11/13 10:53:48 dave Exp $ */
-
 #include <gdfonts.h>
 #include <gd.h>
 #include <stdlib.h>

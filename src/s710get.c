@@ -1,5 +1,3 @@
-/* $Id: s710sh.c,v 1.7 2004/09/21 08:16:05 dave Exp $ */
-
 #include <stdio.h>
 #include <limits.h>
 #include <stdlib.h>

@@ -1,5 +1,3 @@
-/* $Id: time.c,v 1.5 2007/02/26 09:34:54 dave Exp $ */
-
 #include "s710.h"
 
 /* 

@@ -1,5 +1,3 @@
-/* $Id: filter.c,v 1.2 2002/10/08 03:26:58 dave Exp $ */
-
 #include "s710.h"
 
 #ifndef S710_MAX_VALID_HR

@@ -1,5 +1,3 @@
-/* $Id: packet.c,v 1.7 2004/05/20 02:14:39 dave Exp $ */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

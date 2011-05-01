@@ -1,5 +1,3 @@
-/* $Id: workout_read.c,v 1.1 2007/02/26 09:34:54 dave Exp $ */
-
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>

@@ -1,5 +1,3 @@
-/* $Id: srdcat.c,v 1.4 2004/09/21 08:16:05 dave Exp $ */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

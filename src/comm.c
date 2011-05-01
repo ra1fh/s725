@@ -1,5 +1,3 @@
-/* $Id: comm.c,v 1.10 2004/09/21 08:16:05 dave Exp $ */
-
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>

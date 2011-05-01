@@ -1,5 +1,3 @@
-/* $Id: byte_map.c,v 1.2 2002/06/10 06:42:05 dave Exp $ */
-
 #include "s710.h"
 
 unsigned char gByteMap[256];

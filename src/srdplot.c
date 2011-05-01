@@ -1,5 +1,3 @@
-/* $Id: srdplot.c,v 1.7 2004/11/13 10:53:49 dave Exp $ */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

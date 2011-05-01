@@ -1,5 +1,3 @@
-/* $Id: transfer.c,v 1.2 2002/12/28 07:51:49 dave Exp $ */
-
 #include <stdio.h>
 #include "s710.h"
 

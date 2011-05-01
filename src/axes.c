@@ -1,5 +1,3 @@
-/* $Id: axes.c,v 1.4 2007/02/26 09:34:54 dave Exp $ */
-
 #include <gdfonts.h>
 #include <string.h>
 #include <math.h>

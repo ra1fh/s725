@@ -1,5 +1,3 @@
-/* $Id: alpha_map.c,v 1.3 2002/09/17 09:27:15 dave Exp $ */
-
 #include <string.h>
 #include "s710.h"
 

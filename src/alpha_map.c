@@ -6,7 +6,7 @@
 
 /* decode a name or label character */
 
-char
+static char
 alpha_map ( unsigned char c )
 {
 	char a = '?';
@@ -52,7 +52,7 @@ alpha_map ( unsigned char c )
 }
 
 
-unsigned char
+static unsigned char
 inverse_alpha_map ( char c )
 {
 	unsigned char a = 10;  /* default will be the space character. */

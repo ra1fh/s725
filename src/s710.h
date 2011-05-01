@@ -665,9 +665,6 @@ extern "C" {
 					   int                   len );
 
 	/* alpha_map.c */
-
-	char          alpha_map         ( unsigned char  c );
-	unsigned char inverse_alpha_map ( char c );
 	void          extract_label     ( unsigned char *buf, 
 									  S710_Label    *label, 
 									  int            bytes );

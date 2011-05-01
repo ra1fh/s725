@@ -5,6 +5,7 @@
 .*\.lai$
 .*\.Po$
 .*\.Plo$
+.*~$
 Makefile$
 ^libtool$
 ^config\.(log|status)$

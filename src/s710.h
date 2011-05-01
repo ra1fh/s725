@@ -677,65 +677,6 @@ extern "C" {
 	int       send_packet      ( packet_t *packet, S710_Driver *d );
 	packet_t *recv_packet      ( S710_Driver *d );
 
-	/* overview.c */
-
-	int       get_overview     ( S710_Driver *d, overview_t *overview );
-	void      print_overview   ( overview_t *o, FILE *fp );
-
-	/* user.c */
-
-	int       get_user          ( S710_Driver *d, user_t *user );
-	int       set_user          ( user_t *user, S710_Driver *d );
-	void      set_user_name     ( user_t *u, char *name );
-	void      set_user_birthday ( user_t *u, int day, int month, int year );
-	void      print_user        ( user_t *u, FILE *fp );
-	void      load_user_attributes ( attribute_map_t *map );
-
-	/* watch.c */
-
-	int       get_watch        ( S710_Driver *d, watch_t *watch );
-	int       set_watch        ( watch_t *watch, S710_Driver *d );
-	void      print_watch      ( watch_t *w, FILE *fp );
-	void      load_watch_attributes ( attribute_map_t *map );
-
-	/* logo.c */
-
-	int       get_logo         ( S710_Driver *d, logo_t *logo );
-	int       set_logo         ( logo_t *logo, S710_Driver *d );
-	void      print_logo       ( logo_t *l, FILE *fp );
-	void      load_logo_attributes ( attribute_map_t *map );
-
-	/* bike.c */
-
-	int       get_bike         ( S710_Driver *d, bike_t *bike );
-	int       set_bike         ( bike_t *bike, S710_Driver *d );
-	void      print_bike       ( bike_t *b, FILE *fp );
-	void      load_bike_attributes ( attribute_map_t *map );
-
-	/* exercise.c */
-
-	int       get_exercise     ( S710_Driver        *d, 
-								 S710_Packet_Index   which, 
-								 exercise_t         *exercise );
-	int       set_exercise     ( exercise_t         *exercise,
-								 S710_Packet_Index   which,
-								 S710_Driver        *d );
-	void      print_exercise   ( exercise_t         *e, 
-								 FILE               *fp );
-	void      load_exercise_attributes ( attribute_map_t *map );
-
-	/* reminder.c */
-
-	int       get_reminder     ( S710_Driver        *d, 
-								 S710_Packet_Index   which, 
-								 reminder_t         *reminder );
-	int       set_reminder     ( reminder_t         *reminder,
-								 S710_Packet_Index   which,
-								 S710_Driver        *d );
-	void      print_reminder   ( reminder_t         *r, 
-								 FILE               *fp );
-	void      load_reminder_attributes ( attribute_map_t *map );
-
 	/* files.c */
 
 	typedef void (log_cb)(unsigned int level, const char *fmt, ...);
@@ -789,12 +730,6 @@ extern "C" {
 
 	void free_workout               ( workout_t * w );
   
-	/* workout_merge.c */
-
-	workout_t * merge_workouts       ( workout_t *     w1, 
-									   workout_t *     w2,
-									   S710_Merge_Type type );
-
 	/* workout_print.c */
 
 	void        print_workout        ( workout_t * w, FILE * fp, int what );
@@ -806,10 +741,6 @@ extern "C" {
 	workout_t * read_workout         ( char *          filename, 
 									   S710_Filter     filter, 
 									   S710_HRM_Type   type );
-
-	/* workout_write.c */
-
-	int         write_workout        ( workout_t * w, char * filename );
 
 	/* filter.c */
 
@@ -873,10 +804,6 @@ extern "C" {
 										int               height,
 										char             *filename );
 
-	/* glob.c */
-  
-	int  is_like ( const char *given, const char *wanted );
-
 	/* transfer.c */
 
 	void handle_retrieval ( S710_Driver      *d, 
@@ -889,79 +816,6 @@ extern "C" {
 							char             *request,
 							attribute_map_t  *map );
 
-	/* add_attr.c */
-  
-	void add_string_attribute  ( attribute_map_t *m, 
-								 const char      *name,
-								 void            *ptr,
-								 int              length );
-  
-	void add_integer_attribute ( attribute_map_t *m, 
-								 const char      *name, 
-								 void            *ptr,
-								 int              min, 
-								 int              max,
-								 int              offset );
-  
-	void add_boolean_attribute ( attribute_map_t *m,
-								 const char      *name,
-								 void            *ptr );
-  
-	void add_byte_attribute ( attribute_map_t *m,
-							  char            *name,
-							  void            *ptr );
-  
-	void add_enum_integer_attribute ( attribute_map_t *m, 
-									  const char      *name, 
-									  void            *ptr,
-									  ... );
-  
-	void add_enum_string_attribute ( attribute_map_t *m, 
-									 const char      *name, 
-									 void            *ptr,
-									 ... );
-  
-	attribute_pair_t *add_attribute ( attribute_pair_t    **p, 
-									  S710_Attribute_Type   type, 
-									  const char           *name,
-									  void                 *ptr );
-
-	/* merge_attr.c */
-
-	void merge_attribute_map                 ( attribute_map_t *map );
-  
-	void sync_attribute_map                  ( attribute_map_t *map );
-
-	int  merge_attribute_value               ( char *value, 
-											   attribute_pair_t *p );
-	int  merge_integer_attribute_value       ( char *value, 
-											   attribute_pair_t *p );
-	int  merge_string_attribute_value        ( char *value, 
-											   attribute_pair_t *p );
-	int  merge_boolean_attribute_value       ( char *value, 
-											   attribute_pair_t *p );
-	int  merge_byte_attribute_value          ( char *value, 
-											   attribute_pair_t *p );
-	int  merge_enum_integer_attribute_value  ( char *value, 
-											   attribute_pair_t *p );
-	int  merge_enum_string_attribute_value   ( char *value, 
-											   attribute_pair_t *p );
-
-	/* print_attr.c */
-
-	void print_attribute_map ( int c, attribute_map_t *m );
-
-	void print_current_attribute_value ( attribute_pair_t *p, FILE *fp );
-
-	/* free_attr.c */
-
-	void clear_attribute_map     ( attribute_map_t   *map );
-	void free_attribute_pairs    ( attribute_pair_t  *pairs );
-
-	/* parse_attr.c */
-
-	void parse_attribute_pairs ( char *s, attribute_map_t *map );
-  
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

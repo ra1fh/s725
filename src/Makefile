@@ -4,8 +4,7 @@
 VERSION= 0.1
 DATE= $(shell date +%Y%m%d-%H%M)
 
-PROGS=   s710d s710get s710sh srd2hrm srdcat srdhead srdmerge srdplot
-LIBS710= libs710.a
+PROGS=   s710get srdcat srdhead srdplot
 
 PREFIX?= /usr/local
 
@@ -20,13 +19,6 @@ LDFLAGS= -L$(PREFIX)/lib
 INSTALLDIR= install -d
 INSTALLBIN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 555
 INSTALLMAN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 444
-
-LIB_SRCS = add_attr.c alpha_map.c axes.c bike.c byte_map.c comm.c		\
-	crc.c driver.c exercise.c files.c filter.c free_attr.c glob.c		\
-	histogram.c logo.c merge_attr.c overview.c packet.c parse_attr.c	\
-	plot.c print_attr.c reminder.c serial.c time.c transfer.c usb.c		\
-	user.c watch.c workout_merge.c workout_print.c workout_read.c		\
-	workout_util.c workout_write.c
 
 S710GET_SRCS = driver.c files.c byte_map.c serial.c usb.c packet.c  \
 	comm.c crc.c
@@ -48,7 +40,6 @@ DEFS+= -DS710_HRM_MAX_HR=206
 DEFS+= -DS710_HRM_REST_HR=60
 DEFS+= -DS710_FILEDIR=\"/var/polar/raw\"
 
-LIB_OBJS= $(patsubst %.c,%.o,$(LIB_SRCS))
 S710GET_OBJS= $(patsubst %.c,%.o,$(S710GET_SRCS))
 SRDCAT_OBJS= $(patsubst %.c,%.o,$(SRDCAT_SRCS))
 SRDHEAD_OBJS= $(patsubst %.c,%.o,$(SRDHEAD_SRCS))
@@ -64,7 +55,7 @@ endif
 
 ifneq (, $(filter Linux GNU GNU/%, $(shell uname -s)))
 INCDIRS+= -Icompat
-LIB_SRCS+= compat/strlcpy.c
+COMPAT_SRCS+= compat/strlcpy.c
 endif
 
 ifdef DEBUG
@@ -74,45 +65,31 @@ else
 DEFS+= -DBUILD="\"$(VERSION)\""
 endif
 
+COMPAT_OBJS= $(patsubst %.c,%.o,$(COMPAT_SRCS))
+
 CFLAGS+= -Wno-long-long -Wall -W -Wnested-externs -Wformat=2
 CFLAGS+= -Wmissing-prototypes -Wstrict-prototypes -Wmissing-declarations
 CFLAGS+= -Wwrite-strings -Wshadow -Wpointer-arith -Wcast-qual -Wsign-compare
 CFLAGS+= -Wundef -Wshadow -Wbad-function-cast -Winline -Wcast-align
 
-CLEANFILES= $(LIBS710) $(LIB_OBJS) $(S710GET_OBJS) $(PROGS) $(PROG_OBJS) .depend
+CLEANFILES= $(S710GET_OBJS) $(SRDCAT_OBJS) $(SRDHEAD_OBJS) $(SRDPLOT_OBJS) $(PROGS) $(PROG_OBJS) $(COMPAT_OBJS) .depend
 
-all: $(LIBS710) $(PROGS)
+all: $(PROGS)
 
-$(LIBS710): $(LIB_OBJS)
-	ar cru $@ $+
-	ranlib $@
-
-s710d: s710d.o $(LIBS710)
-	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
-
-s710get: s710get.o $(S710GET_OBJS)
+s710get: s710get.o $(S710GET_OBJS) $(COMPAT_OBJS)
 	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ 
 
-s710sh: s710sh.o $(LIBS710)
-	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710) -ledit -lncurses
-
-srd2hrm: srd2hrm.o $(LIBS710)
-	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
-
-srdcat: srdcat.o $(SRDCAT_OBJS)
+srdcat: srdcat.o $(SRDCAT_OBJS) $(COMPAT_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $+ 
 
-srdhead: srdhead.o $(SRDHEAD_OBJS)
+srdhead: srdhead.o $(SRDHEAD_OBJS) $(COMPAT_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $+
 
-srdmerge: srdmerge.o $(LIBS710)
-	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ $(LIBS710)
-
-srdplot: srdplot.o $(SRDPLOT_OBJS)
+srdplot: srdplot.o $(SRDPLOT_OBJS) $(COMPAT_OBJS)
 	$(CC) $(LDFLAGS) $(LIBS) -L/usr/X11R6/lib -o $@ $+ -lgd -lfreetype
 
-depend: $(LIB_SRCS)
-	$(CC) $(CPPFLAGS) -MM $(LIB_SRCS) > .depend
+depend: $(S710GET_SRCS) $(SRDCAT_SRCS) $(SRDHEAD_SRCS) $(SRDPLOT_SRCS)
+	$(CC) $(CPPFLAGS) -MM $+ > .depend
 
 clean:
 	rm -rf $(CLEANFILES)

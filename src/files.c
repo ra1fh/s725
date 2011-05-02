@@ -181,7 +181,6 @@ save_files ( files_t *f, const char *dir, log_cb *cb)
 	int         ofd;
 	int         year;
 	int         month;
-	struct stat sb;
 	uid_t       owner = 0;
 	gid_t       group = 0;
 
@@ -276,84 +275,4 @@ print_hash_marks ( float pct, int bytes, FILE *fp )
 	}
 	fprintf(fp,"] [%5.1f%%]",pct * 100.0);
 	fflush(fp);
-}
-
-		  
-/* make a directory path (may require creation of multiple directories) */
-
-static int
-mkpath ( char *path )
-{
-	struct stat sb;
-	char        rpath[BUFSIZ];
-	int         n = 0;
-	int         j = 0;
-	int         ok = 1;
-	uid_t       owner = 0;
-	gid_t       group = 0;
-	int         already = 0;
-	mode_t      mode = S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH;
-  
-	/* check for obvious errors */
-
-	if ( !path || *path != '/' ) return 0;
-
-	/* 
-	   if the path already exists, return 1 if it is a directory and 0 
-	   otherwise 
-	*/
-  
-	if ( stat(path,&sb) != -1 ) {
-		return (S_ISDIR(sb.st_mode)) ? 1 : 0;
-	}
-
-	/* 
-	   loop through the path, stopping at each slash to try and make the 
-	   directory. 
-	*/
-
-	while ( path[n] ) {
-		rpath[j++] = path[n++];
-		if ( path[n] == '/' ) {
-			rpath[j] = 0;
-			if ( stat(rpath,&sb) != -1 ) {  /* this part already exists */
-				if ( !S_ISDIR(sb.st_mode) ) { /* but is not a directory!  */
-					fprintf(stderr,"mkpath: %s exists but is not a directory",rpath);
-					ok = 0;
-					break;
-				} else {
-	  
-					/* figure out who owns the directory, what permissions they have */
-
-					owner   = sb.st_uid;
-					group   = sb.st_gid;
-					mode    = sb.st_mode;
-					already = 1;
-				}
-			} else {
-				if ( mkdir(rpath,mode) != -1 ) {   /* have to make this part */
-					if ( already ) {
-						chown(rpath,owner,group);
-					}
-				} else {
-					fprintf(stderr,"mkpath: mkdir(%s,%o): %s",path,mode,strerror(errno));
-					ok = 0;
-					break;
-				}
-			}
-		}
-	}
-  
-	/* make the final path */
-
-	if ( mkdir(path,mode) != -1 ) {
-		if ( already ) {
-			chown(rpath,owner,group);
-		}
-	} else {
-		fprintf(stderr,"mkpath: mkdir(%s,%o): %s",path,mode,strerror(errno));
-		ok = 0;
-	}
-
-	return ok;
 }

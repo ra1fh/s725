@@ -5,7 +5,6 @@
 #include <limits.h>
 #include <stdarg.h>
 #include <time.h>
-#include <gd.h>
 
 /* constants */
 
@@ -504,58 +503,6 @@ typedef struct workout_t {
 #define S710_HAS_ALTITUDE(x)  S710_HAS_FIELD(x,ALTITUDE)
 #define S710_HAS_BIKE1(x)     S710_HAS_FIELD(x,BIKE1)
 
-struct cmd {
-	const char *name;
-	int minargs;
-	int maxargs;
-	const char *args;
-	int (*func)(struct cmd *, char **);
-	int packet_type;
-};
-
-#define CMDS	{							\
-		{ "get overview", 0, 0, NULL, NULL, S710_GET_OVERVIEW },		\
-		{ "get user", 0, 0, NULL, NULL, S710_GET_USER },				\
-		{ "get watch", 0, 0, NULL, NULL, S710_GET_WATCH },				\
-		{ "get logo", 0, 0, NULL, NULL, S710_GET_LOGO},					\
-		{ "get bike", 0, 0, NULL, NULL, -1},							\
-		{ "get exercise 1", 0, 0, NULL, NULL, S710_GET_EXERCISE_1 },	\
-		{ "get exercise 2", 0, 0, NULL, NULL, S710_GET_EXERCISE_2 },	\
-		{ "get exercise 3", 0, 0, NULL, NULL, S710_GET_EXERCISE_3 },	\
-		{ "get exercise 4", 0, 0, NULL, NULL, S710_GET_EXERCISE_4 },	\
-		{ "get exercise 5", 0, 0, NULL, NULL, S710_GET_EXERCISE_5 },	\
-		{ "get reminder 1", 0, 0, NULL, NULL, S710_GET_REMINDER_1 },	\
-		{ "get reminder 2", 0, 0, NULL, NULL, S710_GET_REMINDER_2 },	\
-		{ "get reminder 3", 0, 0, NULL, NULL, S710_GET_REMINDER_3 },	\
-		{ "get reminder 4", 0, 0, NULL, NULL, S710_GET_REMINDER_4 },	\
-		{ "get reminder 5", 0, 0, NULL, NULL, S710_GET_REMINDER_5 },	\
-		{ "get reminder 6", 0, 0, NULL, NULL, S710_GET_REMINDER_6 },	\
-		{ "get reminder 7", 0, 0, NULL, NULL, S710_GET_REMINDER_7 },	\
-		{ "get files", 0, 0, NULL, NULL, S710_GET_FILES }, 				\
-		{ "help", 0, 0, NULL, s710sh_help, -1},							\
-		{ NULL, 0, 0, NULL, NULL, -1}									\
-}
-
-/* structs used in rendering images using GD */
-
-typedef struct byte_zone_t {
-	int min;
-	int max;
-	struct {
-		int         red;
-		int         green;
-		int         blue;
-		int         pixel;
-	} color;
-	int seconds;   /* spent in this zone (HR or cadence) */
-} byte_zone_t;
-
-typedef struct byte_histogram_t {
-	int           zones;
-	byte_zone_t  *zone;
-	int           hist[0x10000];  /* histogram of seconds at each byte value */
-} byte_histogram_t;
-
 /* structs and unions used when setting watch properties */
 
 typedef union attribute_value_t {
@@ -743,76 +690,6 @@ extern "C" {
 	/* filter.c */
 
 	void filter_workout ( workout_t * w );
-
-	/* axes.c */
-
-	void   draw_x_axis ( gdImagePtr    im, 
-						 int           t_or_d,
-						 units_data_t *units,
-						 float         max_x,  
-						 int           xi,     
-						 int           yi,     
-						 int           xf,     
-						 int           pixel );
-
-	void   draw_y_axis( gdImagePtr  im,
-						int         side,
-						const char *units,
-						float       ymin,
-						float       ymax,
-						int         tic_opts,
-						int         xi,
-						int         yi,
-						int         xf,
-						int         yf,
-						int         pixel );
-
-	/* plot.c */
-
-	int    plot_workout_xy ( workout_t *w, 
-							 int        y_axis, 
-							 int        x_axis, 
-							 int        r,
-							 int        g,
-							 int        b,
-							 int        tic_opts,
-							 int        width,
-							 int        height,
-							 char      *filename );
-
-	/* histogram.c */
-       
-	byte_histogram_t *make_byte_histogram ( workout_t   *w, 
-											byte_zone_t *z, 
-											int          nz, 
-											int          what );
-	void              free_byte_histogram ( byte_histogram_t *h );
-	int               plot_byte_histogram ( byte_histogram_t *h,
-											int               r,
-											int               g,
-											int               b,
-											int               min,
-											int               max,
-											int               width,
-											int               height,
-											int               dither,
-											char             *filename );
-	int               plot_byte_zones ( byte_histogram_t *h,
-										int               width,
-										int               height,
-										char             *filename );
-
-	/* transfer.c */
-
-	void handle_retrieval ( S710_Driver      *d, 
-							int               r, 
-							const char       *filedir,
-							log_cb           *cb);
-
-	void handle_transfer  ( S710_Driver      *d, 
-							int               r, 
-							char             *request,
-							attribute_map_t  *map );
 
 #ifdef __cplusplus
 }

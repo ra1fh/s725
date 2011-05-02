@@ -4,7 +4,7 @@
 VERSION= 0.1
 DATE= $(shell date +%Y%m%d-%H%M)
 
-PROGS=   s710get srdcat srdhead srdplot
+PROGS=   s710get srdcat srdhead
 
 PREFIX?= /usr/local
 
@@ -29,9 +29,6 @@ SRDCAT_SRCS = alpha_map.c filter.c time.c \
 SRDHEAD_SRCS = alpha_map.c filter.c time.c \
 	workout_print.c workout_read.c workout_util.c
 
-SRDPLOT_SRCS = alpha_map.c filter.c axes.c histogram.c plot.c time.c \
-	workout_print.c workout_read.c workout_util.c
-
 PROG_SRCS= $(patsubst %,%.c,$(PROGS))
 
 LIBS+= 
@@ -43,7 +40,6 @@ DEFS+= -DS710_FILEDIR=\"/var/polar/raw\"
 S710GET_OBJS= $(patsubst %.c,%.o,$(S710GET_SRCS))
 SRDCAT_OBJS= $(patsubst %.c,%.o,$(SRDCAT_SRCS))
 SRDHEAD_OBJS= $(patsubst %.c,%.o,$(SRDHEAD_SRCS))
-SRDPLOT_OBJS= $(patsubst %.c,%.o,$(SRDPLOT_SRCS))
 PROG_OBJS= $(patsubst %,%.o,$(PROGS))
 CPPFLAGS+= $(DEFS) -I. $(INCDIRS)
 
@@ -72,7 +68,7 @@ CFLAGS+= -Wmissing-prototypes -Wstrict-prototypes -Wmissing-declarations
 CFLAGS+= -Wwrite-strings -Wshadow -Wpointer-arith -Wcast-qual -Wsign-compare
 CFLAGS+= -Wundef -Wshadow -Wbad-function-cast -Winline -Wcast-align
 
-CLEANFILES= $(S710GET_OBJS) $(SRDCAT_OBJS) $(SRDHEAD_OBJS) $(SRDPLOT_OBJS) $(PROGS) $(PROG_OBJS) $(COMPAT_OBJS) .depend
+CLEANFILES= $(S710GET_OBJS) $(SRDCAT_OBJS) $(SRDHEAD_OBJS) $(PROGS) $(PROG_OBJS) $(COMPAT_OBJS) .depend
 
 all: $(PROGS)
 
@@ -85,10 +81,7 @@ srdcat: srdcat.o $(SRDCAT_OBJS) $(COMPAT_OBJS)
 srdhead: srdhead.o $(SRDHEAD_OBJS) $(COMPAT_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $+
 
-srdplot: srdplot.o $(SRDPLOT_OBJS) $(COMPAT_OBJS)
-	$(CC) $(LDFLAGS) $(LIBS) -L/usr/X11R6/lib -o $@ $+ -lgd -lfreetype
-
-depend: $(S710GET_SRCS) $(SRDCAT_SRCS) $(SRDHEAD_SRCS) $(SRDPLOT_SRCS)
+depend: $(S710GET_SRCS) $(SRDCAT_SRCS) $(SRDHEAD_SRCS)
 	$(CC) $(CPPFLAGS) -MM $+ > .depend
 
 clean:

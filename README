@@ -11,15 +11,7 @@ native IR, and the USB interface.
 
 If you wish to enable USB support, you need to have the libusb library
 (http://libusb.sf.net) installed, with version of at least 0.1.8.
-libusb supports Linux, FreeBSD and Mac OS X.  This software, however,
-has only been tested on OpenBSD.
-
-You need to have the GD graphics library and header files installed in
-order to build this package.  There are various plotting functions
-which require GD.  Your GD version must include the gdImagePng()
-function (i.e. gd 1.8 or later).  Thus, you must also have libpng
-installed on your system (thanks to Jan-Frode Myklebust (janfrode <at>
-parallab <dot> uib <dot> no) for pointing this out).
+libusb supports Linux, FreeBSD and Mac OS X.
 
 Stefan Kleditzsch (kleditzsch <at> iwr <dot> uni-heidelberg <dot> de)
 decoded the CRC algorithm and has also figured out how to get native

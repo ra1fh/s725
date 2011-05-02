@@ -23,10 +23,10 @@ INSTALLMAN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 444
 S710GET_SRCS = driver.c files.c byte_map.c serial.c usb.c packet.c  \
 	comm.c crc.c
 
-SRDCAT_SRCS = alpha_map.c filter.c time.c \
+SRDCAT_SRCS = alpha_map.c workout_filter.c time.c \
 	workout_print.c workout_read.c workout_util.c
 
-SRDHEAD_SRCS = alpha_map.c filter.c time.c \
+SRDHEAD_SRCS = alpha_map.c workout_filter.c time.c \
 	workout_print.c workout_read.c workout_util.c
 
 PROG_SRCS= $(patsubst %,%.c,$(PROGS))

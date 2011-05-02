@@ -52,7 +52,7 @@ main ( int argc, char **argv )
       printf("\nPrinting workout header in %s [loaded in %f seconds]:\n\n",
 	     argv[i],el);
       workout_print(w,stdout,S710_WORKOUT_HEADER|S710_WORKOUT_LAPS);
-      free_workout(w);
+      workout_free(w);
     } else {
       printf("%s: invalid file\n",argv[i]);
     }

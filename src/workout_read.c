@@ -272,8 +272,8 @@ workout_read_laps(workout_t * w, unsigned char * buf)
 
 	prev_lap_ascent = 0;
 	prev_lap_dist   = 0;
-	lap_size        = bytes_per_lap(w->type,w->mode,w->interval_mode);
-	hdr_size        = header_size(w);
+	lap_size        = workout_bytes_per_lap(w->type,w->mode,w->interval_mode);
+	hdr_size        = workout_header_size(w);
 	w->lap_data     = calloc(w->laps,sizeof(lap_data_t));
 
 	for ( i = 0; i < w->laps; i++ ) {
@@ -371,9 +371,9 @@ workout_read_samples(workout_t * w, unsigned char * buf)
 	int            s;
 	int            x;
 
-	lap_size    = bytes_per_lap(w->type,w->mode,w->interval_mode);
-	sample_size = bytes_per_sample(w->mode);
-	offset      = header_size(w);
+	lap_size    = workout_bytes_per_lap(w->type,w->mode,w->interval_mode);
+	sample_size = workout_bytes_per_sample(w->mode);
+	offset      = workout_header_size(w);
 
 	if ( offset != 0 ) {
 
@@ -384,7 +384,7 @@ workout_read_samples(workout_t * w, unsigned char * buf)
 		w->samples = (w->bytes - offset)/sample_size;
 
 		/* allocate memory */
-		ok = allocate_sample_space(w);
+		ok = workout_allocate_sample_space(w);
 
 		/* if we succeeded in allocating the buffers, ok will not be 0 here. */
 		if ( ok ) {
@@ -515,7 +515,7 @@ workout_extract(unsigned char *buf, S710_Filter filter, S710_HRM_Type type)
 
 	/* never let a partially allocated workout get through. */
 	if ( !ok ) {
-		free_workout(w);
+		workout_free(w);
 		return NULL;
 	}
 
@@ -558,8 +558,8 @@ workout_detect_hrm_type(unsigned char * buf, unsigned int bytes)
 
 		if ( (ri = workout_get_recording_interval(buf[27])) != 0 ) {
 			/* compute the number of bytes per sample and per lap */
-			bps = bytes_per_sample(buf[26]);
-			bpl = bytes_per_lap(S710_HRM_UNKNOWN,buf[26],buf[23]);
+			bps = workout_bytes_per_sample(buf[26]);
+			bpl = workout_bytes_per_lap(S710_HRM_UNKNOWN,buf[26],buf[23]);
       
 			/* obtain the number of laps and samples in the file */
 			duration   = BCD(buf[16])+60*(BCD(buf[17])+60*BCD(buf[18]));

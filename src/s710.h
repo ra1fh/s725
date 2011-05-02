@@ -658,18 +658,11 @@ void   increment_s710_time      ( S710_Time *  t,
 float  get_hours_from_s710_time ( S710_Time *  t );
 
 /* workout_util.c */
-
-int  header_size                ( workout_t * w );
-
-int  bytes_per_lap              ( S710_HRM_Type type,
-								  unsigned char bt,
-								  unsigned char bi );
-
-int  bytes_per_sample           ( unsigned char bt );
-
-int  allocate_sample_space      ( workout_t * w );
-
-void free_workout               ( workout_t * w );
+int  		workout_header_size(workout_t * w);
+int  		workout_bytes_per_lap(S710_HRM_Type type, unsigned char bt, unsigned char bi);
+int  		workout_bytes_per_sample(unsigned char bt);
+int  		workout_allocate_sample_space(workout_t * w);
+void 		workout_free(workout_t * w);
 
 /* workout_print.c */
 void		workout_print(workout_t * w, FILE * fp, int what);

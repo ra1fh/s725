@@ -15,8 +15,6 @@
 
 static void   prep_hash_marks  ( FILE *fp );
 static void   print_hash_marks ( float pct, int bytes, FILE *fp );
-static int    mkpath           ( char *path );
-
 
 /* 
    This function reads the user's workout data from the watch and stores

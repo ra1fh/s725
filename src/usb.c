@@ -1,53 +1,51 @@
-#include <stdlib.h>
-#include <errno.h>
+/*
+ * usb support
+ */
+
 #include <sys/time.h>
+
+#include <errno.h>
+#include <stdlib.h>
 #include <string.h>
-#include "s710.h"
-#ifdef HAVE_LIBUSB
 #include <usb.h>
 
-/* typedefs */
+#include "s710.h"
 
-typedef struct _S710_USB_Data {
+struct s710_usb_data {
 	struct usb_device *device;
 	usb_dev_handle    *handle;
 	int                endpoint;
 	int                interface;
-} _S710_USB_Data;
+};
 
-/* static functions */
-
-static int find_first_altsetting ( struct usb_device *dev, 
-								   int               *config, 
-								   int               *interface, 
-								   int               *altsetting );
-static int find_endpoint         ( struct usb_device *dev, 
-								   int                config, 
-								   int                interface, 
-								   int                altsetting, 
-								   int                dir, 
-								   int                type );     
-#endif /* HAVE_LIBUSB */
-
+static int find_first_altsetting(struct usb_device *dev,
+								 int               *config,
+								 int               *interface,
+								 int               *altsetting);
+static int find_endpoint        (struct usb_device *dev,
+								 int                config,
+								 int                interface,
+								 int                altsetting,
+								 int                dir,
+								 int                type);
 
 int
-init_usb_port ( S710_Driver *d)
+init_usb_port(S710_Driver *d)
 {
 	int ret = -1;
-#ifdef HAVE_LIBUSB
 	struct usb_bus                  *bi;
 	struct usb_device               *di;
 	int                              config = -1;
 	int                              interface = -1;
 	int                              altsetting = -1;
-	_S710_USB_Data                  *data;
+	struct s710_usb_data                  *data;
 
 	if ( d->type != S710_DRIVER_USB ) {
 		fprintf(stderr,"Wrong driver type for init_usb_port\n");
 		return -1;
 	}
 
-	if ( (data = calloc(1,sizeof(_S710_USB_Data))) != NULL ) {
+	if ( (data = calloc(1,sizeof(struct s710_usb_data))) != NULL ) {
 
 		fprintf(stderr,"usb_set_debug(99)\n");
 
@@ -57,7 +55,7 @@ init_usb_port ( S710_Driver *d)
 		usb_find_devices();
 
 		fprintf(stderr,"usb_find_devices is done\n");
-    
+
 		for ( bi = usb_busses; bi != NULL; bi = bi->next ) {
 			for ( di = bi->devices; di != NULL; di = di->next ) {
 				if ( di->descriptor.idVendor  == S710_USB_VENDOR_ID &&
@@ -75,9 +73,9 @@ init_usb_port ( S710_Driver *d)
 			}
 			if ( data->device != NULL ) break;
 		}
-    
+
 		/* if we found the device, find the endpoint and open it. */
-    
+
 		if ( data->device != NULL ) {
 			find_first_altsetting(data->device,&config,&interface,&altsetting);
 			data->endpoint = find_endpoint(data->device,
@@ -122,29 +120,27 @@ init_usb_port ( S710_Driver *d)
 		d->data = (void *)data;
 	}
 
-#endif /* HAVE_LIBUSB */
-
 	return ret;
 }
 
 
-/* I need to revisit this function at some point. */
-
+/*
+ * I need to revisit this function at some point.
+ */
 int
-read_usb_byte ( S710_Driver *d, unsigned char *byte )
+read_usb_byte(S710_Driver *d, unsigned char *byte)
 {
 	int r = 0;
-#ifdef HAVE_LIBUSB
 	static char buf[BUFSIZ];
 	static int  bytes;
 	static int  idx;
 	int         i = 0;
-	_S710_USB_Data *data = (_S710_USB_Data *)d->data;
+	struct s710_usb_data *data = (struct s710_usb_data *)d->data;
 
 	if ( d->type == S710_DRIVER_USB ) {
 		if ( idx == bytes ) {
 			idx = 0;
-			do { 
+			do {
 #ifdef S710_USB_BULK_READ
 				bytes = usb_bulk_read(data->handle,
 									  data->endpoint,
@@ -169,20 +165,18 @@ read_usb_byte ( S710_Driver *d, unsigned char *byte )
 		}
 	}
 
-#endif /* HAVE_LIBUSB */
-  
 	return r;
 }
 
 
-/* send a packet to the polar device over the usb interface */
-
+/*
+ * send a packet to the polar device over the usb interface
+ */
 int
-send_packet_usb ( unsigned char *serialized, int bytes, S710_Driver *d )
+send_packet_usb(unsigned char *serialized, int bytes, S710_Driver *d)
 {
 	int  ret = 0;
-#ifdef HAVE_LIBUSB
-	_S710_USB_Data *data = (_S710_USB_Data *)d->data;
+	struct s710_usb_data *data = (struct s710_usb_data *)d->data;
 
 	if ( d->type == S710_DRIVER_USB ) {
 
@@ -200,7 +194,6 @@ send_packet_usb ( unsigned char *serialized, int bytes, S710_Driver *d )
 	} else {
 		fprintf(stderr,"Driver is not USB, no USB communication possible.\n");
 	}
-#endif
 
 	return ret;
 }
@@ -208,11 +201,10 @@ send_packet_usb ( unsigned char *serialized, int bytes, S710_Driver *d )
 
 
 int
-shutdown_usb_port ( S710_Driver *d )
+shutdown_usb_port(S710_Driver *d)
 {
 	int ret = -1;
-#ifdef HAVE_LIBUSB
-	_S710_USB_Data *data = (_S710_USB_Data *)d->data;
+	struct s710_usb_data *data = (struct s710_usb_data *)d->data;
 
 	if ( d->type == S710_DRIVER_USB ) {
 		fprintf(stderr,"Resetting endpoint\n");
@@ -226,28 +218,20 @@ shutdown_usb_port ( S710_Driver *d )
 	free(data);
 	d->data = (void *)NULL;
 
-#endif /* HAVE_LIBUSB */
-
 	return ret;
 }
 
-
-
-#ifdef HAVE_LIBUSB
-
-/* I copied these helper functions from gphoto2. */
-
 static int
-find_first_altsetting ( struct usb_device *dev, 
-						int               *config, 
-						int               *interface, 
-						int               *altsetting )
+find_first_altsetting (struct usb_device *dev,
+					   int               *config,
+					   int               *interface,
+					   int               *altsetting)
 {
 	int i, i1, i2;
-  
+
 	if (!dev->config)
 		return -1;
-  
+
 	for (i = 0; i < dev->descriptor.bNumConfigurations; i++)
 		for (i1 = 0; i1 < dev->config[i].bNumInterfaces; i1++)
 			for (i2 = 0; i2 < dev->config[i].interface[i1].num_altsetting; i2++)
@@ -256,37 +240,35 @@ find_first_altsetting ( struct usb_device *dev,
 					*config = i;
 					*interface = i1;
 					*altsetting = i2;
-	  
+
 					return 0;
 				}
-  
+
 	return -1;
 }
 
 
 static int
-find_endpoint ( struct usb_device *dev, 
-				int                config, 
-				int                interface, 
-				int                altsetting, 
-				int                dir, 
-				int                type )
+find_endpoint (struct usb_device *dev,
+			   int                config,
+			   int                interface,
+			   int                altsetting,
+			   int                dir,
+			   int                type)
 {
 	struct usb_interface_descriptor *intf;
 	int i;
-  
+
 	if (!dev->config)
 		return -1;
-  
+
 	intf = &dev->config[config].interface[interface].altsetting[altsetting];
-  
+
 	for (i = 0; i < intf->bNumEndpoints; i++) {
 		if ((intf->endpoint[i].bEndpointAddress & USB_ENDPOINT_DIR_MASK) == dir &&
 			(intf->endpoint[i].bmAttributes & USB_ENDPOINT_TYPE_MASK) == type)
 			return intf->endpoint[i].bEndpointAddress;
 	}
-  
+
 	return -1;
 }
-
-#endif /* HAVE_LIBUSB */

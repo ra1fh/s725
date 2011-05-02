@@ -589,16 +589,12 @@ int       init_serial_port ( S710_Driver *d, S710_Mode mode );
 int       read_serial_byte ( S710_Driver *d, unsigned char *byte );
 
 /* usb.c */
-
-int       init_usb_port     ( S710_Driver *d);
-int       read_usb_byte     ( S710_Driver *d, unsigned char *byte );
-int       send_packet_usb   ( unsigned char *serialized,
-							  int            bytes,
-							  S710_Driver   *d );
-int       shutdown_usb_port ( S710_Driver *d );
+int       init_usb_port(S710_Driver *d);
+int       read_usb_byte(S710_Driver *d, unsigned char *byte);
+int       send_packet_usb(unsigned char *serialized, int bytes, S710_Driver   *d);
+int       shutdown_usb_port(S710_Driver *d);
 
 /* crc.c */
-
 void crc_process ( unsigned short      * context,
 				   unsigned char         ch );
 void crc_block   ( unsigned short      * context,

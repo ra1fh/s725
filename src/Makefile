@@ -44,10 +44,9 @@ PROG_OBJS= $(patsubst %,%.o,$(PROGS))
 CPPFLAGS+= $(DEFS) -I. $(INCDIRS)
 
 ifeq ($(shell pkg-config --exists libusb && echo yes), yes)
-	CPPFLAGS += -D HAVE_LIBUSB
 	CFLAGS += $(shell pkg-config --cflags libusb)
 	LIBS   += $(shell pkg-config --libs libusb)	
-endif	
+endif
 
 ifneq (, $(filter Linux GNU GNU/%, $(shell uname -s)))
 INCDIRS+= -Icompat

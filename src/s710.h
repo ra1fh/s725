@@ -72,7 +72,7 @@ typedef enum {
 	S710_X_AXIS_TIME
 } S710_X_Axis;
 
-typedef enum { 
+typedef enum {
 	S710_Y_AXIS_HEART_RATE,
 	S710_Y_AXIS_ALTITUDE,
 	S710_Y_AXIS_SPEED,
@@ -85,7 +85,7 @@ typedef enum {
 	S710_FILTER_ON
 } S710_Filter;
 
-typedef enum { 
+typedef enum {
 	S710_MODE_RDWR,
 	S710_MODE_RDONLY
 } S710_Mode;
@@ -195,7 +195,7 @@ typedef enum {
 	S710_ACTIVITY_TOP
 } S710_Activity_Level;
 
-typedef enum { 
+typedef enum {
 	S710_GENDER_MALE,
 	S710_GENDER_FEMALE
 } S710_Gender;
@@ -506,7 +506,7 @@ typedef struct workout_t {
 /* structs and unions used when setting watch properties */
 
 typedef union attribute_value_t {
-	int                 int_value;  
+	int                 int_value;
 	S710_Label          string_value;
 	unsigned char       byte_value;
 	S710_On_Off         bool_value;
@@ -520,22 +520,22 @@ typedef union attribute_value_t {
 	} enum_string_value;
 } attribute_value_t;
 
-/* 
-   if the type is S710_ATTRIBUTE_TYPE_INTEGER, then values is a three-element 
-   array with the first element being the lower bound and the second element 
+/*
+   if the type is S710_ATTRIBUTE_TYPE_INTEGER, then values is a three-element
+   array with the first element being the lower bound and the second element
    the upper bound for the value, and the third element the offset (amount to
    add to the value before storing it).
-   
-   if the type is S710_ATTRIBUTE_TYPE_STRING, then values is a single-element 
+
+   if the type is S710_ATTRIBUTE_TYPE_STRING, then values is a single-element
    array with the only element being the (integer) maximum string length.
 
    if the type is S710_ATTRIBUTE_TYPE_BOOLEAN or S710_ATTRIBUTE_TYPE_BYTE,
    then values is NULL.
-   
-   if the type is S710_ATTRIBUTE_TYPE_ENUM_INTEGER, then values is a 
+
+   if the type is S710_ATTRIBUTE_TYPE_ENUM_INTEGER, then values is a
    negative-terminated list of allowed (non-negative) integer values.
 
-   if the type is S710_ATTRIBUTE_TYPE_ENUM_STRING, then values is a 
+   if the type is S710_ATTRIBUTE_TYPE_ENUM_STRING, then values is a
    NULL-terminated list of pairs of allowed string values and the integer
    values they correspond to.
 */
@@ -543,23 +543,23 @@ typedef union attribute_value_t {
 typedef struct attribute_pair_t {
 	char                    *name;
 	S710_Attribute_Type      type;
-	void                    *ptr;  
+	void                    *ptr;
 	attribute_value_t       *values;
-	int                      vcount;  
+	int                      vcount;
 	attribute_value_t        value;
 	int                      oosync;
 	struct attribute_pair_t *next;
 } attribute_pair_t;
 
 typedef struct attribute_map_t {
-	union { 
+	union {
 		user_t     user;
 		watch_t    watch;
 		bike_t     bike;
 		logo_t     logo;
 		exercise_t exercise;
 		reminder_t reminder;
-	} data;    
+	} data;
 	S710_Map_Type           type;
 	attribute_pair_t       *pairs;
 	int                     oosync;
@@ -573,127 +573,113 @@ extern unsigned char gByteMap[256];
 
 /* function prototypes */
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+/* driver.c */
 
-	/* driver.c */
+int       driver_init  ( const char *driver_name, const char *device, S710_Driver *d );
+int       driver_open  ( S710_Driver *d, S710_Mode mode );
+int       driver_close ( S710_Driver *d );
 
-	int       driver_init  ( const char *driver_name, const char *device, S710_Driver *d );
-	int       driver_open  ( S710_Driver *d, S710_Mode mode );
-	int       driver_close ( S710_Driver *d );
+/* byte_map.c */
 
-	/* byte_map.c */
+void      compute_byte_map ( void );
 
-	void      compute_byte_map ( void );
+/* serial.c */
 
-	/* serial.c */
+int       init_serial_port ( S710_Driver *d, S710_Mode mode );
+int       read_serial_byte ( S710_Driver *d, unsigned char *byte );
 
-	int       init_serial_port ( S710_Driver *d, S710_Mode mode );
-	int       read_serial_byte ( S710_Driver *d, unsigned char *byte );
+/* usb.c */
 
-	/* usb.c */
+int       init_usb_port     ( S710_Driver *d);
+int       read_usb_byte     ( S710_Driver *d, unsigned char *byte );
+int       send_packet_usb   ( unsigned char *serialized,
+							  int            bytes,
+							  S710_Driver   *d );
+int       shutdown_usb_port ( S710_Driver *d );
 
-	int       init_usb_port     ( S710_Driver *d);
-	int       read_usb_byte     ( S710_Driver *d, unsigned char *byte );
-	int       send_packet_usb   ( unsigned char *serialized,
-								  int            bytes, 
-								  S710_Driver   *d );
-	int       shutdown_usb_port ( S710_Driver *d );
+/* crc.c */
 
-	/* crc.c */
+void crc_process ( unsigned short      * context,
+				   unsigned char         ch );
+void crc_block   ( unsigned short      * context,
+				   const unsigned char * blk,
+				   int                   len );
 
-	void crc_process ( unsigned short      * context, 
-					   unsigned char         ch );
-	void crc_block   ( unsigned short      * context,
-					   const unsigned char * blk,
-					   int                   len );
+/* alpha_map.c */
+void          extract_label     ( unsigned char *buf,
+								  S710_Label    *label,
+								  int            bytes );
+void          encode_label      ( S710_Label     label,
+								  unsigned char *buf,
+								  int            bytes );
 
-	/* alpha_map.c */
-	void          extract_label     ( unsigned char *buf, 
-									  S710_Label    *label, 
-									  int            bytes );
-	void          encode_label      ( S710_Label     label,
-									  unsigned char *buf,
-									  int            bytes );
+/* comm.c */
 
-	/* comm.c */
+int       send_packet      ( packet_t *packet, S710_Driver *d );
+packet_t *recv_packet      ( S710_Driver *d );
 
-	int       send_packet      ( packet_t *packet, S710_Driver *d );
-	packet_t *recv_packet      ( S710_Driver *d );
+/* files.c */
 
-	/* files.c */
+typedef void (log_cb)(unsigned int level, const char *fmt, ...);
 
-	typedef void (log_cb)(unsigned int level, const char *fmt, ...);
+int       get_files        ( S710_Driver *d, files_t *files, FILE *fp );
+int       receive_file     ( S710_Driver *d, files_t *file, log_cb *cb);
+int       save_files       ( files_t *f, const char *dir, log_cb *cb);
+void      print_files      ( files_t *f, log_cb *cb);
+time_t    file_timestamp   ( unsigned char *data );
 
-	int       get_files        ( S710_Driver *d, files_t *files, FILE *fp );
-	int       receive_file     ( S710_Driver *d, files_t *file, log_cb *cb);
-	int       save_files       ( files_t *f, const char *dir, log_cb *cb);
-	void      print_files      ( files_t *f, log_cb *cb);
-	time_t    file_timestamp   ( unsigned char *data );
+/* packet.c */
 
-	/* packet.c */
-  
-	int       num_packets      ( void );
-	packet_t *packet           ( S710_Packet_Index idx );
-	packet_t *make_set_packet  ( S710_Packet_Index idx );
-	int       send_set_packet  ( packet_t *pkt, S710_Driver *d );
-	packet_t *get_response     ( S710_Packet_Index request, S710_Driver *d );
-	void      close_connection ( S710_Driver *d );
-	void      print_packet     ( packet_t *pkt, FILE *fp );
+int       num_packets      ( void );
+packet_t *packet           ( S710_Packet_Index idx );
+packet_t *make_set_packet  ( S710_Packet_Index idx );
+int       send_set_packet  ( packet_t *pkt, S710_Driver *d );
+packet_t *get_response     ( S710_Packet_Index request, S710_Driver *d );
+void      close_connection ( S710_Driver *d );
+void      print_packet     ( packet_t *pkt, FILE *fp );
 
-	/* time.c */
+/* time.c */
 
-	void   print_s710_time          ( S710_Time *  t, 
-									  const char * format, 
-									  FILE *       fp );
+void   print_s710_time          ( S710_Time *  t,
+								  const char * format,
+								  FILE *       fp );
 
-	time_t s710_time_to_tenths      ( S710_Time *  t );
-	time_t s710_time_to_seconds     ( S710_Time *  t );
-  
-	void   diff_s710_time           ( S710_Time *  t1, 
-									  S710_Time *  t2, 
-									  S710_Time *  diff );
-	void   sum_s710_time            ( S710_Time *  t1, 
-									  S710_Time *  t2, 
-									  S710_Time *  sum );
-	void   increment_s710_time      ( S710_Time *  t, 
-									  unsigned int seconds );
-	float  get_hours_from_s710_time ( S710_Time *  t );
+time_t s710_time_to_tenths      ( S710_Time *  t );
+time_t s710_time_to_seconds     ( S710_Time *  t );
 
-	/* workout_util.c */
+void   diff_s710_time           ( S710_Time *  t1,
+								  S710_Time *  t2,
+								  S710_Time *  diff );
+void   sum_s710_time            ( S710_Time *  t1,
+								  S710_Time *  t2,
+								  S710_Time *  sum );
+void   increment_s710_time      ( S710_Time *  t,
+								  unsigned int seconds );
+float  get_hours_from_s710_time ( S710_Time *  t );
 
-	int  header_size                ( workout_t * w );
+/* workout_util.c */
 
-	int  bytes_per_lap              ( S710_HRM_Type type, 
-									  unsigned char bt, 
-									  unsigned char bi );
+int  header_size                ( workout_t * w );
 
-	int  bytes_per_sample           ( unsigned char bt );
+int  bytes_per_lap              ( S710_HRM_Type type,
+								  unsigned char bt,
+								  unsigned char bi );
 
-	int  allocate_sample_space      ( workout_t * w );
+int  bytes_per_sample           ( unsigned char bt );
 
-	void free_workout               ( workout_t * w );
-  
-	/* workout_print.c */
+int  allocate_sample_space      ( workout_t * w );
 
-	void        print_workout        ( workout_t * w, FILE * fp, int what );
-	void        print_workout_as_hrm ( workout_t * w, FILE * fp );
+void free_workout               ( workout_t * w );
 
+/* workout_print.c */
+void	workout_print(workout_t * w, FILE * fp, int what);
 
-	/* workout_read.c */
+/* workout_read.c */
+workout_t * read_workout         ( char *          filename,
+								   S710_Filter     filter,
+								   S710_HRM_Type   type );
 
-	workout_t * read_workout         ( char *          filename, 
-									   S710_Filter     filter, 
-									   S710_HRM_Type   type );
-
-	/* filter.c */
-
-	void filter_workout ( workout_t * w );
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
+/* filter.c */
+void filter_workout ( workout_t * w );
 
 #endif /* __S710_H__ */

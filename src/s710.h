@@ -635,23 +635,13 @@ void      close_connection ( S710_Driver *d );
 void      print_packet     ( packet_t *pkt, FILE *fp );
 
 /* time.c */
-
-void   print_s710_time          ( S710_Time *  t,
-								  const char * format,
-								  FILE *       fp );
-
-time_t s710_time_to_tenths      ( S710_Time *  t );
-time_t s710_time_to_seconds     ( S710_Time *  t );
-
-void   diff_s710_time           ( S710_Time *  t1,
-								  S710_Time *  t2,
-								  S710_Time *  diff );
-void   sum_s710_time            ( S710_Time *  t1,
-								  S710_Time *  t2,
-								  S710_Time *  sum );
-void   increment_s710_time      ( S710_Time *  t,
-								  unsigned int seconds );
-float  get_hours_from_s710_time ( S710_Time *  t );
+void   		print_s710_time(S710_Time* t, const char *format, FILE *fp);
+time_t 		s710_time_to_tenths(S710_Time *t);
+time_t 		s710_time_to_seconds(S710_Time *t);
+void   		diff_s710_time(S710_Time *t1, S710_Time *t2, S710_Time *diff);
+void   		sum_s710_time(S710_Time *t1, S710_Time *t2, S710_Time *sum);
+void   		increment_s710_time(S710_Time *t, unsigned int seconds);
+float  		get_hours_from_s710_time(S710_Time *t);
 
 /* workout_util.c */
 int  		workout_header_size(workout_t * w);

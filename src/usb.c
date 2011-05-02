@@ -30,7 +30,7 @@ static int find_endpoint        (struct usb_device *dev,
 								 int                type);
 
 int
-init_usb_port(S710_Driver *d)
+init_usb_port(struct s710_driver *d, S710_Mode mode)
 {
 	int ret = -1;
 	struct usb_bus                  *bi;
@@ -39,6 +39,8 @@ init_usb_port(S710_Driver *d)
 	int                              interface = -1;
 	int                              altsetting = -1;
 	struct s710_usb_data                  *data;
+
+	(void) mode;
 
 	if ( d->type != S710_DRIVER_USB ) {
 		fprintf(stderr,"Wrong driver type for init_usb_port\n");
@@ -123,12 +125,11 @@ init_usb_port(S710_Driver *d)
 	return ret;
 }
 
-
 /*
  * I need to revisit this function at some point.
  */
 int
-read_usb_byte(S710_Driver *d, unsigned char *byte)
+read_usb_byte(struct s710_driver *d, unsigned char *byte)
 {
 	int r = 0;
 	static char buf[BUFSIZ];
@@ -153,7 +154,7 @@ read_usb_byte(S710_Driver *d, unsigned char *byte)
 				if ( bytes == 0 && errno == EOVERFLOW ) {
 					usb_reset(data->handle);
 					shutdown_usb_port(d);
-					init_usb_port(d);
+					init_usb_port(d, 0);
 				}
 				usleep(10000);
 			} while ( !bytes && i++ < 100 );
@@ -173,7 +174,7 @@ read_usb_byte(S710_Driver *d, unsigned char *byte)
  * send a packet to the polar device over the usb interface
  */
 int
-send_packet_usb(unsigned char *serialized, int bytes, S710_Driver *d)
+send_packet_usb(struct s710_driver *d, unsigned char *serialized, size_t bytes)
 {
 	int  ret = 0;
 	struct s710_usb_data *data = (struct s710_usb_data *)d->data;
@@ -201,7 +202,7 @@ send_packet_usb(unsigned char *serialized, int bytes, S710_Driver *d)
 
 
 int
-shutdown_usb_port(S710_Driver *d)
+shutdown_usb_port(struct s710_driver *d)
 {
 	int ret = -1;
 	struct s710_usb_data *data = (struct s710_usb_data *)d->data;

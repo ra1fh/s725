@@ -209,7 +209,7 @@ make_set_packet ( S710_Packet_Index idx )
 /* send and free a "set" packet, read response - return 1 if ok, 0 if not. */
 
 int
-send_set_packet ( packet_t *p, S710_Driver *d )
+send_set_packet ( packet_t *p, struct s710_driver *d )
 {
 	packet_t *response;
 	int       ok = 0;
@@ -230,7 +230,7 @@ send_set_packet ( packet_t *p, S710_Driver *d )
 /* get a single-packet response to a request */
 
 packet_t *
-get_response ( S710_Packet_Index request, S710_Driver *d )
+get_response ( S710_Packet_Index request, struct s710_driver *d )
 {
 	packet_t *send;
 	packet_t *recv = NULL;
@@ -256,7 +256,7 @@ get_response ( S710_Packet_Index request, S710_Driver *d )
 
 
 void
-close_connection ( S710_Driver *d )
+close_connection ( struct s710_driver *d )
 {
 	send_packet(packet(S710_CLOSE_CONNECTION),d);
 	printf("\nConnection closed\n\n");

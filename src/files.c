@@ -24,7 +24,7 @@ static void   print_hash_marks ( float pct, int bytes, FILE *fp );
 */
 
 int
-get_files ( S710_Driver *d, files_t *files, FILE *fp )
+get_files ( struct s710_driver *d, files_t *files, FILE *fp )
 {
 	packet_t      *p;
 	int            ok = 0;
@@ -78,7 +78,7 @@ get_files ( S710_Driver *d, files_t *files, FILE *fp )
 
 
 int
-receive_file(S710_Driver *d, files_t *file, log_cb* cb)
+receive_file(struct s710_driver *d, files_t *file, log_cb* cb)
 {
 	packet_t      *p;
 	int            ok = 0;

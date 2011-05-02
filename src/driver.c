@@ -2,15 +2,29 @@
 #include <string.h>
 #include "s710.h"
 
+static struct s710_driver_ops serial_driver_ops = {
+	.init = serial_init,
+	.read = serial_read_byte,
+	.write = serial_write,
+	.close = NULL,
+};
 
-/* externs */
+static struct s710_driver_ops ir_driver_ops = {
+	.init = ir_init,
+	.read = ir_read_byte,
+	.write = ir_write,
+	.close = NULL,
+};
 
-extern char *optarg;
-extern int   optind;
-
+static struct s710_driver_ops usb_driver_ops = {
+	.init = init_usb_port,
+	.read = read_usb_byte,
+	.write = send_packet_usb,
+	.close = NULL,
+};
 
 int
-driver_init (const char *driver_name, const char *device, S710_Driver *d)
+driver_init (const char *driver_name, const char *device, struct s710_driver *d)
 {
 	int  init = 0;
 	int  needpath = 1;
@@ -20,10 +34,13 @@ driver_init (const char *driver_name, const char *device, S710_Driver *d)
 	if (driver_name) {
 		if ( !strcmp(driver_name,"serial") ) {
 			d->type = S710_DRIVER_SERIAL;
+			d->dops = &serial_driver_ops;
 		} else if ( !strcmp(driver_name,"ir") ) {
 			d->type = S710_DRIVER_IR;
+			d->dops = &ir_driver_ops;
 		} else if ( !strcmp(driver_name,"usb") ) {
 			d->type = S710_DRIVER_USB;
+			d->dops = &usb_driver_ops;
 			needpath = 0;
 			printf("needpath=0\n");
 		}
@@ -39,47 +56,42 @@ driver_init (const char *driver_name, const char *device, S710_Driver *d)
 	return init;
 }
 
+int
+driver_write(struct s710_driver *d, unsigned char *buf, size_t nbytes) {
+	if (d->dops->write)
+		return d->dops->write(d, buf, nbytes);
+	else
+		return -1;
+}
 
 int
-driver_open ( S710_Driver *d, S710_Mode mode )
+driver_read_byte(struct s710_driver *d, unsigned char *b)
+{
+	if (d->dops->read)
+		return d->dops->read(d, b);
+	else
+		return 0;
+}
+
+int
+driver_open(struct s710_driver *d, S710_Mode mode)
 {
 	int ret = -1;
 
 	d->mode = mode;
-
-	switch ( d->type ) {
-	case S710_DRIVER_SERIAL:
-		compute_byte_map();
-	case S710_DRIVER_IR:
-		ret = init_serial_port(d,mode);
-		break;
-	case S710_DRIVER_USB:
-		ret = init_usb_port(d);
-		break;
-	default:
-		break;
-	}
+	if (d->dops->init)
+		ret = d->dops->init(d, mode);
 
 	return ret;
 }
 
-
 int
-driver_close ( S710_Driver *d )
+driver_close (struct s710_driver *d)
 {
 	int ret = 0;
 
-	switch ( d->type ) {
-	case S710_DRIVER_SERIAL:    
-	case S710_DRIVER_IR:
-		ret = close((int)d->data);
-		break;
-	case S710_DRIVER_USB:
-		ret = shutdown_usb_port(d);
-		break;
-	default:
-		break;
-	}
+	if (d->dops->close)
+		ret = d->dops->close(d);
 
 	return ret;
 }

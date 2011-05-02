@@ -29,7 +29,7 @@ main(int argc, char **argv)
 	const char		 *filedir = NULL;
 	char			  path[PATH_MAX];
 	int				  ok;
-	S710_Driver		  d;
+	struct s710_driver d;
 	const char		 *driver_name = "ir";
 	const char		 *device = NULL;
 	int				  ch;

@@ -9,69 +9,40 @@
 #include "s710.h"
 
 /* This file needs to be rewritten.  */
-
 #define READ_TRIES   10
 
 /* static helper functions */
+static int recv_short(unsigned short *s, struct s710_driver *d);
+static unsigned short packet_checksum(packet_t *p);
+static int serialize_packet(packet_t *p, unsigned char *buf);
 
-static void send_byte         ( unsigned char   byte,  S710_Driver *d );
-static int  recv_byte         ( unsigned char  *byte,  S710_Driver *d );
-static int  recv_short        ( unsigned short *s,     S710_Driver *d );
-static unsigned short packet_checksum ( packet_t *p );
-static int  serialize_packet  ( packet_t *p, unsigned char *buf );
-
-/* send a packet via the S710 driver */
-
+/* 
+ * send a packet via the S710 driver
+ */
 int 
-send_packet ( packet_t *p, S710_Driver *d )
+send_packet ( packet_t *p, struct s710_driver *d )
 {
-	int           i;
 	int           ret = 1;
 	unsigned char serialized[BUFSIZ];
 	int           bytes;
 
 	/* first, compute the packet checksum */
-  
 	p->checksum = packet_checksum(p);
   
 	/* next, serialize the packet into a stream of bytes */
-
 	bytes = serialize_packet ( p, serialized );
-  
 
-	if ( d->type == S710_DRIVER_USB ) {
-    
-		/* USB packets are sent all at once. */
+	ret = driver_write(d, serialized, bytes);
 
-		ret = send_packet_usb ( serialized, bytes, d );
-
-	} else {
-		for ( i = 0; i < bytes; i++ ) {
-			send_byte(serialized[i],d);
-#ifdef S710_SERIAL_ALT_INTER_CHAR_TIMER_IMP
-			usleep(10000); /* 10ms */
-#endif
-		}
-    
-		if ( d->type == S710_DRIVER_SERIAL ) {
-
-			/* the data that gets echoed back is not RS-232 data.  it is garbage 
-			   data that we have to flush.  there is a pause of at least 0.1 
-			   seconds before the real data shows up. */
-
-			usleep(100000);
-			tcflush((int)d->data,TCIFLUSH);
-		}
-	}
-
-	return ret;
+	return ret != -1;
 }
 
 
-/* receive a packet from the S710 driver (allocates memory) */
-
+/*
+ * receive a packet from the S710 driver (allocates memory)
+ */
 packet_t *
-recv_packet ( S710_Driver *d ) {
+recv_packet ( struct s710_driver *d ) {
 	int             r;
 	int             i;
 	unsigned char   c = 0;
@@ -81,13 +52,13 @@ recv_packet ( S710_Driver *d ) {
 	packet_t       *p = NULL;
 	unsigned short  crc = 0;
 
-	r = recv_byte ( &c, d );
+	r = driver_read_byte(d, &c);
 	crc_process ( &crc, c );
 
 	if ( c == S710_RESPONSE ) {
-		r = recv_byte ( &id, d );
+		r = driver_read_byte(d, &id);
 		crc_process ( &crc, id );
-		r = recv_byte ( &c, d );
+		r = driver_read_byte(d, &c);
 		crc_process ( &crc, c );
 		r = recv_short ( &len, d );
 		crc_process ( &crc, len >> 8 );
@@ -105,10 +76,10 @@ recv_packet ( S710_Driver *d ) {
 				p->id     = id;
 				p->length = len;
 				for ( i = 0; i < len; i++ ) {
-					r = recv_byte ( &p->data[i], d );
+					r = driver_read_byte(d, &p->data[i]);
 					crc_process ( &crc, p->data[i] );
 					if ( !r ) {
-						fprintf(stderr, "recv_byte failed\n");
+						fprintf(stderr, "driver_read_byte failed\n");
 						free ( p );
 						p = NULL;
 						break;
@@ -139,66 +110,23 @@ recv_packet ( S710_Driver *d ) {
 	return p;
 }
 
-
-/* read a byte from fd */
-
+/*
+ * read a short from fd
+ */
 static int
-recv_byte ( unsigned char *byte, S710_Driver *d )
-{
-	int r = 0;
-
-	switch ( d->type ) {
-	case S710_DRIVER_SERIAL:
-	case S710_DRIVER_IR:
-		r = read_serial_byte(d,byte);
-		break;
-	case S710_DRIVER_USB:
-		r = read_usb_byte(d,byte);
-		break;
-	default:
-		break;
-	}
-
-	return r;
-}
-
-
-/* read a short from fd */
-
-static int
-recv_short ( unsigned short *s, S710_Driver *d )
+recv_short ( unsigned short *s, struct s710_driver *d )
 {
 	int           r = 0;
 	unsigned char u = 0;
 	unsigned char l = 0;
 
-	r = recv_byte ( &u, d );
-	r = recv_byte ( &l, d );
+	r = driver_read_byte(d, &u);
+	r = driver_read_byte(d, &l);
 
 	*s = (unsigned short)(u<<8)|l;
 
 	return r;
 }
-
-
-/* send a mapped byte over fd - MAKE SURE you compute_byte_map() first
-   if you are using the serial port IR dongle! */
-
-static void
-send_byte ( unsigned char byte, S710_Driver *d )
-{
-	switch ( d->type ) {
-	case S710_DRIVER_SERIAL:
-		write((int)d->data,&gByteMap[byte],1);
-		break;
-	case S710_DRIVER_IR:
-		write((int)d->data,&byte,1);
-		break;
-	default:
-		break;
-	}
-}
-
 
 static unsigned short
 packet_checksum ( packet_t *p )

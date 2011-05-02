@@ -250,13 +250,22 @@ typedef enum {
 
 
 /* structure and type definitions */
+struct s710_driver;
 
-typedef struct S710_Driver {
-	S710_Driver_Type  type;
-	S710_Mode         mode;
-	char              path[PATH_MAX];
-	void             *data;
-} S710_Driver;
+struct s710_driver_ops {
+	int (*init)  (struct s710_driver* d, S710_Mode mode);
+	int (*read)  (struct s710_driver* d, unsigned char *byte);
+	int (*write) (struct s710_driver* d, unsigned char *buf, size_t nbytes);
+	int (*close) (struct s710_driver* d);
+};
+
+struct s710_driver {
+	S710_Driver_Type        type;
+	S710_Mode               mode;
+	char                    path[PATH_MAX];
+	void                   *data;
+	struct s710_driver_ops *dops;
+};
 
 
 typedef char           S710_Label[8];
@@ -574,25 +583,29 @@ extern unsigned char gByteMap[256];
 /* function prototypes */
 
 /* driver.c */
-
-int       driver_init  ( const char *driver_name, const char *device, S710_Driver *d );
-int       driver_open  ( S710_Driver *d, S710_Mode mode );
-int       driver_close ( S710_Driver *d );
+int       driver_init  (const char *driver_name, const char *device, struct s710_driver *d );
+int       driver_open  (struct s710_driver *d, S710_Mode mode );
+int		  driver_write (struct s710_driver *d, unsigned char *buf, size_t nbytes);
+int       driver_read_byte(struct s710_driver *d, unsigned char *b);
+int       driver_close (struct s710_driver *d );
 
 /* byte_map.c */
 
 void      compute_byte_map ( void );
 
 /* serial.c */
-
-int       init_serial_port ( S710_Driver *d, S710_Mode mode );
-int       read_serial_byte ( S710_Driver *d, unsigned char *byte );
+int       ir_init(struct s710_driver *d, S710_Mode mode);
+int       ir_read_byte(struct s710_driver *d, unsigned char *byte);
+int       ir_write(struct s710_driver *d, unsigned char *buf, size_t nbytes);
+int       serial_init(struct s710_driver *d, S710_Mode mode);
+int       serial_read_byte(struct s710_driver *d, unsigned char *byte);
+int       serial_write(struct s710_driver *d, unsigned char *buf, size_t nbytes);
 
 /* usb.c */
-int       init_usb_port(S710_Driver *d);
-int       read_usb_byte(S710_Driver *d, unsigned char *byte);
-int       send_packet_usb(unsigned char *serialized, int bytes, S710_Driver   *d);
-int       shutdown_usb_port(S710_Driver *d);
+int       init_usb_port(struct s710_driver *d, S710_Mode mode);
+int       read_usb_byte(struct s710_driver *d, unsigned char *byte);
+int       send_packet_usb(struct s710_driver *d, unsigned char *buf, size_t bytes);
+int       shutdown_usb_port(struct s710_driver *d);
 
 /* crc.c */
 void crc_process ( unsigned short      * context,
@@ -611,15 +624,15 @@ void          encode_label      ( S710_Label     label,
 
 /* comm.c */
 
-int       send_packet      ( packet_t *packet, S710_Driver *d );
-packet_t *recv_packet      ( S710_Driver *d );
+int       send_packet      ( packet_t *packet, struct s710_driver *d );
+packet_t *recv_packet      ( struct s710_driver *d );
 
 /* files.c */
 
 typedef void (log_cb)(unsigned int level, const char *fmt, ...);
 
-int       get_files        ( S710_Driver *d, files_t *files, FILE *fp );
-int       receive_file     ( S710_Driver *d, files_t *file, log_cb *cb);
+int       get_files        ( struct s710_driver *d, files_t *files, FILE *fp );
+int       receive_file     ( struct s710_driver *d, files_t *file, log_cb *cb);
 int       save_files       ( files_t *f, const char *dir, log_cb *cb);
 void      print_files      ( files_t *f, log_cb *cb);
 time_t    file_timestamp   ( unsigned char *data );
@@ -629,9 +642,9 @@ time_t    file_timestamp   ( unsigned char *data );
 int       num_packets      ( void );
 packet_t *packet           ( S710_Packet_Index idx );
 packet_t *make_set_packet  ( S710_Packet_Index idx );
-int       send_set_packet  ( packet_t *pkt, S710_Driver *d );
-packet_t *get_response     ( S710_Packet_Index request, S710_Driver *d );
-void      close_connection ( S710_Driver *d );
+int       send_set_packet  ( packet_t *pkt, struct s710_driver *d );
+packet_t *get_response     ( S710_Packet_Index request, struct s710_driver *d );
+void      close_connection ( struct s710_driver *d );
 void      print_packet     ( packet_t *pkt, FILE *fp );
 
 /* time.c */

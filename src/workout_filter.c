@@ -10,12 +10,11 @@
 
 
 /* 
-   This function filters out bad HR data from a workout and recomputes
-   the average and max HR from the filtered data.  
-*/
-
+ * This function filters out bad HR data from a workout and recomputes
+ * the average and max HR from the filtered data.  
+ */
 void
-filter_workout ( workout_t *w )
+workout_filter(workout_t *w)
 {
 	int              v;
 	int              lv;
@@ -26,7 +25,6 @@ filter_workout ( workout_t *w )
 	float            avg;
 
 	/* clean up the sample data */
-
 	if ( w->hr_data != NULL ) {
 		v  = 1;
 		lv = 0;
@@ -49,7 +47,6 @@ filter_workout ( workout_t *w )
 		}
     
 		/* recompute max and avg HR if we have to */
-    
 		if ( remax != 0 ) {
 			w->max_hr = 0;
 			avg = 0;
@@ -87,7 +84,6 @@ filter_workout ( workout_t *w )
 		}
     
 		/* recompute max and avg cadence if we have to */
-    
 		if ( remax != 0 ) {
 			w->max_cad = 0;
 			avg = 0;

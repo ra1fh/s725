@@ -524,7 +524,7 @@ workout_extract(unsigned char *buf, S710_Filter filter, S710_HRM_Type type)
 	 * avg/max HR values.
 	 */
 	if ( filter == S710_FILTER_ON ) {
-		filter_workout(w);
+		workout_filter(w);
 	}
 
 	workout_compute_speed_info(w);

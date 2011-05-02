@@ -7,13 +7,27 @@
 #include <unistd.h>
 #include "s710.h"
 
-
+static void workout_read_preamble(workout_t * w, unsigned char * buf);
+static void workout_read_date(workout_t * w, unsigned char * buf);
+static void workout_read_duration(workout_t * w, unsigned char * buf);
+static void workout_read_units(workout_t * w, unsigned char b);
+static int  workout_get_recording_interval(unsigned char b);
+static void workout_read_recording_interval(workout_t * w, unsigned char * buf);
+static void workout_read_hr_limits(workout_t * w, unsigned char * buf);
+static void workout_read_bestlap_split(workout_t * w, unsigned char * buf);
+static void workout_read_energy(workout_t * w, unsigned char * buf);
+static void workout_read_cumulative_exercise(workout_t * w, unsigned char * buf);
+static void workout_read_ride_info(workout_t * w, unsigned char * buf);
+static void workout_read_laps(workout_t * w, unsigned char * buf);
+static int  workout_read_samples(workout_t * w, unsigned char * buf);
+static void workout_compute_speed_info(workout_t * w);
+static workout_t * workout_extract(unsigned char *buf, S710_Filter filter, S710_HRM_Type type);
+static S710_HRM_Type workout_detect_hrm_type(unsigned char * buf, unsigned int bytes);
 
 static void
-read_preamble ( workout_t * w, unsigned char * buf )
+workout_read_preamble(workout_t * w, unsigned char * buf)
 {
 	/* number of bytes in the buffer (including these two) */
-
 	w->bytes = buf[0] + (buf[1]<<8);
 
 	w->exercise_number = buf[2];
@@ -24,18 +38,15 @@ read_preamble ( workout_t * w, unsigned char * buf )
 	}
 }
 
-
 static void
-read_date ( workout_t * w, unsigned char * buf )
+workout_read_date(workout_t * w, unsigned char * buf)
 {
 	/* date of workout */
-  
 	w->date.tm_sec   = BCD(buf[0]);
 	w->date.tm_min   = BCD(buf[1]);
 	w->date.tm_hour  = BCD(buf[2] & 0x7f);
   
 	/* PATCH for AM/PM mode detection from Berend Ozceri */
-  
 	w->ampm = S710_AM_PM_MODE_UNSET;
 	if ( buf[3] & 0x80 ) w->ampm |= S710_AM_PM_MODE_SET;
 	if ( buf[2] & 0x80 ) w->ampm |= S710_AM_PM_MODE_PM;
@@ -54,7 +65,7 @@ read_date ( workout_t * w, unsigned char * buf )
 
 
 static void
-read_duration ( workout_t * w, unsigned char * buf )
+workout_read_duration(workout_t * w, unsigned char * buf)
 {
 	w->duration.tenths  = UNIB(buf[0]);
 	w->duration.seconds = BCD(buf[1]);
@@ -64,18 +75,15 @@ read_duration ( workout_t * w, unsigned char * buf )
 
 
 static void
-read_units ( workout_t * w, unsigned char b )
+workout_read_units(workout_t * w, unsigned char b)
 {
 	if ( b & 0x02 ) { /* english */
-
 		w->units.system      = S710_UNITS_ENGLISH;
 		w->units.altitude    = S710_ALTITUDE_FT;
 		w->units.speed       = S710_SPEED_MPH;
 		w->units.distance    = S710_DISTANCE_MI;
 		w->units.temperature = S710_TEMPERATURE_F;
-
 	} else {         /* metric */
-
 		w->units.system      = S710_UNITS_METRIC;
 		w->units.altitude    = S710_ALTITUDE_M;
 		w->units.speed       = S710_SPEED_KPH;
@@ -86,7 +94,7 @@ read_units ( workout_t * w, unsigned char b )
 
 
 static int
-get_recording_interval ( unsigned char b )
+workout_get_recording_interval(unsigned char b)
 {
 	int ri = 0;
 
@@ -102,17 +110,16 @@ get_recording_interval ( unsigned char b )
 
 
 static void
-read_recording_interval ( workout_t * w, unsigned char * buf )
+workout_read_recording_interval(workout_t * w, unsigned char * buf)
 {
-	w->recording_interval = get_recording_interval(buf[0]);
+	w->recording_interval = workout_get_recording_interval(buf[0]);
 }
 
 
 static void
-read_hr_limits ( workout_t * w, unsigned char * buf )
+workout_read_hr_limits(workout_t * w, unsigned char * buf)
 {
 	/* HR limits */
-
 	w->hr_limit[0].lower     = buf[0];
 	w->hr_limit[0].upper     = buf[1];
 	w->hr_limit[1].lower     = buf[2];
@@ -121,7 +128,6 @@ read_hr_limits ( workout_t * w, unsigned char * buf )
 	w->hr_limit[2].upper     = buf[5];
 
 	/* time below, within, above hr limits 1 */
-  
 	w->hr_zone[0][0].tenths  = 0;
 	w->hr_zone[0][0].seconds = BCD(buf[9]);   /* Below zone 1, seconds */
 	w->hr_zone[0][0].minutes = BCD(buf[10]);  /* Below zone 1, minutes */
@@ -134,7 +140,6 @@ read_hr_limits ( workout_t * w, unsigned char * buf )
 	w->hr_zone[0][2].hours   = BCD(buf[17]);  /* Above zone 1, hours   */
 
 	/* time below, within, above hr limits 2 */
-
 	w->hr_zone[1][0].tenths  = 0;
 	w->hr_zone[1][0].seconds = BCD(buf[18]);  /* Below zone 2, seconds */
 	w->hr_zone[1][0].minutes = BCD(buf[19]);  /* Below zone 2, minutes */
@@ -147,7 +152,6 @@ read_hr_limits ( workout_t * w, unsigned char * buf )
 	w->hr_zone[1][2].hours   = BCD(buf[26]);  /* Above zone 2, hours   */
 
 	/* time below, within, above hr limits 3 */
-
 	w->hr_zone[2][0].tenths  = 0;
 	w->hr_zone[2][0].seconds = BCD(buf[27]);  /* Below zone 3, seconds */
 	w->hr_zone[2][0].minutes = BCD(buf[28]);  /* Below zone 3, minutes */
@@ -162,7 +166,7 @@ read_hr_limits ( workout_t * w, unsigned char * buf )
 
 
 static void
-read_bestlap_split ( workout_t * w, unsigned char * buf )
+workout_read_bestlap_split(workout_t * w, unsigned char * buf)
 {
 	w->bestlap_split.tenths  = UNIB(buf[0]);
 	w->bestlap_split.seconds = BCD(buf[1]);
@@ -172,7 +176,7 @@ read_bestlap_split ( workout_t * w, unsigned char * buf )
 
 
 static void
-read_energy ( workout_t * w, unsigned char * buf )
+workout_read_energy(workout_t * w, unsigned char * buf)
 {
 	w->energy       = BCD(buf[0])/10 + 10 * BCD(buf[1]) + 1000 * BCD(buf[2]);
 	w->total_energy = BCD(buf[3]) + 100 * BCD(buf[4]) + 10000 * BCD(buf[5]);
@@ -180,7 +184,7 @@ read_energy ( workout_t * w, unsigned char * buf )
 
 
 static void
-read_cumulative_exercise ( workout_t * w, unsigned char * buf )
+workout_read_cumulative_exercise(workout_t * w, unsigned char * buf)
 {
 	w->cumulative_exercise.tenths  = 0;
 	w->cumulative_exercise.seconds = 0;
@@ -190,7 +194,7 @@ read_cumulative_exercise ( workout_t * w, unsigned char * buf )
 
 
 static void
-read_ride_info( workout_t * w, unsigned char * buf )
+workout_read_ride_info(workout_t * w, unsigned char * buf)
 {
 	w->cumulative_ride.tenths      = 0;
 	w->cumulative_ride.seconds     = 0;
@@ -200,33 +204,25 @@ read_ride_info( workout_t * w, unsigned char * buf )
 	w->odometer = 10000 * BCD(buf[5]) + 100 * BCD(buf[4]) + BCD(buf[3]);
 
 	/* exercise distance */
-
 	w->exercise_distance = buf[6] + (buf[7]<<8);
 
 	/* avg and max speed */
-
 	w->avg_speed = buf[8] | ((buf[9] & 0xfUL) << 8);
 	w->max_speed = (buf[10] << 4) | (buf[9] >> 4);
 
 	/* avg, max cadence */
-
 	w->avg_cad  = buf[11];
 	w->max_cad  = buf[12];
 
 	/* min, avg, max temperature */
-
 	if ( w->units.system == S710_UNITS_ENGLISH ) {
-
 		/* English units */
-
 		w->min_temp = buf[19];
 		w->avg_temp = buf[20];
 		w->max_temp = buf[21];
 
 	} else {
-
 		/* Metric units */
-
 		w->min_temp = buf[19] & 0x7f;
 		w->min_temp = ( buf[19] & 0x80 ) ? w->min_temp : - w->min_temp;
     
@@ -238,7 +234,6 @@ read_ride_info( workout_t * w, unsigned char * buf )
 	}
 
 	/* altitude, ascent */
-
 	w->min_alt  = buf[13] + ((buf[14] & 0x7f)<<8);
 	w->min_alt  = ( buf[14] & 0x80 ) ? w->min_alt : - w->min_alt;
 
@@ -251,7 +246,6 @@ read_ride_info( workout_t * w, unsigned char * buf )
 	w->ascent   = (buf[23] << 8) + buf[22];
 
 	/* avg, max power data */
-
 	w->avg_power.power       = buf[24] + (LNIB(buf[25]) << 8);
 	w->max_power.power       = UNIB(buf[25]) + (buf[26] << 4);
 	w->avg_power.pedal_index = buf[27];
@@ -262,10 +256,11 @@ read_ride_info( workout_t * w, unsigned char * buf )
 }
 
 
-/* Extract the lap data. */
-
+/*
+ * Extract the lap data. 
+ */
 static void
-read_laps ( workout_t * w, unsigned char * buf )
+workout_read_laps(workout_t * w, unsigned char * buf)
 {
 	S710_Distance  prev_lap_dist;
 	S710_Altitude  prev_lap_ascent;
@@ -282,14 +277,11 @@ read_laps ( workout_t * w, unsigned char * buf )
 	w->lap_data     = calloc(w->laps,sizeof(lap_data_t));
 
 	for ( i = 0; i < w->laps; i++ ) {
-
 		/* position to the start of the lap */
-
 		offset = hdr_size + i * lap_size;
 		l = &w->lap_data[i];
 
 		/* timestamp (split) */
-
 		l->cumulative.hours   = buf[offset+2];
 		l->cumulative.minutes = buf[offset+1] & 0x3f;
 		l->cumulative.seconds = buf[offset] & 0x3f;
@@ -302,14 +294,12 @@ read_laps ( workout_t * w, unsigned char * buf )
 			diff_s710_time(&w->lap_data[i-1].cumulative,&l->cumulative,&l->split);
 
 		/* heart rate data */
-
 		l->lap_hr = buf[offset+3];
 		l->avg_hr = buf[offset+4];
 		l->max_hr = buf[offset+5];
 		offset += 6;
 
 		/* altitude data */
-
 		if ( S710_HAS_ALTITUDE(w->mode) ) {
 			l->alt = buf[offset] + (buf[offset+1]<<8) - 512;
 			/* This ascent data is cumulative from start of the exercise */
@@ -328,18 +318,14 @@ read_laps ( workout_t * w, unsigned char * buf )
 		}
 
 		/* bike data */
-
 		if ( S710_HAS_SPEED(w->mode) ) {
-
 			/* cadence data */
-
 			if ( S710_HAS_CADENCE(w->mode) ) { 
 				l->cad  = buf[offset]; 
 				offset += 1; 
 			}
 
 			/* next 4 bytes are power data */
-
 			if ( S710_HAS_POWER(w->mode) ) { 
 				l->power.power = buf[offset] + (buf[offset+1]<<8);
 				l->power.lr_balance  = buf[offset+3];   /* ??? switched  ??? */
@@ -348,27 +334,25 @@ read_laps ( workout_t * w, unsigned char * buf )
 			}
 
 			/* 
-			   next 4 bytes are distance/speed data
-			   this is cumulative distance from start (at least with S720i)
-			*/
-
+			 * next 4 bytes are distance/speed data
+			 * this is cumulative distance from start (at least with S720i)
+			 */
 			l->cumul_distance = buf[offset] + (buf[offset+1]<<8);
 			l->distance = l->cumul_distance - prev_lap_dist;
 			prev_lap_dist = l->cumul_distance;
 
 			/* 
-			   The offset + 2 appears to be 4b.4b, where the upper 4b is the
-			   integer portion of the speed and the lower 4b is the fractional
-			   portion in sixteenths.  I'm not sure where the most significant
-			   bits come from, but it might be the high order nibble of the next
-			   byte- lets try that.
+			 * The offset + 2 appears to be 4b.4b, where the upper 4b is the
+			 * integer portion of the speed and the lower 4b is the fractional
+			 * portion in sixteenths.  I'm not sure where the most significant
+			 * bits come from, but it might be the high order nibble of the next
+			 * byte- lets try that.
 			*/
-      
-			l->speed = buf[offset+2] + ((buf[offset+3] & 0xf0) << 4);
+      		l->speed = buf[offset+2] + ((buf[offset+3] & 0xf0) << 4);
 
 			/* fprintf(stderr, "distance/speed: %02x %02x %02x %02x\n",
 			   buf[offset], buf[offset+1], buf[offset+2], buf[offset+3]); */
-			/*  fprintf(stderr, "SPEED: %X\n", l->speed); */
+			/* fprintf(stderr, "SPEED: %X\n", l->speed); */
       
 		}
 	}
@@ -376,7 +360,7 @@ read_laps ( workout_t * w, unsigned char * buf )
 
 
 static int
-read_samples ( workout_t * w, unsigned char * buf )
+workout_read_samples(workout_t * w, unsigned char * buf)
 {
 	int            offset;
 	int            lap_size;
@@ -394,23 +378,17 @@ read_samples ( workout_t * w, unsigned char * buf )
 	if ( offset != 0 ) {
 
 		/* now add the offset due to laps */
-
 		offset += w->laps * lap_size;
 
 		/* number of samples */
-
 		w->samples = (w->bytes - offset)/sample_size;
 
 		/* allocate memory */
-
 		ok = allocate_sample_space(w);
 
 		/* if we succeeded in allocating the buffers, ok will not be 0 here. */
-
 		if ( ok ) {
-
 			/* At last, we can extract the samples.  They are in reverse order. */
-      
 			for ( i = 0; i < w->samples; i++ ) {
 				s = offset + i * sample_size;
 				x = w->samples - 1 - i;
@@ -450,7 +428,6 @@ read_samples ( workout_t * w, unsigned char * buf )
 		}
 	} else {
 		/* we don't know what kind of HRM this is */
-
 		ok = 0;
 	}
 
@@ -459,14 +436,13 @@ read_samples ( workout_t * w, unsigned char * buf )
 
 
 static void
-compute_speed_info ( workout_t * w )
+workout_compute_speed_info(workout_t * w)
 {
 	int    i;
 	int    j;
 	float  avg;
 
 	/* compute median speed and highest sampled speed */
-
 	if ( S710_HAS_SPEED(w->mode) ) {
 		avg = 0;
 		w->highest_speed = 0;
@@ -484,12 +460,11 @@ compute_speed_info ( workout_t * w )
 }
 
 
-/* don't call this unless you're sure it's going to be ok. */
-
+/* 
+ * don't call this unless you're sure it's going to be ok.
+ */
 static workout_t *
-extract_workout ( unsigned char *  buf, 
-		  S710_Filter      filter, 
-		  S710_HRM_Type    type )
+workout_extract(unsigned char *buf, S710_Filter filter, S710_HRM_Type type)
 {
 	workout_t * w  = NULL;
 	int         ok = 1;
@@ -501,14 +476,12 @@ extract_workout ( unsigned char *  buf,
 	}
 
 	/* Define the type of the HRM */
-
 	w->type = type;
 
 	/* Now extract the header data */
-
-	read_preamble(w,buf);
-	read_date(w,buf+10);
-	read_duration(w,buf+15);
+	workout_read_preamble(w,buf);
+	workout_read_date(w,buf+10);
+	workout_read_duration(w,buf+15);
 
 	w->avg_hr        = buf[19];
 	w->max_hr        = buf[20];
@@ -517,57 +490,56 @@ extract_workout ( unsigned char *  buf,
 	w->interval_mode = buf[23];
 	w->user_id       = BCD(buf[24]);
 
-	read_units(w,buf[25]);
+	workout_read_units(w,buf[25]);
 
 	/* recording mode and interval */
-
 	if ( w->type == S710_HRM_S610 ) {
 		w->mode = 0;
-		read_recording_interval  (w,buf+26);
-		read_hr_limits           (w,buf+28);
-		read_bestlap_split       (w,buf+65);
-		read_energy              (w,buf+69);
-		read_cumulative_exercise (w,buf+75);
+		workout_read_recording_interval  (w,buf+26);
+		workout_read_hr_limits           (w,buf+28);
+		workout_read_bestlap_split       (w,buf+65);
+		workout_read_energy              (w,buf+69);
+		workout_read_cumulative_exercise (w,buf+75);
 	} else {
 		w->mode = buf[26];
-		read_recording_interval  (w,buf+27);
-		read_hr_limits           (w,buf+29);
-		read_bestlap_split       (w,buf+66);
-		read_energy              (w,buf+70);
-		read_cumulative_exercise (w,buf+76);
-		read_ride_info           (w,buf+79);
+		workout_read_recording_interval  (w,buf+27);
+		workout_read_hr_limits           (w,buf+29);
+		workout_read_bestlap_split       (w,buf+66);
+		workout_read_energy              (w,buf+70);
+		workout_read_cumulative_exercise (w,buf+76);
+		workout_read_ride_info           (w,buf+79);
 	}
 
-	read_laps(w,buf);
-	ok = read_samples(w,buf);
+	workout_read_laps(w,buf);
+	ok = workout_read_samples(w,buf);
 
 	/* never let a partially allocated workout get through. */
-
 	if ( !ok ) {
 		free_workout(w);
 		return NULL;
 	}
 
-	/* if filtering was requested, filter the HR data and recompute
-	   avg/max HR values. */
-
+	/* 
+	 * if filtering was requested, filter the HR data and recompute
+	 * avg/max HR values.
+	 */
 	if ( filter == S710_FILTER_ON ) {
 		filter_workout(w);
 	}
 
-	compute_speed_info(w);
+	workout_compute_speed_info(w);
 
 	return w;
 }
 
 
 /* 
-   Attempt to auto-detect the HRM type based on some information in the file.
-   This may not always succeed, but it seems to work relatively well.
-*/
+ * Attempt to auto-detect the HRM type based on some information in the file.
+ * This may not always succeed, but it seems to work relatively well.
+ */
 
 static S710_HRM_Type
-detect_hrm_type ( unsigned char * buf, unsigned int bytes )
+workout_detect_hrm_type(unsigned char * buf, unsigned int bytes)
 {
 	S710_HRM_Type type = S710_HRM_UNKNOWN;
 	int           duration = 0;
@@ -579,40 +551,35 @@ detect_hrm_type ( unsigned char * buf, unsigned int bytes )
 	int           ri;
 
 	if ( buf[34] == 0 && buf[36] == 251 ) { 
-
 		/* this is a s610 HRM */
-
 		type = S710_HRM_S610;
-
 	} else if ( (buf[35] == 0 || buf[35] == 48) && buf[37] == 251 ) {
-    
 		/* this is either an s710 or s625x or...? */
-    
-		if ( (ri = get_recording_interval(buf[27])) != 0 ) {
-      
+
+		if ( (ri = workout_get_recording_interval(buf[27])) != 0 ) {
 			/* compute the number of bytes per sample and per lap */
-      
 			bps = bytes_per_sample(buf[26]);
 			bpl = bytes_per_lap(S710_HRM_UNKNOWN,buf[26],buf[23]);
       
 			/* obtain the number of laps and samples in the file */
-      
 			duration   = BCD(buf[16])+60*(BCD(buf[17])+60*BCD(buf[18]));
 			samples    = duration / ri + 1;
 			laps       = BCD(buf[21]);
       
 			/* now compute the size of the file header */
-      
 			header     = bytes - samples * bps - laps * bpl;
       
-			/* based on the header size, we can make a guess at
-			   the HRM type.  note that this will NOT work if the
-			   file was truncated due to the watch memory filling
-			   up before recording was stopped. */
+			/*
+			 * based on the header size, we can make a guess at the
+			 * HRM type. note that this will NOT work if the file was
+			 * truncated due to the watch memory filling up before
+			 * recording was stopped.
+			 */
       
-			/* assume it's an S710 unless the header size matches
-			   the S625x header size. */
-      
+			/* 
+			 * assume it's an S710 unless the header size matches
+			 * the S625x header size.
+			 */
 			if ( header == S710_HEADER_SIZE_S625X ) {
 				type = S710_HRM_S625X; 
 			} else {
@@ -626,7 +593,7 @@ detect_hrm_type ( unsigned char * buf, unsigned int bytes )
 
 
 workout_t *
-read_workout ( char *filename, S710_Filter filter, S710_HRM_Type type )
+workout_read(char *filename, S710_Filter filter, S710_HRM_Type type)
 {
 	int            fd;
 	struct stat    sb;
@@ -638,21 +605,18 @@ read_workout ( char *filename, S710_Filter filter, S710_HRM_Type type )
 			if ( sb.st_size < sizeof(buf) ) {
 				if ( read(fd,buf,sb.st_size) == sb.st_size ) {
 					if ( buf[0] + (buf[1]<<8) == sb.st_size ) {
-
 						/* 
-						   if type == S710_HRM_AUTO, try to guess the "real" type.
-						   we do this using some heuristics that may or may not be
-						   reliable. 
-						*/
-
+						 * if type == S710_HRM_AUTO, try to guess the "real" type.
+						 * we do this using some heuristics that may or may not be
+						 * reliable. 
+						 */
 						if ( type == S710_HRM_AUTO ) {
-							type = detect_hrm_type(buf,sb.st_size);
+							type = workout_detect_hrm_type(buf,sb.st_size);
 						}
 	    
 						/* we're good to go */
-
 						if ( type != S710_HRM_UNKNOWN ) {
-							w = extract_workout(buf,filter,type);
+							w = workout_extract(buf,filter,type);
 						} else {
 							fprintf(stderr,"%s: unable to auto-detect HRM type\n",
 									filename);

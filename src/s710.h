@@ -672,12 +672,10 @@ int  allocate_sample_space      ( workout_t * w );
 void free_workout               ( workout_t * w );
 
 /* workout_print.c */
-void	workout_print(workout_t * w, FILE * fp, int what);
+void		workout_print(workout_t * w, FILE * fp, int what);
 
 /* workout_read.c */
-workout_t * read_workout         ( char *          filename,
-								   S710_Filter     filter,
-								   S710_HRM_Type   type );
+workout_t*	workout_read(char* filename, S710_Filter filter, S710_HRM_Type type);
 
 /* filter.c */
 void filter_workout ( workout_t * w );

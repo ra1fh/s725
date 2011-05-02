@@ -45,7 +45,7 @@ main ( int argc, char **argv )
 
 	for ( i = 0; i < argc; i++ ) {
 		gettimeofday(&ti,NULL);
-		w = read_workout(argv[i],filter,S710_HRM_AUTO);
+		w = workout_read(argv[i],filter,S710_HRM_AUTO);
 		gettimeofday(&tf,NULL);
 		el = tf.tv_sec - ti.tv_sec + (tf.tv_usec-ti.tv_usec)/1000000.0;
 		if ( w != NULL ) {

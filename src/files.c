@@ -86,7 +86,7 @@ receive_file(struct s710_driver *d, files_t *file, log_cb* cb)
 	unsigned int   start;
 	unsigned int   offset = 0;
 
-	p = recv_packet(d);
+	p = packet_recv(d);
 	file->bytes = 0;
 	file->cursor = 0;
 
@@ -113,7 +113,7 @@ receive_file(struct s710_driver *d, files_t *file, log_cb* cb)
 		/* free this packet and get the next one */
 
 		free ( p );
-		p = recv_packet(d);
+		p = packet_recv(d);
 	}
 
 	if ( p_remaining != 0 ) ok = 0;

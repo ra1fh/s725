@@ -613,9 +613,8 @@ void          encode_label      ( S710_Label     label,
 								  int            bytes );
 
 /* comm.c */
-
-int       send_packet      ( packet_t *packet, struct s710_driver *d );
-packet_t *recv_packet      ( struct s710_driver *d );
+int       packet_send      (packet_t *packet, struct s710_driver *d);
+packet_t *packet_recv      (struct s710_driver *d);
 
 /* files.c */
 

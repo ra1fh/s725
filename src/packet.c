@@ -214,9 +214,9 @@ send_set_packet ( packet_t *p, struct s710_driver *d )
 	packet_t *response;
 	int       ok = 0;
 
-	send_packet(p,d);
+	packet_send(p,d);
 	free(p);
-	response = recv_packet(d);  
+	response = packet_recv(d);  
 
 	if ( response != NULL ) {
 		ok = 1;
@@ -237,8 +237,8 @@ get_response ( S710_Packet_Index request, struct s710_driver *d )
 
 	send = packet(request);
 
-	if ( send != NULL && send_packet(send,d) > 0 )
-		recv = recv_packet(d);
+	if ( send != NULL && packet_send(send,d) > 0 )
+		recv = packet_recv(d);
 	if ( recv == NULL ) {
 		if ( send != NULL ) {
 			if ( request != S710_CONTINUE_TRANSFER &&
@@ -258,7 +258,7 @@ get_response ( S710_Packet_Index request, struct s710_driver *d )
 void
 close_connection ( struct s710_driver *d )
 {
-	send_packet(packet(S710_CLOSE_CONNECTION),d);
+	packet_send(packet(S710_CLOSE_CONNECTION),d);
 	printf("\nConnection closed\n\n");
 }
 

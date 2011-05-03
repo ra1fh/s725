@@ -14,13 +14,13 @@
 /* static helper functions */
 static int recv_short(unsigned short *s, struct s710_driver *d);
 static unsigned short packet_checksum(packet_t *p);
-static int serialize_packet(packet_t *p, unsigned char *buf);
+static int packet_serialize(packet_t *p, unsigned char *buf);
 
 /* 
  * send a packet via the S710 driver
  */
 int 
-send_packet ( packet_t *p, struct s710_driver *d )
+packet_send(packet_t *p, struct s710_driver *d)
 {
 	int           ret = 1;
 	unsigned char serialized[BUFSIZ];
@@ -30,7 +30,7 @@ send_packet ( packet_t *p, struct s710_driver *d )
 	p->checksum = packet_checksum(p);
   
 	/* next, serialize the packet into a stream of bytes */
-	bytes = serialize_packet ( p, serialized );
+	bytes = packet_serialize(p, serialized);
 
 	ret = driver_write(d, serialized, bytes);
 
@@ -42,7 +42,7 @@ send_packet ( packet_t *p, struct s710_driver *d )
  * receive a packet from the S710 driver (allocates memory)
  */
 packet_t *
-recv_packet ( struct s710_driver *d ) {
+packet_recv(struct s710_driver *d) {
 	int             r;
 	int             i;
 	unsigned char   c = 0;
@@ -114,7 +114,7 @@ recv_packet ( struct s710_driver *d ) {
  * read a short from fd
  */
 static int
-recv_short ( unsigned short *s, struct s710_driver *d )
+recv_short(unsigned short *s, struct s710_driver *d)
 {
 	int           r = 0;
 	unsigned char u = 0;
@@ -129,7 +129,7 @@ recv_short ( unsigned short *s, struct s710_driver *d )
 }
 
 static unsigned short
-packet_checksum ( packet_t *p )
+packet_checksum(packet_t *p)
 {
 	unsigned short crc = 0;
 
@@ -142,9 +142,8 @@ packet_checksum ( packet_t *p )
 	return crc;
 }
 
-
 static int
-serialize_packet ( packet_t *p, unsigned char *buf )
+packet_serialize(packet_t *p, unsigned char *buf)
 {
 	unsigned short l = p->length + 5;
 

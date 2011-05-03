@@ -9,15 +9,15 @@
 #include <fcntl.h>
 #include "s710.h"
 
-/* This file needs to be rewritten after I figure out how to get the damn
-   serial port to work for everybody! */
-
 #define SERIAL_READ_TRIES 10
+
+unsigned char gByteMap[256];
+
+static void compute_byte_map(void);
 
 int
 ir_init(struct s710_driver *d, S710_Mode mode)
 {
-	compute_byte_map();
 	return serial_init(d, mode);
 }
 
@@ -77,6 +77,7 @@ serial_init(struct s710_driver *d, S710_Mode mode)
 {
 	struct termios t;
 	int fd;
+	compute_byte_map();
 
 	fd = open(d->path, O_RDWR | O_NOCTTY | O_NDELAY); 
 	if ( fd < 0 ) { 
@@ -172,3 +173,16 @@ serial_read_byte(struct s710_driver *d, unsigned char *byte)
 
 	return r;
 }
+
+static void
+compute_byte_map(void)
+{
+	int i, j, m;
+
+	for ( i = 0; i < 0x100; i++ ) {
+		m = !(i & 1);
+		for (j=7;j>0;j--) m |= ((i+0x100-(1<<(j-1)))&0xff) & (1<<j);
+		gByteMap[m] = i;
+	}
+}
+

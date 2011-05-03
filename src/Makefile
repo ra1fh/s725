@@ -20,7 +20,7 @@ INSTALLDIR= install -d
 INSTALLBIN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 555
 INSTALLMAN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 444
 
-S710GET_SRCS = driver.c files.c byte_map.c serial.c usb.c packet.c  \
+S710GET_SRCS = driver.c files.c serial.c usb.c packet.c  \
 	comm.c crc.c
 
 SRDCAT_SRCS = alpha_map.c workout_filter.c time.c \

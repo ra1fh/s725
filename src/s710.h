@@ -574,12 +574,6 @@ typedef struct attribute_map_t {
 	int                     oosync;
 } attribute_map_t;
 
-
-/* externs */
-
-extern unsigned char gByteMap[256];
-
-
 /* function prototypes */
 
 /* driver.c */
@@ -588,10 +582,6 @@ int       driver_open  (struct s710_driver *d, S710_Mode mode );
 int		  driver_write (struct s710_driver *d, unsigned char *buf, size_t nbytes);
 int       driver_read_byte(struct s710_driver *d, unsigned char *b);
 int       driver_close (struct s710_driver *d );
-
-/* byte_map.c */
-
-void      compute_byte_map ( void );
 
 /* serial.c */
 int       ir_init(struct s710_driver *d, S710_Mode mode);

@@ -33,10 +33,6 @@ PROG_SRCS= $(patsubst %,%.c,$(PROGS))
 
 LIBS+= 
 
-DEFS+= -DS710_HRM_MAX_HR=206
-DEFS+= -DS710_HRM_REST_HR=60
-DEFS+= -DS710_FILEDIR=\"/var/polar/raw\"
-
 S710GET_OBJS= $(patsubst %.c,%.o,$(S710GET_SRCS))
 SRDCAT_OBJS= $(patsubst %.c,%.o,$(SRDCAT_SRCS))
 SRDHEAD_OBJS= $(patsubst %.c,%.o,$(SRDHEAD_SRCS))
@@ -55,17 +51,11 @@ endif
 
 ifdef DEBUG
 CFLAGS+= -g -ggdb -DDEBUG
-DEFS+= -DBUILD="\"$(VERSION) ($(DATE))\""
-else
-DEFS+= -DBUILD="\"$(VERSION)\""
 endif
 
 COMPAT_OBJS= $(patsubst %.c,%.o,$(COMPAT_SRCS))
 
-CFLAGS+= -Wno-long-long -Wall -W -Wnested-externs -Wformat=2
-CFLAGS+= -Wmissing-prototypes -Wstrict-prototypes -Wmissing-declarations
-CFLAGS+= -Wwrite-strings -Wshadow -Wpointer-arith -Wcast-qual -Wsign-compare
-CFLAGS+= -Wundef -Wshadow -Wbad-function-cast -Winline -Wcast-align
+CFLAGS+= -Wall
 
 CLEANFILES= $(S710GET_OBJS) $(SRDCAT_OBJS) $(SRDHEAD_OBJS) $(PROGS) $(PROG_OBJS) $(COMPAT_OBJS) .depend
 

@@ -15,48 +15,48 @@ extern int   optind;
 
 static void
 usage(void) {
-  fprintf(stderr, "usage: srdhead [-fh] <srd...>\n");
+	fprintf(stderr, "usage: srdhead [-fh] <srd...>\n");
 }
 
 int
 main ( int argc, char **argv )
 {
-  int              i;
-  workout_t       *w;
-  struct timeval   ti;
-  struct timeval   tf;
-  float            el;
-  int              ch;
-  S710_Filter      filter = S710_FILTER_OFF;
+	int              i;
+	workout_t       *w;
+	struct timeval   ti;
+	struct timeval   tf;
+	float            el;
+	int              ch;
+	S710_Filter      filter = S710_FILTER_OFF;
 
-  while ( (ch = getopt(argc,argv,"fh")) != -1 ) {
-    switch (ch) {
-    case 'f':
-      filter = S710_FILTER_ON;
-      break;
-    case 'h':
-      usage();
-      exit(0);
-      break;
-    }
-  }
-  argc -= optind;
-  argv += optind;
+	while ( (ch = getopt(argc,argv,"fh")) != -1 ) {
+		switch (ch) {
+		case 'f':
+			filter = S710_FILTER_ON;
+			break;
+		case 'h':
+			usage();
+			exit(0);
+			break;
+		}
+	}
+	argc -= optind;
+	argv += optind;
 
-  for ( i = 0; i < argc; i++ ) {
-    gettimeofday(&ti,NULL);
-    w = workout_read(argv[i],filter,S710_HRM_AUTO);
-    gettimeofday(&tf,NULL);
-    el = tf.tv_sec - ti.tv_sec + (tf.tv_usec-ti.tv_usec)/1000000.0;
-    if ( w != NULL ) {
-      printf("\nPrinting workout header in %s [loaded in %f seconds]:\n\n",
-	     argv[i],el);
-      workout_print(w,stdout,S710_WORKOUT_HEADER|S710_WORKOUT_LAPS);
-      workout_free(w);
-    } else {
-      printf("%s: invalid file\n",argv[i]);
-    }
-  }
+	for ( i = 0; i < argc; i++ ) {
+		gettimeofday(&ti,NULL);
+		w = workout_read(argv[i],filter,S710_HRM_AUTO);
+		gettimeofday(&tf,NULL);
+		el = tf.tv_sec - ti.tv_sec + (tf.tv_usec-ti.tv_usec)/1000000.0;
+		if ( w != NULL ) {
+			printf("\nPrinting workout header in %s [loaded in %f seconds]:\n\n",
+				   argv[i],el);
+			workout_print(w,stdout,S710_WORKOUT_HEADER|S710_WORKOUT_LAPS);
+			workout_free(w);
+		} else {
+			printf("%s: invalid file\n",argv[i]);
+		}
+	}
 
-  return 0;
+	return 0;
 }

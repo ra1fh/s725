@@ -604,13 +604,9 @@ void crc_block   ( unsigned short      * context,
 				   const unsigned char * blk,
 				   int                   len );
 
-/* alpha_map.c */
-void          extract_label     ( unsigned char *buf,
-								  S710_Label    *label,
-								  int            bytes );
-void          encode_label      ( S710_Label     label,
-								  unsigned char *buf,
-								  int            bytes );
+/* label.c */
+void      label_extract(unsigned char *buf, S710_Label *label, int bytes);
+void      label_encode(S710_Label label, unsigned char *buf, int bytes);
 
 /* comm.c */
 int       packet_send      (packet_t *packet, struct s710_driver *d);

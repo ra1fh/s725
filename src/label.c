@@ -1,8 +1,40 @@
+/*
+ * decode a name or label character
+ */
+
 #include <string.h>
 #include "s710.h"
 
+static char alpha_map(unsigned char c);
+static unsigned char inverse_alpha_map(char c);
 
-/* decode a name or label character */
+void
+label_extract(unsigned char *buf, S710_Label *label, int bytes)
+{
+	int   i;
+	char *p = (char *)label;
+
+	for ( i = 0; i < bytes && i < (int) sizeof(S710_Label)-1; i++ ) {
+		*(p+i) = alpha_map(buf[i]);
+	}
+
+	*(p+i) = 0;
+}
+
+void
+label_encode(S710_Label label, unsigned char *buf, int bytes)
+{
+	int   i;
+	unsigned char *p = buf;
+
+	/* initialize to all spaces */
+	memset(buf,10,bytes);
+
+	/* now encode the actual characters */
+	for ( i = 0; i < bytes && i < (int) sizeof(S710_Label)-1; i++ ) {
+		*(p+i) = inverse_alpha_map(label[i]);
+	}
+}
 
 static char
 alpha_map ( unsigned char c )
@@ -93,36 +125,4 @@ inverse_alpha_map ( char c )
 	}
 
 	return a;
-}
-
-
-void
-extract_label ( unsigned char *buf, S710_Label *label, int bytes )
-{
-	int   i;
-	char *p = (char *)label;
-
-	for ( i = 0; i < bytes && i < (int) sizeof(S710_Label)-1; i++ ) {
-		*(p+i) = alpha_map(buf[i]);
-	}
-
-	*(p+i) = 0;
-}
-
-
-void
-encode_label ( S710_Label label, unsigned char *buf, int bytes )
-{
-	int   i;
-	unsigned char *p = buf;
-
-	/* initialize to all spaces */
-
-	memset(buf,10,bytes);
-
-	/* now encode the actual characters */
-
-	for ( i = 0; i < bytes && i < (int) sizeof(S710_Label)-1; i++ ) {
-		*(p+i) = inverse_alpha_map(label[i]);
-	}
 }

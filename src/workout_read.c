@@ -32,7 +32,7 @@ workout_read_preamble(workout_t * w, unsigned char * buf)
 
 	w->exercise_number = buf[2];
 	if ( w->exercise_number > 0 && w->exercise_number <= 5 ) {
-		extract_label(&buf[3],&w->exercise_label,7);
+		label_extract(&buf[3],&w->exercise_label,7);
 	} else {
 		strlcpy(w->exercise_label,"<empty>", sizeof(w->exercise_label));
 	}

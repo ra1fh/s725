@@ -12,7 +12,7 @@
 #define READ_TRIES   10
 
 /* static helper functions */
-static int recv_short(unsigned short *s, struct s710_driver *d);
+static int packet_recv_short(unsigned short *s, struct s710_driver *d);
 static unsigned short packet_checksum(packet_t *p);
 static int packet_serialize(packet_t *p, unsigned char *buf);
 
@@ -59,7 +59,7 @@ packet_recv(struct s710_driver *d) {
 		crc_process ( &crc, id );
 		r = driver_read_byte(d, &c);
 		crc_process ( &crc, c );
-		r = recv_short ( &len, d );
+		r = packet_recv_short ( &len, d );
 		crc_process ( &crc, len >> 8 );
 		crc_process ( &crc, len & 0xff );
 		if ( r ) {
@@ -85,7 +85,7 @@ packet_recv(struct s710_driver *d) {
 					}
 				}
 				if ( p != NULL ) {
-					recv_short ( &p->checksum, d );
+					packet_recv_short ( &p->checksum, d );
 
 					if ( crc != p->checksum ) {
 	    
@@ -113,7 +113,7 @@ packet_recv(struct s710_driver *d) {
  * read a short from fd
  */
 static int
-recv_short(unsigned short *s, struct s710_driver *d)
+packet_recv_short(unsigned short *s, struct s710_driver *d)
 {
 	int           r = 0;
 	unsigned char u = 0;

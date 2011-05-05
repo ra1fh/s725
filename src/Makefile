@@ -1,5 +1,5 @@
 
-.PHONY: clean
+.PHONY: clean doxygen egypt
 
 VERSION= 0.1
 DATE= $(shell date +%Y%m%d-%H%M)
@@ -57,6 +57,10 @@ COMPAT_OBJS= $(patsubst %.c,%.o,$(COMPAT_SRCS))
 
 CFLAGS+= -Wall
 
+ifdef EGYPT
+CFLAGS+= -fdump-rtl-expand 
+endif
+
 CLEANFILES= $(S710GET_OBJS) $(SRDCAT_OBJS) $(SRDHEAD_OBJS) $(PROGS) $(PROG_OBJS) $(COMPAT_OBJS) .depend
 
 all: $(PROGS)
@@ -73,8 +77,14 @@ srdhead: srdhead.o $(SRDHEAD_OBJS) $(COMPAT_OBJS)
 depend: $(S710GET_SRCS) $(SRDCAT_SRCS) $(SRDHEAD_SRCS)
 	$(CC) $(CPPFLAGS) -MM $+ > .depend
 
+doxygen:
+	doxygen Doxyfile
+
+egypt:
+	egypt *.expand | dot -Tpng > callgraph.png
+
 clean:
-	rm -rf $(CLEANFILES)
+	rm -rf $(CLEANFILES) *.104r.expand callgraph.png
 
 install:
 	$(INSTALLDIR) $(DESTDIR)$(PREFIX)/bin

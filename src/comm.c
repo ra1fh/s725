@@ -37,7 +37,6 @@ packet_send(packet_t *p, struct s710_driver *d)
 	return ret != -1;
 }
 
-
 /*
  * receive a packet from the S710 driver (allocates memory)
  */

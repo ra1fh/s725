@@ -1,5 +1,8 @@
-#include <unistd.h>
+
+#include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+
 #include "s710.h"
 
 static struct s710_driver_ops serial_driver_ops = {

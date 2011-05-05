@@ -1,9 +1,9 @@
 #ifndef __S710_H__
 #define __S710_H__
 
-#include <stdio.h>
 #include <limits.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <time.h>
 
 /* constants */

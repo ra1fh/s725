@@ -623,14 +623,9 @@ void      print_files      ( files_t *f, log_cb *cb);
 time_t    file_timestamp   ( unsigned char *data );
 
 /* packet.c */
-
-int       num_packets      ( void );
-packet_t *packet           ( S710_Packet_Index idx );
-packet_t *make_set_packet  ( S710_Packet_Index idx );
-int       send_set_packet  ( packet_t *pkt, struct s710_driver *d );
-packet_t *get_response     ( S710_Packet_Index request, struct s710_driver *d );
-void      close_connection ( struct s710_driver *d );
-void      print_packet     ( packet_t *pkt, FILE *fp );
+packet_t *packet_get(S710_Packet_Index idx);
+packet_t *packet_get_response(S710_Packet_Index request, struct s710_driver *d);
+void      packet_print(packet_t *pkt, FILE *fp);
 
 /* time.c */
 void   		print_s710_time(S710_Time* t, const char *format, FILE *fp);

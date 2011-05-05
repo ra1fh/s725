@@ -162,80 +162,24 @@ static packet_t gPacket[] = {
 
 static int gNumPackets = sizeof(gPacket)/sizeof(gPacket[0]);
 
-
-int
-num_packets ( void )
-{
-	return gNumPackets;
-}
-
-
 /* return a packet pointer for a given packet index */
 
 packet_t *
-packet ( S710_Packet_Index idx )
+packet_get ( S710_Packet_Index idx )
 {
 	return ( idx > S710_PACKET_INDEX_INVALID && idx < gNumPackets ) ? &gPacket[idx] : NULL;
-}
-
-
-/* return a (memory-allocated) packet pointer for a "set" packet */
-
-packet_t *
-make_set_packet ( S710_Packet_Index idx )
-{
-	packet_t     *p = NULL;
-	int  lower = S710_SET_USER;
-	int  upper = S710_SET_REMINDER_7;
-
-	if ( idx >= lower && idx <= upper ) {
-		p = calloc(1,sizeof(packet_t) + gPacket[idx].length);
-		if ( p != NULL ) {
-			memcpy(p,&gPacket[idx],sizeof(packet_t));
-		} else {
-			fprintf(stderr,"calloc(1,%ld): %s\n",
-					(long)(sizeof(packet_t) + gPacket[idx].length),
-					strerror(errno));
-		}
-	} else {
-		fprintf(stderr,"make_set_packet: idx %d outside of [%d,%d]\n",
-				idx,lower,upper);
-	}
-
-	return p;
-}
-
-
-/* send and free a "set" packet, read response - return 1 if ok, 0 if not. */
-
-int
-send_set_packet ( packet_t *p, struct s710_driver *d )
-{
-	packet_t *response;
-	int       ok = 0;
-
-	packet_send(p,d);
-	free(p);
-	response = packet_recv(d);  
-
-	if ( response != NULL ) {
-		ok = 1;
-		free ( response );
-	}
-  
-	return ok;
 }
 
 
 /* get a single-packet response to a request */
 
 packet_t *
-get_response ( S710_Packet_Index request, struct s710_driver *d )
+packet_get_response(S710_Packet_Index request, struct s710_driver *d)
 {
 	packet_t *send;
 	packet_t *recv = NULL;
 
-	send = packet(request);
+	send = packet_get(request);
 
 	if ( send != NULL && packet_send(send,d) > 0 )
 		recv = packet_recv(d);
@@ -254,17 +198,8 @@ get_response ( S710_Packet_Index request, struct s710_driver *d )
 	return recv;
 }
 
-
 void
-close_connection ( struct s710_driver *d )
-{
-	packet_send(packet(S710_CLOSE_CONNECTION),d);
-	printf("\nConnection closed\n\n");
-}
-
-
-void
-print_packet ( packet_t *p, FILE *fp )
+packet_print(packet_t *p, FILE *fp)
 {
 	int i;
 

@@ -40,7 +40,7 @@ get_files ( struct s710_driver *d, files_t *files, FILE *fp )
 		print_hash_marks(0,0,fp);
 	}
 
-	p = get_response(S710_GET_FILES,d);
+	p = packet_get_response(S710_GET_FILES,d);
 	files->bytes = 0;
 	files->cursor = 0;
 
@@ -67,7 +67,7 @@ get_files ( struct s710_driver *d, files_t *files, FILE *fp )
 		/* free this packet and get the next one */
 
 		free ( p );
-		p = get_response(S710_CONTINUE_TRANSFER,d);
+		p = packet_get_response(S710_CONTINUE_TRANSFER,d);
 	}
 
 	if ( fp != NULL ) fprintf(fp,"\n\n");

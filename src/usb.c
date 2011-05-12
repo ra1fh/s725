@@ -180,22 +180,16 @@ send_packet_usb(struct s710_driver *d, unsigned char *serialized, size_t bytes)
 	int  ret = 0;
 	struct s710_usb_data *data = (struct s710_usb_data *)d->data;
 
-	if ( d->type == S710_DRIVER_USB ) {
+	/* packets are sent via USB control transfers. */
 
-		/* packets are sent via USB control transfers. */
-
-		ret = usb_control_msg(data->handle,
-							  0x43,
-							  0x01,
-							  0x0801,
-							  0x0000,
-							  (char *)serialized,
-							  bytes,
-							  1000);
-
-	} else {
-		fprintf(stderr,"Driver is not USB, no USB communication possible.\n");
-	}
+	ret = usb_control_msg(data->handle,
+						  0x43,
+						  0x01,
+						  0x0801,
+						  0x0000,
+						  (char *)serialized,
+						  bytes,
+						  1000);
 
 	return ret;
 }

@@ -617,7 +617,6 @@ packet_t *packet_recv      (struct s710_driver *d);
 typedef void (log_cb)(unsigned int level, const char *fmt, ...);
 
 int       get_files        ( struct s710_driver *d, files_t *files, FILE *fp );
-int       receive_file     ( struct s710_driver *d, files_t *file, log_cb *cb);
 int       save_files       ( files_t *f, const char *dir, log_cb *cb);
 void      print_files      ( files_t *f, log_cb *cb);
 time_t    file_timestamp   ( unsigned char *data );

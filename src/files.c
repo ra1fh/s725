@@ -77,53 +77,6 @@ get_files ( struct s710_driver *d, files_t *files, FILE *fp )
 }
 
 
-int
-receive_file(struct s710_driver *d, files_t *file, log_cb* cb)
-{
-	packet_t      *p;
-	int            ok = 0;
-	int            p_remaining = 1;
-	unsigned int   start;
-	unsigned int   offset = 0;
-
-	p = packet_recv(d);
-	file->bytes = 0;
-	file->cursor = 0;
-
-	if ( p != NULL ) ok = 1;
-
-	while ( p != NULL ) {
-
-		/* handle this packet */
-
-		p_remaining = p->data[0] & 0x7f;
-		if ( p->data[0] & 0x80 ) {
-			file->bytes = (p->data[1] << 8) + p->data[2];
-			start = 5;
-		} else {
-			start = 1;
-		}
-
-		memcpy(&file->data[offset],&p->data[start],p->length - start);
-		offset += p->length - start;
-		if (cb) {
-			cb(1, "transferred %d/%d bytes\n", offset, file->bytes);
-		}
-
-		/* free this packet and get the next one */
-
-		free ( p );
-		p = packet_recv(d);
-	}
-
-	if ( p_remaining != 0 ) ok = 0;
-
-	return ok;
-}
-
-
-
-
 /* 
    FIX ME!!!! 
 

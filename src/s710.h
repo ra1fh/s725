@@ -248,7 +248,6 @@ typedef enum {
 
 #define CLAMP(a,b,c) if((a)<(b))(a)=(b);if((a)>(c))(a)=(c)
 
-
 /* structure and type definitions */
 struct s710_driver;
 
@@ -577,11 +576,11 @@ typedef struct attribute_map_t {
 /* function prototypes */
 
 /* driver.c */
-int       driver_init  (const char *driver_name, const char *device, struct s710_driver *d );
-int       driver_open  (struct s710_driver *d, S710_Mode mode );
-int		  driver_write (struct s710_driver *d, unsigned char *buf, size_t nbytes);
-int       driver_read_byte(struct s710_driver *d, unsigned char *b);
-int       driver_close (struct s710_driver *d );
+int		 driver_init(const char *driver_name, const char *device);
+int		 driver_open(S710_Mode mode );
+int		 driver_write(unsigned char *buf, size_t nbytes);
+int		 driver_read_byte(unsigned char *b);
+int		 driver_close();
 
 /* serial.c */
 int       ir_init(struct s710_driver *d, S710_Mode mode);
@@ -609,21 +608,21 @@ void      label_extract(unsigned char *buf, S710_Label *label, int bytes);
 void      label_encode(S710_Label label, unsigned char *buf, int bytes);
 
 /* comm.c */
-int       packet_send      (packet_t *packet, struct s710_driver *d);
-packet_t *packet_recv      (struct s710_driver *d);
+int       packet_send(packet_t *packet);
+packet_t *packet_recv();
 
 /* files.c */
 
 typedef void (log_cb)(unsigned int level, const char *fmt, ...);
 
-int       get_files        ( struct s710_driver *d, files_t *files, FILE *fp );
-int       save_files       ( files_t *f, const char *dir, log_cb *cb);
-void      print_files      ( files_t *f, log_cb *cb);
-time_t    file_timestamp   ( unsigned char *data );
+int       get_files(files_t *files, FILE *fp);
+int       save_files(files_t *f, const char *dir, log_cb *cb);
+void      print_files(files_t *f, log_cb *cb);
+time_t    file_timestamp(unsigned char *data);
 
 /* packet.c */
 packet_t *packet_get(S710_Packet_Index idx);
-packet_t *packet_get_response(S710_Packet_Index request, struct s710_driver *d);
+packet_t *packet_get_response(S710_Packet_Index request);
 void      packet_print(packet_t *pkt, FILE *fp);
 
 /* time.c */

@@ -1,12 +1,13 @@
-#include <stdio.h>
-#include <limits.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <stdarg.h>
+
 #include <ctype.h>
+#include <errno.h>
+#include <limits.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "s710.h"
 
@@ -29,7 +30,6 @@ main(int argc, char **argv)
 	const char		 *filedir = NULL;
 	char			  path[PATH_MAX];
 	int				  ok;
-	struct s710_driver d;
 	const char		 *driver_name = "ir";
 	const char		 *device = NULL;
 	int				  ch;
@@ -56,7 +56,7 @@ main(int argc, char **argv)
 	argv += optind;
 	device = argv[0];
 
-	ok = driver_init (driver_name , device, &d );
+	ok = driver_init (driver_name , device);
 
 	if ( ok != 1 ) {
 		printf("problem with driver_init\n");
@@ -78,17 +78,17 @@ main(int argc, char **argv)
 		return 1;
 	}
 
-	if ( driver_open ( &d, S710_MODE_RDWR ) < 0 ) {
+	if (driver_open(S710_MODE_RDWR) < 0) {
 		fprintf(stderr,"unable to open port: %s\n",strerror(errno));
 		return 1;
 	}
 
-	if (get_files(&d,&files,stdout)) {
+	if (get_files(&files,stdout)) {
 		save_files(&files, filedir, s710sh_log);
 		print_files(&files, s710sh_log); 
 	}
 
-	driver_close(&d);
+	driver_close();
 	return 0;
 }
 

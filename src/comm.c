@@ -20,7 +20,7 @@ static int packet_serialize(packet_t *p, unsigned char *buf);
  * send a packet via the S710 driver
  */
 int 
-packet_send(packet_t *p, struct s710_driver *d)
+packet_send(packet_t *p)
 {
 	int           ret = 1;
 	unsigned char serialized[BUFSIZ];
@@ -32,7 +32,7 @@ packet_send(packet_t *p, struct s710_driver *d)
 	/* next, serialize the packet into a stream of bytes */
 	bytes = packet_serialize(p, serialized);
 
-	ret = driver_write(d, serialized, bytes);
+	ret = driver_write(serialized, bytes);
 
 	return ret != -1;
 }
@@ -51,13 +51,13 @@ packet_recv(struct s710_driver *d) {
 	packet_t       *p = NULL;
 	unsigned short  crc = 0;
 
-	r = driver_read_byte(d, &c);
+	r = driver_read_byte(&c);
 	crc_process ( &crc, c );
 
 	if ( c == S710_RESPONSE ) {
-		r = driver_read_byte(d, &id);
+		r = driver_read_byte(&id);
 		crc_process ( &crc, id );
-		r = driver_read_byte(d, &c);
+		r = driver_read_byte(&c);
 		crc_process ( &crc, c );
 		r = packet_recv_short ( &len, d );
 		crc_process ( &crc, len >> 8 );
@@ -75,7 +75,7 @@ packet_recv(struct s710_driver *d) {
 				p->id     = id;
 				p->length = len;
 				for ( i = 0; i < len; i++ ) {
-					r = driver_read_byte(d, &p->data[i]);
+					r = driver_read_byte(&p->data[i]);
 					crc_process ( &crc, p->data[i] );
 					if ( !r ) {
 						fprintf(stderr, "driver_read_byte failed\n");
@@ -119,8 +119,8 @@ packet_recv_short(unsigned short *s, struct s710_driver *d)
 	unsigned char u = 0;
 	unsigned char l = 0;
 
-	r = driver_read_byte(d, &u);
-	r = driver_read_byte(d, &l);
+	r = driver_read_byte(&u);
+	r = driver_read_byte(&l);
 
 	*s = (unsigned short)(u<<8)|l;
 

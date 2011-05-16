@@ -170,19 +170,18 @@ packet_get ( S710_Packet_Index idx )
 	return ( idx > S710_PACKET_INDEX_INVALID && idx < gNumPackets ) ? &gPacket[idx] : NULL;
 }
 
-
 /* get a single-packet response to a request */
 
 packet_t *
-packet_get_response(S710_Packet_Index request, struct s710_driver *d)
+packet_get_response(S710_Packet_Index request)
 {
 	packet_t *send;
 	packet_t *recv = NULL;
 
 	send = packet_get(request);
 
-	if ( send != NULL && packet_send(send,d) > 0 )
-		recv = packet_recv(d);
+	if (send != NULL && packet_send(send) > 0)
+		recv = packet_recv();
 	if ( recv == NULL ) {
 		if ( send != NULL ) {
 			if ( request != S710_CONTINUE_TRANSFER &&

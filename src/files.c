@@ -1,30 +1,31 @@
-#include <err.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-#include "s710.h"
 
+#include <sys/stat.h>
+#include <sys/types.h>
+
+#include <err.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "s710.h"
 
 #define HASH_MARKS   40
 
-
-static void   prep_hash_marks  ( FILE *fp );
-static void   print_hash_marks ( float pct, int bytes, FILE *fp );
+static void   prep_hash_marks(FILE *fp);
+static void   print_hash_marks(float pct, int bytes, FILE *fp);
 
 /* 
-   This function reads the user's workout data from the watch and stores
-   it in a structure which is nothing more than a giant byte array.  The
-   function, unfortunately, is error-prone because we don't have any good
-   way to check integrity of the data.  
-*/
+ * This function reads the user's workout data from the watch and stores
+ * it in a structure which is nothing more than a giant byte array.  The
+ * function, unfortunately, is error-prone because we don't have any good
+ * way to check integrity of the data.  
+ */
 
 int
-get_files ( struct s710_driver *d, files_t *files, FILE *fp )
+get_files(files_t *files, FILE *fp)
 {
 	packet_t      *p;
 	int            ok = 0;
@@ -34,25 +35,25 @@ get_files ( struct s710_driver *d, files_t *files, FILE *fp )
 
 	/* send the first packet - S710_GET_FILES */
 
-	if ( fp != NULL ) {
+	if (fp != NULL) {
 		fprintf(fp,"\nReading ");
 		prep_hash_marks(fp);
 		print_hash_marks(0,0,fp);
 	}
 
-	p = packet_get_response(S710_GET_FILES,d);
+	p = packet_get_response(S710_GET_FILES);
 	files->bytes = 0;
 	files->cursor = 0;
 
-	if ( p != NULL ) ok = 1;
-	else if ( fp != NULL ) fprintf(fp,"[error]");
+	if (p != NULL)
+		ok = 1;
+	else if (fp != NULL)
+		fprintf(fp,"[error]");
 
-	while ( p != NULL ) {
-
+	while (p != NULL) {
 		/* handle this packet */
-
 		p_remaining = p->data[0] & 0x7f;
-		if ( p->data[0] & 0x80 ) {
+		if (p->data[0] & 0x80) {
 			files->bytes = (p->data[1] << 8) + p->data[2];
 			start = 5;
 		} else {
@@ -61,17 +62,19 @@ get_files ( struct s710_driver *d, files_t *files, FILE *fp )
 
 		memcpy(&files->data[offset],&p->data[start],p->length - start);
 		offset += p->length - start;
-		if ( fp != NULL && files->bytes > 0 ) 
+		if (fp != NULL && files->bytes > 0) 
 			print_hash_marks((float)offset/files->bytes,files->bytes,fp);
 
 		/* free this packet and get the next one */
-
-		free ( p );
-		p = packet_get_response(S710_CONTINUE_TRANSFER,d);
+		free(p);
+		p = packet_get_response(S710_CONTINUE_TRANSFER);
 	}
 
-	if ( fp != NULL ) fprintf(fp,"\n\n");
-	if ( p_remaining != 0 ) ok = 0;
+	if (fp != NULL)
+		fprintf(fp,"\n\n");
+
+	if (p_remaining != 0)
+		ok = 0;
 
 	return ok;
 }

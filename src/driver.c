@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -26,31 +27,41 @@ static struct s710_driver_ops usb_driver_ops = {
 	.close = NULL,
 };
 
+static struct s710_driver *driver;
+
 int
-driver_init (const char *driver_name, const char *device, struct s710_driver *d)
+driver_init (const char *driver_name, const char *device)
 {
 	int  init = 0;
 	int  needpath = 1;
 
-	d->type = S710_DRIVER_SERIAL;
+	if (driver)
+		return 0;
+	
+	driver = malloc(sizeof(struct s710_driver));
+	if (!driver)
+		return 0;
+
+	bzero(driver, sizeof(struct s710_driver));
+	driver->type = S710_DRIVER_SERIAL;
 
 	if (driver_name) {
 		if ( !strcmp(driver_name,"serial") ) {
-			d->type = S710_DRIVER_SERIAL;
-			d->dops = &serial_driver_ops;
+			driver->type = S710_DRIVER_SERIAL;
+			driver->dops = &serial_driver_ops;
 		} else if ( !strcmp(driver_name,"ir") ) {
-			d->type = S710_DRIVER_IR;
-			d->dops = &ir_driver_ops;
+			driver->type = S710_DRIVER_IR;
+			driver->dops = &ir_driver_ops;
 		} else if ( !strcmp(driver_name,"usb") ) {
-			d->type = S710_DRIVER_USB;
-			d->dops = &usb_driver_ops;
+			driver->type = S710_DRIVER_USB;
+			driver->dops = &usb_driver_ops;
 			needpath = 0;
 			printf("needpath=0\n");
 		}
 	}
 
 	if ( needpath != 0 && device != NULL ) {
-		strncpy(d->path,device,sizeof(d->path)-1);
+		strncpy(driver->path,device,sizeof(driver->path)-1);
 		init = 1;
 	} else if ( needpath == 0 && device == 0 ) {
 		init = 1;
@@ -60,41 +71,41 @@ driver_init (const char *driver_name, const char *device, struct s710_driver *d)
 }
 
 int
-driver_write(struct s710_driver *d, unsigned char *buf, size_t nbytes) {
-	if (d->dops->write)
-		return d->dops->write(d, buf, nbytes);
+driver_write(unsigned char *buf, size_t nbytes) {
+	if (driver->dops->write)
+		return driver->dops->write(driver, buf, nbytes);
 	else
 		return -1;
 }
 
 int
-driver_read_byte(struct s710_driver *d, unsigned char *b)
+driver_read_byte(unsigned char *b)
 {
-	if (d->dops->read)
-		return d->dops->read(d, b);
+	if (driver->dops->read)
+		return driver->dops->read(driver, b);
 	else
 		return 0;
 }
 
 int
-driver_open(struct s710_driver *d, S710_Mode mode)
+driver_open(S710_Mode mode)
 {
 	int ret = -1;
 
-	d->mode = mode;
-	if (d->dops->init)
-		ret = d->dops->init(d, mode);
+	driver->mode = mode;
+	if (driver->dops->init)
+		ret = driver->dops->init(driver, mode);
 
 	return ret;
 }
 
 int
-driver_close (struct s710_driver *d)
+driver_close()
 {
 	int ret = 0;
 
-	if (d->dops->close)
-		ret = d->dops->close(d);
+	if (driver->dops->close)
+		ret = driver->dops->close(driver);
 
 	return ret;
 }

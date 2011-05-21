@@ -591,10 +591,10 @@ int       serial_read_byte(struct s710_driver *d, unsigned char *byte);
 int       serial_write(struct s710_driver *d, unsigned char *buf, size_t nbytes);
 
 /* usb.c */
-int       init_usb_port(struct s710_driver *d, S710_Mode mode);
-int       read_usb_byte(struct s710_driver *d, unsigned char *byte);
-int       send_packet_usb(struct s710_driver *d, unsigned char *buf, size_t bytes);
-int       shutdown_usb_port(struct s710_driver *d);
+int       usb_init_port(struct s710_driver *d, S710_Mode mode);
+int       usb_read_byte(struct s710_driver *d, unsigned char *byte);
+int       usb_send_packet(struct s710_driver *d, unsigned char *buf, size_t bytes);
+int       usb_shutdown_port(struct s710_driver *d);
 
 /* crc.c */
 void crc_process ( unsigned short      * context,

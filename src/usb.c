@@ -31,7 +31,7 @@ static int find_endpoint        (struct usb_device *dev,
 								 int                type);
 
 int
-init_usb_port(struct s710_driver *d, S710_Mode mode)
+usb_init_port(struct s710_driver *d, S710_Mode mode)
 {
 	int ret = -1;
 	struct usb_bus                  *bi;
@@ -48,7 +48,7 @@ init_usb_port(struct s710_driver *d, S710_Mode mode)
 		return -1;
 	}
 
-	if ( (data = calloc(1,sizeof(struct s710_usb_data))) != NULL ) {
+	if ((data = calloc(1,sizeof(struct s710_usb_data))) != NULL) {
 
 		fprintf(stderr,"usb_set_debug(99)\n");
 
@@ -59,10 +59,10 @@ init_usb_port(struct s710_driver *d, S710_Mode mode)
 
 		fprintf(stderr,"usb_find_devices is done\n");
 
-		for ( bi = usb_busses; bi != NULL; bi = bi->next ) {
-			for ( di = bi->devices; di != NULL; di = di->next ) {
-				if ( di->descriptor.idVendor  == S710_USB_VENDOR_ID &&
-					 di->descriptor.idProduct == S710_USB_PRODUCT_ID ) {
+		for (bi = usb_busses; bi != NULL; bi = bi->next) {
+			for (di = bi->devices; di != NULL; di = di->next) {
+				if (di->descriptor.idVendor  == S710_USB_VENDOR_ID &&
+					 di->descriptor.idProduct == S710_USB_PRODUCT_ID) {
 					data->device = di;
 					fprintf(stderr,
 							"Found Polar USB interface "
@@ -74,12 +74,12 @@ init_usb_port(struct s710_driver *d, S710_Mode mode)
 					break;
 				}
 			}
-			if ( data->device != NULL ) break;
+			if (data->device != NULL) break;
 		}
 
 		/* if we found the device, find the endpoint and open it. */
 
-		if ( data->device != NULL ) {
+		if (data->device != NULL) {
 			find_first_altsetting(data->device,&config,&interface,&altsetting);
 			data->endpoint = find_endpoint(data->device,
 										   config,
@@ -87,9 +87,9 @@ init_usb_port(struct s710_driver *d, S710_Mode mode)
 										   altsetting,
 										   USB_ENDPOINT_IN,
 										   USB_ENDPOINT_TYPE_INTERRUPT);
-			if ( (data->handle = usb_open(data->device)) != NULL ) {
+			if ((data->handle = usb_open(data->device)) != NULL) {
 				fprintf(stderr,"Opened device: claiming interface now\n");
-				if ( usb_claim_interface(data->handle,interface) == 0 ) {
+				if (usb_claim_interface(data->handle,interface) == 0) {
 					fprintf(stderr,"Claimed interface: ready to receive data\n");
 					data->interface = interface;
 					ret = 1;
@@ -130,7 +130,7 @@ init_usb_port(struct s710_driver *d, S710_Mode mode)
  * I need to revisit this function at some point.
  */
 int
-read_usb_byte(struct s710_driver *d, unsigned char *byte)
+usb_read_byte(struct s710_driver *d, unsigned char *byte)
 {
 	int r = 0;
 	static char buf[BUFSIZ];
@@ -139,8 +139,8 @@ read_usb_byte(struct s710_driver *d, unsigned char *byte)
 	int         i = 0;
 	struct s710_usb_data *data = (struct s710_usb_data *)d->data;
 
-	if ( d->type == S710_DRIVER_USB ) {
-		if ( idx == bytes ) {
+	if (d->type == S710_DRIVER_USB) {
+		if (idx == bytes) {
 			idx = 0;
 			do {
 #ifdef S710_USB_BULK_READ
@@ -152,15 +152,15 @@ read_usb_byte(struct s710_driver *d, unsigned char *byte)
 										   data->endpoint,
 										   buf,sizeof(buf),5000);
 #endif /* S710_USB_BULK_READ */
-				if ( bytes == 0 && errno == EOVERFLOW ) {
+				if (bytes == 0 && errno == EOVERFLOW) {
 					usb_reset(data->handle);
-					shutdown_usb_port(d);
-					init_usb_port(d, 0);
+					usb_shutdown_port(d);
+					usb_init_port(d, 0);
 				}
 				usleep(10000);
-			} while ( !bytes && i++ < 100 );
+			} while (!bytes && i++ < 100);
 		}
-		if ( bytes > 0 ) {
+		if (bytes > 0) {
 			/*      fprintf(stderr,"[%02x]\n",(unsigned char)buf[idx]); */
 			*byte = (unsigned char)buf[idx++];
 			r = 1;
@@ -175,7 +175,7 @@ read_usb_byte(struct s710_driver *d, unsigned char *byte)
  * send a packet to the polar device over the usb interface
  */
 int
-send_packet_usb(struct s710_driver *d, unsigned char *serialized, size_t bytes)
+usb_send_packet(struct s710_driver *d, unsigned char *serialized, size_t bytes)
 {
 	int  ret = 0;
 	struct s710_usb_data *data = (struct s710_usb_data *)d->data;
@@ -197,12 +197,12 @@ send_packet_usb(struct s710_driver *d, unsigned char *serialized, size_t bytes)
 
 
 int
-shutdown_usb_port(struct s710_driver *d)
+usb_shutdown_port(struct s710_driver *d)
 {
 	int ret = -1;
 	struct s710_usb_data *data = (struct s710_usb_data *)d->data;
 
-	if ( d->type == S710_DRIVER_USB ) {
+	if (d->type == S710_DRIVER_USB) {
 		fprintf(stderr,"Resetting endpoint\n");
 		usb_resetep(data->handle,data->endpoint);
 		fprintf(stderr,"Releasing interface\n");
@@ -218,10 +218,10 @@ shutdown_usb_port(struct s710_driver *d)
 }
 
 static int
-find_first_altsetting (struct usb_device *dev,
-					   int               *config,
-					   int               *interface,
-					   int               *altsetting)
+find_first_altsetting(struct usb_device *dev,
+					  int               *config,
+					  int               *interface,
+					  int               *altsetting)
 {
 	int i, i1, i2;
 
@@ -245,12 +245,12 @@ find_first_altsetting (struct usb_device *dev,
 
 
 static int
-find_endpoint (struct usb_device *dev,
-			   int                config,
-			   int                interface,
-			   int                altsetting,
-			   int                dir,
-			   int                type)
+find_endpoint(struct usb_device *dev,
+			  int                config,
+			  int                interface,
+			  int                altsetting,
+			  int                dir,
+			  int                type)
 {
 	struct usb_interface_descriptor *intf;
 	int i;

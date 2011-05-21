@@ -21,10 +21,10 @@ static struct s710_driver_ops ir_driver_ops = {
 };
 
 static struct s710_driver_ops usb_driver_ops = {
-	.init = init_usb_port,
-	.read = read_usb_byte,
-	.write = send_packet_usb,
-	.close = NULL,
+	.init = usb_init_port,
+	.read = usb_read_byte,
+	.write = usb_send_packet,
+	.close = usb_shutdown_port,
 };
 
 static struct s710_driver *driver;

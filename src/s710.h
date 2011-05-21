@@ -60,13 +60,6 @@
 #define S710_HEADER_SIZE_S710  109
 #define S710_HEADER_SIZE_S610   78
 
-
-typedef enum {
-	S710_DRIVER_SERIAL,
-	S710_DRIVER_IR,
-	S710_DRIVER_USB
-} S710_Driver_Type;
-
 typedef enum {
 	S710_X_AXIS_DISTANCE,
 	S710_X_AXIS_TIME
@@ -259,7 +252,6 @@ struct s710_driver_ops {
 };
 
 struct s710_driver {
-	S710_Driver_Type        type;
 	S710_Mode               mode;
 	char                    path[PATH_MAX];
 	void                   *data;

@@ -43,11 +43,6 @@ usb_init_port(struct s710_driver *d, S710_Mode mode)
 
 	(void) mode;
 
-	if ( d->type != S710_DRIVER_USB ) {
-		fprintf(stderr,"Wrong driver type for init_usb_port\n");
-		return -1;
-	}
-
 	if ((data = calloc(1,sizeof(struct s710_usb_data))) != NULL) {
 
 		fprintf(stderr,"usb_set_debug(99)\n");
@@ -139,34 +134,31 @@ usb_read_byte(struct s710_driver *d, unsigned char *byte)
 	int         i = 0;
 	struct s710_usb_data *data = (struct s710_usb_data *)d->data;
 
-	if (d->type == S710_DRIVER_USB) {
-		if (idx == bytes) {
-			idx = 0;
-			do {
+	if (idx == bytes) {
+		idx = 0;
+		do {
 #ifdef S710_USB_BULK_READ
-				bytes = usb_bulk_read(data->handle,
-									  data->endpoint,
-									  buf,sizeof(buf),5000);
+			bytes = usb_bulk_read(data->handle,
+								  data->endpoint,
+								  buf,sizeof(buf),5000);
 #else /* not S710_USB_BULK_READ */
-				bytes = usb_interrupt_read(data->handle,
-										   data->endpoint,
-										   buf,sizeof(buf),5000);
+			bytes = usb_interrupt_read(data->handle,
+									   data->endpoint,
+									   buf,sizeof(buf),5000);
 #endif /* S710_USB_BULK_READ */
-				if (bytes == 0 && errno == EOVERFLOW) {
-					usb_reset(data->handle);
-					usb_shutdown_port(d);
-					usb_init_port(d, 0);
-				}
-				usleep(10000);
-			} while (!bytes && i++ < 100);
-		}
-		if (bytes > 0) {
-			/*      fprintf(stderr,"[%02x]\n",(unsigned char)buf[idx]); */
-			*byte = (unsigned char)buf[idx++];
-			r = 1;
-		}
+			if (bytes == 0 && errno == EOVERFLOW) {
+				usb_reset(data->handle);
+				usb_shutdown_port(d);
+				usb_init_port(d, 0);
+			}
+			usleep(10000);
+		} while (!bytes && i++ < 100);
 	}
-
+	if (bytes > 0) {
+		/*      fprintf(stderr,"[%02x]\n",(unsigned char)buf[idx]); */
+		*byte = (unsigned char)buf[idx++];
+		r = 1;
+	}
 	return r;
 }
 
@@ -202,14 +194,14 @@ usb_shutdown_port(struct s710_driver *d)
 	int ret = -1;
 	struct s710_usb_data *data = (struct s710_usb_data *)d->data;
 
-	if (d->type == S710_DRIVER_USB) {
-		fprintf(stderr,"Resetting endpoint\n");
-		usb_resetep(data->handle,data->endpoint);
-		fprintf(stderr,"Releasing interface\n");
-		usb_release_interface(data->handle,data->interface);
-		fprintf(stderr,"Disconnecting from USB device\n");
-		ret = usb_close(data->handle);
-	}
+	fprintf(stderr,"Resetting endpoint\n");
+	usb_resetep(data->handle,data->endpoint);
+
+	fprintf(stderr,"Releasing interface\n");
+	usb_release_interface(data->handle,data->interface);
+
+	fprintf(stderr,"Disconnecting from USB device\n");
+	ret = usb_close(data->handle);
 
 	free(data);
 	d->data = (void *)NULL;

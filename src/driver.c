@@ -43,17 +43,13 @@ driver_init (const char *driver_name, const char *device)
 		return 0;
 
 	bzero(driver, sizeof(struct s710_driver));
-	driver->type = S710_DRIVER_SERIAL;
 
 	if (driver_name) {
 		if ( !strcmp(driver_name,"serial") ) {
-			driver->type = S710_DRIVER_SERIAL;
 			driver->dops = &serial_driver_ops;
 		} else if ( !strcmp(driver_name,"ir") ) {
-			driver->type = S710_DRIVER_IR;
 			driver->dops = &ir_driver_ops;
 		} else if ( !strcmp(driver_name,"usb") ) {
-			driver->type = S710_DRIVER_USB;
 			driver->dops = &usb_driver_ops;
 			needpath = 0;
 			printf("needpath=0\n");

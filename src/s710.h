@@ -61,24 +61,6 @@
 #define S710_HEADER_SIZE_S610   78
 
 typedef enum {
-	S710_X_AXIS_DISTANCE,
-	S710_X_AXIS_TIME
-} S710_X_Axis;
-
-typedef enum {
-	S710_Y_AXIS_HEART_RATE,
-	S710_Y_AXIS_ALTITUDE,
-	S710_Y_AXIS_SPEED,
-	S710_Y_AXIS_CADENCE,
-	S710_Y_AXIS_POWER
-} S710_Y_Axis;
-
-typedef enum {
-	S710_FILTER_OFF,
-	S710_FILTER_ON
-} S710_Filter;
-
-typedef enum {
 	S710_MODE_RDWR,
 	S710_MODE_RDONLY
 } S710_Mode;
@@ -626,14 +608,11 @@ void   		sum_s710_time(S710_Time *t1, S710_Time *t2, S710_Time *sum);
 void   		increment_s710_time(S710_Time *t, unsigned int seconds);
 float  		get_hours_from_s710_time(S710_Time *t);
 
-/* workout_filter.c */
-void 		workout_filter(workout_t * w);
-
 /* workout_print.c */
 void		workout_print(workout_t * w, FILE * fp, int what);
 
 /* workout_read.c */
-workout_t*	workout_read(char* filename, S710_Filter filter, S710_HRM_Type type);
+workout_t*	workout_read(char* filename, S710_HRM_Type type);
 
 /* workout_util.c */
 int  		workout_header_size(workout_t * w);

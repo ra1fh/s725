@@ -27,13 +27,9 @@ main ( int argc, char **argv )
 	struct timeval   tf;
 	float            el;
 	int              ch;
-	S710_Filter      filter = S710_FILTER_OFF;
 
-	while ( (ch = getopt(argc,argv,"fh")) != -1 ) {
+	while ( (ch = getopt(argc,argv,"h")) != -1 ) {
 		switch (ch) {
-		case 'f':
-			filter = S710_FILTER_ON;
-			break;
 		case 'h':
 			usage();
 			exit(0);
@@ -44,9 +40,9 @@ main ( int argc, char **argv )
 	argv += optind;
 
 	for ( i = 0; i < argc; i++ ) {
-		gettimeofday(&ti,NULL);
-		w = workout_read(argv[i],filter,S710_HRM_AUTO);
-		gettimeofday(&tf,NULL);
+		gettimeofday(&ti, NULL);
+		w = workout_read(argv[i], S710_HRM_AUTO);
+		gettimeofday(&tf, NULL);
 		el = tf.tv_sec - ti.tv_sec + (tf.tv_usec-ti.tv_usec)/1000000.0;
 		if ( w != NULL ) {
 			printf("\nPrinting workout in %s [loaded in %f seconds]:\n\n",

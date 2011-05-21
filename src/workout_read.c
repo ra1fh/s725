@@ -21,7 +21,7 @@ static void workout_read_ride_info(workout_t * w, unsigned char * buf);
 static void workout_read_laps(workout_t * w, unsigned char * buf);
 static int  workout_read_samples(workout_t * w, unsigned char * buf);
 static void workout_compute_speed_info(workout_t * w);
-static workout_t * workout_extract(unsigned char *buf, S710_Filter filter, S710_HRM_Type type);
+static workout_t * workout_extract(unsigned char *buf, S710_HRM_Type type);
 static S710_HRM_Type workout_detect_hrm_type(unsigned char * buf, unsigned int bytes);
 
 static void
@@ -464,7 +464,7 @@ workout_compute_speed_info(workout_t * w)
  * don't call this unless you're sure it's going to be ok.
  */
 static workout_t *
-workout_extract(unsigned char *buf, S710_Filter filter, S710_HRM_Type type)
+workout_extract(unsigned char *buf, S710_HRM_Type type)
 {
 	workout_t * w  = NULL;
 	int         ok = 1;
@@ -517,14 +517,6 @@ workout_extract(unsigned char *buf, S710_Filter filter, S710_HRM_Type type)
 	if ( !ok ) {
 		workout_free(w);
 		return NULL;
-	}
-
-	/* 
-	 * if filtering was requested, filter the HR data and recompute
-	 * avg/max HR values.
-	 */
-	if ( filter == S710_FILTER_ON ) {
-		workout_filter(w);
 	}
 
 	workout_compute_speed_info(w);
@@ -593,7 +585,7 @@ workout_detect_hrm_type(unsigned char * buf, unsigned int bytes)
 
 
 workout_t *
-workout_read(char *filename, S710_Filter filter, S710_HRM_Type type)
+workout_read(char *filename, S710_HRM_Type type)
 {
 	int            fd;
 	struct stat    sb;
@@ -616,7 +608,7 @@ workout_read(char *filename, S710_Filter filter, S710_HRM_Type type)
 	    
 						/* we're good to go */
 						if ( type != S710_HRM_UNKNOWN ) {
-							w = workout_extract(buf,filter,type);
+							w = workout_extract(buf, type);
 						} else {
 							fprintf(stderr,"%s: unable to auto-detect HRM type\n",
 									filename);

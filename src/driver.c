@@ -84,13 +84,12 @@ driver_read_byte(unsigned char *b)
 }
 
 int
-driver_open(S710_Mode mode)
+driver_open()
 {
 	int ret = -1;
 
-	driver->mode = mode;
 	if (driver->dops->init)
-		ret = driver->dops->init(driver, mode);
+		ret = driver->dops->init(driver);
 
 	return ret;
 }

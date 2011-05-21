@@ -78,7 +78,7 @@ main(int argc, char **argv)
 		return 1;
 	}
 
-	if (driver_open(S710_MODE_RDWR) < 0) {
+	if (driver_open() < 0) {
 		fprintf(stderr,"unable to open port: %s\n",strerror(errno));
 		return 1;
 	}

@@ -16,9 +16,9 @@ unsigned char gByteMap[256];
 static void compute_byte_map(void);
 
 int
-ir_init(struct s710_driver *d, S710_Mode mode)
+ir_init(struct s710_driver *d)
 {
-	return serial_init(d, mode);
+	return serial_init(d);
 }
 
 int
@@ -73,7 +73,7 @@ serial_write(struct s710_driver *d, unsigned char *buf, size_t nbytes)
  * initialize the serial port
  */
 int  
-serial_init(struct s710_driver *d, S710_Mode mode)
+serial_init(struct s710_driver *d)
 {
 	struct termios t;
 	int fd;
@@ -96,7 +96,7 @@ serial_init(struct s710_driver *d, S710_Mode mode)
 	   communication.  Also, it doesn't work for everyone - in fact, it
 	   may only work for me. */
 
-	if ( mode == S710_MODE_RDWR ) t.c_cflag |= CSTOPB;
+	t.c_cflag |= CSTOPB;
 	t.c_iflag = IGNPAR;
 	t.c_oflag = 0;
 	t.c_lflag = 0;

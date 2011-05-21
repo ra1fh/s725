@@ -61,11 +61,6 @@
 #define S710_HEADER_SIZE_S610   78
 
 typedef enum {
-	S710_MODE_RDWR,
-	S710_MODE_RDONLY
-} S710_Mode;
-
-typedef enum {
 	S710_PACKET_INDEX_INVALID = -1,
 	S710_GET_OVERVIEW = 0,
 	S710_GET_USER,
@@ -227,14 +222,13 @@ typedef enum {
 struct s710_driver;
 
 struct s710_driver_ops {
-	int (*init)  (struct s710_driver* d, S710_Mode mode);
+	int (*init)  (struct s710_driver* d);
 	int (*read)  (struct s710_driver* d, unsigned char *byte);
 	int (*write) (struct s710_driver* d, unsigned char *buf, size_t nbytes);
 	int (*close) (struct s710_driver* d);
 };
 
 struct s710_driver {
-	S710_Mode               mode;
 	char                    path[PATH_MAX];
 	void                   *data;
 	struct s710_driver_ops *dops;
@@ -551,21 +545,21 @@ typedef struct attribute_map_t {
 
 /* driver.c */
 int		 driver_init(const char *driver_name, const char *device);
-int		 driver_open(S710_Mode mode );
+int		 driver_open();
 int		 driver_write(unsigned char *buf, size_t nbytes);
 int		 driver_read_byte(unsigned char *b);
 int		 driver_close();
 
 /* serial.c */
-int       ir_init(struct s710_driver *d, S710_Mode mode);
+int       ir_init(struct s710_driver *d);
 int       ir_read_byte(struct s710_driver *d, unsigned char *byte);
 int       ir_write(struct s710_driver *d, unsigned char *buf, size_t nbytes);
-int       serial_init(struct s710_driver *d, S710_Mode mode);
+int       serial_init(struct s710_driver *d);
 int       serial_read_byte(struct s710_driver *d, unsigned char *byte);
 int       serial_write(struct s710_driver *d, unsigned char *buf, size_t nbytes);
 
 /* usb.c */
-int       usb_init_port(struct s710_driver *d, S710_Mode mode);
+int       usb_init_port(struct s710_driver *d);
 int       usb_read_byte(struct s710_driver *d, unsigned char *byte);
 int       usb_send_packet(struct s710_driver *d, unsigned char *buf, size_t bytes);
 int       usb_shutdown_port(struct s710_driver *d);

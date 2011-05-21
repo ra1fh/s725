@@ -31,7 +31,7 @@ static int find_endpoint        (struct usb_device *dev,
 								 int                type);
 
 int
-usb_init_port(struct s710_driver *d, S710_Mode mode)
+usb_init_port(struct s710_driver *d)
 {
 	int ret = -1;
 	struct usb_bus                  *bi;
@@ -40,8 +40,6 @@ usb_init_port(struct s710_driver *d, S710_Mode mode)
 	int                              interface = -1;
 	int                              altsetting = -1;
 	struct s710_usb_data                  *data;
-
-	(void) mode;
 
 	if ((data = calloc(1,sizeof(struct s710_usb_data))) != NULL) {
 
@@ -149,7 +147,7 @@ usb_read_byte(struct s710_driver *d, unsigned char *byte)
 			if (bytes == 0 && errno == EOVERFLOW) {
 				usb_reset(data->handle);
 				usb_shutdown_port(d);
-				usb_init_port(d, 0);
+				usb_init_port(d);
 			}
 			usleep(10000);
 		} while (!bytes && i++ < 100);

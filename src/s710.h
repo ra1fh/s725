@@ -124,37 +124,6 @@ typedef enum {
 } S710_Interval_Mode;
 
 typedef enum {
-	S710_ACTIVITY_LOW,
-	S710_ACTIVITY_MEDIUM,
-	S710_ACTIVITY_HIGH,
-	S710_ACTIVITY_TOP
-} S710_Activity_Level;
-
-typedef enum {
-	S710_GENDER_MALE,
-	S710_GENDER_FEMALE
-} S710_Gender;
-
-typedef enum {
-	S710_ATTRIBUTE_TYPE_INTEGER,
-	S710_ATTRIBUTE_TYPE_STRING,
-	S710_ATTRIBUTE_TYPE_BYTE,
-	S710_ATTRIBUTE_TYPE_BOOLEAN,
-	S710_ATTRIBUTE_TYPE_ENUM_INTEGER,
-	S710_ATTRIBUTE_TYPE_ENUM_STRING
-} S710_Attribute_Type;
-
-typedef enum {
-	S710_MAP_TYPE_USER,
-	S710_MAP_TYPE_WATCH,
-	S710_MAP_TYPE_LOGO,
-	S710_MAP_TYPE_BIKE,
-	S710_MAP_TYPE_EXERCISE,
-	S710_MAP_TYPE_REMINDER,
-	S710_MAP_TYPE_COUNT
-} S710_Map_Type;
-
-typedef enum {
 	S710_HRM_AUTO    =  0,
 	S710_HRM_S610    = 11,  /* same as in hrm files */
 	S710_HRM_S710    = 12,  /* same as in hrm files */
@@ -162,12 +131,6 @@ typedef enum {
 	S710_HRM_S625X   = 22,  /* same as in hrm files */
 	S710_HRM_UNKNOWN = 255
 } S710_HRM_Type;
-
-typedef enum {
-	S710_MERGE_TRUE,
-	S710_MERGE_CONCAT
-} S710_Merge_Type;
-
 
 /* helpful macros */
 
@@ -199,9 +162,7 @@ struct s710_driver {
 	struct s710_driver_ops *dops;
 };
 
-
 typedef char           S710_Label[8];
-typedef struct tm      S710_Date;
 
 typedef struct S710_Time {
 	int    hours;
@@ -317,7 +278,7 @@ typedef struct units_data_t {
 
 typedef struct workout_t {
 	S710_HRM_Type           type;
-	S710_Date               date;
+	struct tm               date;
 	int                     ampm;
 	time_t                  unixtime;
 	int                     user_id;

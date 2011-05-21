@@ -102,41 +102,6 @@ typedef enum {
 } S710_Packet_Index;
 
 typedef enum {
-	S710_OFF,
-	S710_ON
-} S710_On_Off;
-
-typedef enum {
-	S710_HOURS_24,
-	S710_HOURS_12
-} S710_Hours;
-
-typedef enum {
-	S710_BIKE_NONE,
-	S710_BIKE_1,
-	S710_BIKE_2
-} S710_Bike;
-
-typedef enum {
-	S710_EXE_NONE,
-	S710_EXE_BASIC_USE,
-	S710_EXE_SET_1,
-	S710_EXE_SET_2,
-	S710_EXE_SET_3,
-	S710_EXE_SET_4,
-	S710_EXE_SET_5
-} S710_Exercise;
-
-typedef enum {
-	S710_REPEAT_OFF,
-	S710_REPEAT_HOURLY,
-	S710_REPEAT_DAILY,
-	S710_REPEAT_WEEKLY,
-	S710_REPEAT_MONTHLY,
-	S710_REPEAT_YEARLY
-} S710_Repeat;
-
-typedef enum {
 	S710_UNITS_METRIC,
 	S710_UNITS_ENGLISH
 } S710_Units;
@@ -291,65 +256,11 @@ typedef struct overview_t {
 	int bytes;
 } overview_t;
 
-/* user data */
-
-typedef struct user_t {
-	S710_On_Off              altimeter;
-	S710_On_Off              fitness_test;
-	S710_On_Off              predict_hr_max;
-	S710_On_Off              energy_expenditure;
-	S710_On_Off              options_lock;
-	S710_On_Off              help;
-	S710_On_Off              activity_button_sound;
-	S710_Units               units;
-	S710_Heart_Touch         heart_touch;
-	S710_Recording_Interval  recording_interval;
-	S710_Activity_Level      activity_level;
-	S710_Gender              gender;
-	unsigned int             weight;
-	unsigned int             height;
-	unsigned int             vo2max;
-	S710_Heart_Rate          max_hr;
-	unsigned int             user_id;
-	S710_Label               name;
-	S710_Date                birth_date;
-	unsigned char            unknown[2];
-} user_t;
-
-/* watch data */
-
-typedef struct watch_t {
-	S710_Date               time1;
-	S710_Time               time2;
-	S710_Time               alarm;
-	S710_On_Off             alarm_on;
-	S710_Hours              time1_hours;
-	S710_Hours              time2_hours;
-	int                     time_zone;
-} watch_t;
-
 /* logo data */
 
 typedef struct logo_t {
 	unsigned char column[47];
 } logo_t;
-
-/* bike data */
-
-typedef struct bike_data_t {
-	unsigned int            wheel_size;
-	S710_Label              label;
-	S710_On_Off             power_sensor;
-	S710_On_Off             cadence_sensor;
-	unsigned int            chain_weight;
-	unsigned int            chain_length;
-	unsigned int            span_length;
-} bike_data_t;
-
-typedef struct bike_t {
-	S710_Bike               in_use;
-	bike_data_t             bike[2];
-} bike_t;
 
 /* exercise data */
 
@@ -361,17 +272,6 @@ typedef struct exercise_t {
 	S710_Time               recovery_time;
 	S710_Heart_Rate         recovery_hr;
 } exercise_t;
-
-/* reminder data */
-
-typedef struct reminder_t {
-	unsigned int            which;
-	S710_Label              label;
-	S710_Date               date;
-	S710_On_Off             on;
-	S710_Exercise           exercise;
-	S710_Repeat             repeat;
-} reminder_t;
 
 /* workout data */
 
@@ -478,68 +378,6 @@ typedef struct workout_t {
 #define S710_HAS_SPEED(x)     S710_HAS_FIELD(x,SPEED)
 #define S710_HAS_ALTITUDE(x)  S710_HAS_FIELD(x,ALTITUDE)
 #define S710_HAS_BIKE1(x)     S710_HAS_FIELD(x,BIKE1)
-
-/* structs and unions used when setting watch properties */
-
-typedef union attribute_value_t {
-	int                 int_value;
-	S710_Label          string_value;
-	unsigned char       byte_value;
-	S710_On_Off         bool_value;
-	struct {
-		int               eval;
-		int               ival;
-	} enum_int_value;
-	struct {
-		char             *sval;
-		int               ival;
-	} enum_string_value;
-} attribute_value_t;
-
-/*
-   if the type is S710_ATTRIBUTE_TYPE_INTEGER, then values is a three-element
-   array with the first element being the lower bound and the second element
-   the upper bound for the value, and the third element the offset (amount to
-   add to the value before storing it).
-
-   if the type is S710_ATTRIBUTE_TYPE_STRING, then values is a single-element
-   array with the only element being the (integer) maximum string length.
-
-   if the type is S710_ATTRIBUTE_TYPE_BOOLEAN or S710_ATTRIBUTE_TYPE_BYTE,
-   then values is NULL.
-
-   if the type is S710_ATTRIBUTE_TYPE_ENUM_INTEGER, then values is a
-   negative-terminated list of allowed (non-negative) integer values.
-
-   if the type is S710_ATTRIBUTE_TYPE_ENUM_STRING, then values is a
-   NULL-terminated list of pairs of allowed string values and the integer
-   values they correspond to.
-*/
-
-typedef struct attribute_pair_t {
-	char                    *name;
-	S710_Attribute_Type      type;
-	void                    *ptr;
-	attribute_value_t       *values;
-	int                      vcount;
-	attribute_value_t        value;
-	int                      oosync;
-	struct attribute_pair_t *next;
-} attribute_pair_t;
-
-typedef struct attribute_map_t {
-	union {
-		user_t     user;
-		watch_t    watch;
-		bike_t     bike;
-		logo_t     logo;
-		exercise_t exercise;
-		reminder_t reminder;
-	} data;
-	S710_Map_Type           type;
-	attribute_pair_t       *pairs;
-	int                     oosync;
-} attribute_map_t;
 
 /* function prototypes */
 

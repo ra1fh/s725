@@ -379,13 +379,9 @@ int       packet_send(packet_t *packet);
 packet_t *packet_recv();
 
 /* files.c */
-
-typedef void (log_cb)(unsigned int level, const char *fmt, ...);
-
-int       get_files(files_t *files, FILE *fp);
-int       save_files(files_t *f, const char *dir, log_cb *cb);
-void      print_files(files_t *f, log_cb *cb);
-time_t    file_timestamp(unsigned char *data);
+int       files_get(files_t *files);
+int       files_save(files_t *f, const char *dir);
+void      files_print(files_t *f);
 
 /* packet.c */
 packet_t *packet_get(S710_Packet_Index idx);

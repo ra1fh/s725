@@ -12,7 +12,6 @@
 #include "s710.h"
 
 static void     usage(void);
-static void     s710sh_log(unsigned int level, const char *fmt, ...);
 
 static void
 usage(void) {
@@ -83,23 +82,11 @@ main(int argc, char **argv)
 		return 1;
 	}
 
-	if (get_files(&files,stdout)) {
-		save_files(&files, filedir, s710sh_log);
-		print_files(&files, s710sh_log); 
+	if (files_get(&files)) {
+		files_save(&files, filedir);
+		files_print(&files); 
 	}
 
 	driver_close();
 	return 0;
-}
-
-static void
-s710sh_log(u_int level, const char *fmt, ...)
-{
-	va_list ap;
-
-	(void) level;
-	va_start(ap, fmt);
-	vfprintf(stderr, fmt, ap);
-	fflush(stderr);
-	va_end(ap);
 }

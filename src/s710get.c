@@ -88,6 +88,7 @@ main(int argc, char **argv)
 		files_save(files, filedir);
 	}
 
+	buf_free(files);
 	driver_close();
 	return 0;
 }

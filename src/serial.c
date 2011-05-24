@@ -28,13 +28,15 @@ ir_read_byte(struct s710_driver *d, unsigned char *byte)
 }
 
 int
-ir_write(struct s710_driver *d, unsigned char *buf, size_t nbytes)
+ir_write(struct s710_driver *d, BUF *buf)
 {
 	unsigned int i;
+	unsigned char c;
 	int ret = 0;
 
-	for ( i = 0; i < nbytes; i++ ) {
-		if ((write((int)d->data, &buf[i], 1)) < 0)
+	for ( i = 0; i < buf_len(buf); i++ ) {
+		c = buf_getc(buf, i);
+		if ((write((int)d->data, &c, 1)) < 0)
 			ret = -1;
 	}
     
@@ -49,13 +51,15 @@ ir_write(struct s710_driver *d, unsigned char *buf, size_t nbytes)
 }
 
 int
-serial_write(struct s710_driver *d, unsigned char *buf, size_t nbytes)
+serial_write(struct s710_driver *d, BUF *buf)
 {
 	unsigned int i;
+	unsigned char c;
 	int ret = 0;
 
-	for ( i = 0; i < nbytes; i++ ) {
-		if (write((int)d->data, &gByteMap[buf[i]], 1) < 0)
+	for ( i = 0; i < buf_len(buf); i++ ) {
+		c = buf_getc(buf, i);
+		if (write((int)d->data, &gByteMap[c], 1) < 0)
 			ret = -1;
 	}
     

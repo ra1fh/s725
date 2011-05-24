@@ -165,7 +165,7 @@ usb_read_byte(struct s710_driver *d, unsigned char *byte)
  * send a packet to the polar device over the usb interface
  */
 int
-usb_send_packet(struct s710_driver *d, unsigned char *serialized, size_t bytes)
+usb_send_packet(struct s710_driver *d, BUF *buf)
 {
 	int  ret = 0;
 	struct s710_usb_data *data = (struct s710_usb_data *)d->data;
@@ -177,8 +177,8 @@ usb_send_packet(struct s710_driver *d, unsigned char *serialized, size_t bytes)
 						  0x01,
 						  0x0801,
 						  0x0000,
-						  (char *)serialized,
-						  bytes,
+						  (char *) buf_get(buf),
+						  buf_len(buf),
 						  1000);
 
 	return ret;

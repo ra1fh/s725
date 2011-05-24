@@ -14,7 +14,7 @@
 /* static helper functions */
 static int packet_recv_short(unsigned short *s, struct s710_driver *d);
 static unsigned short packet_checksum(packet_t *p);
-static int packet_serialize(packet_t *p, unsigned char *buf);
+static int packet_serialize(packet_t *p, BUF *buf);
 
 /* 
  * send a packet via the S710 driver
@@ -22,17 +22,17 @@ static int packet_serialize(packet_t *p, unsigned char *buf);
 int 
 packet_send(packet_t *p)
 {
-	int           ret = 1;
-	unsigned char serialized[BUFSIZ];
-	int           bytes;
+	int  ret = 1;
+	BUF *buf;
 
-	/* first, compute the packet checksum */
+	buf = buf_alloc(0);
 	p->checksum = packet_checksum(p);
   
-	/* next, serialize the packet into a stream of bytes */
-	bytes = packet_serialize(p, serialized);
+	packet_serialize(p, buf);
 
-	ret = driver_write(serialized, bytes);
+	ret = driver_write(buf);
+
+	buf_free(buf);
 
 	return ret != -1;
 }
@@ -142,20 +142,20 @@ packet_checksum(packet_t *p)
 }
 
 static int
-packet_serialize(packet_t *p, unsigned char *buf)
+packet_serialize(packet_t *p, BUF *buf)
 {
 	unsigned short l = p->length + 5;
 
-	buf[0]   = p->type;
-	buf[1]   = p->id;
-	buf[2]   = 0;
-	buf[3]   = l >> 8;
-	buf[4]   = l & 0xff;
+	buf_putc(buf, p->type);
+	buf_putc(buf, p->id);
+	buf_putc(buf, 0);
+	buf_putc(buf, l >> 8);
+	buf_putc(buf, l & 0xff);
 	if ( p->length > 0 ) {
-		memcpy(&buf[5],p->data,p->length);
+		buf_append(buf, p->data, p->length);
 	}
-	buf[l]   = p->checksum >> 8;
-	buf[l+1] = p->checksum & 0xff;
+	buf_putc(buf, p->checksum >> 8);
+	buf_putc(buf, p->checksum & 0xff);
 
-	return l+2;
+	return buf_len(buf);
 }

@@ -67,9 +67,10 @@ driver_init (const char *driver_name, const char *device)
 }
 
 int
-driver_write(unsigned char *buf, size_t nbytes) {
+driver_write(BUF *buf)
+{
 	if (driver->dops->write)
-		return driver->dops->write(driver, buf, nbytes);
+		return driver->dops->write(driver, buf);
 	else
 		return -1;
 }

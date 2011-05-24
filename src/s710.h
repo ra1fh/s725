@@ -154,7 +154,7 @@ struct s710_driver;
 struct s710_driver_ops {
 	int (*init)  (struct s710_driver* d);
 	int (*read)  (struct s710_driver* d, unsigned char *byte);
-	int (*write) (struct s710_driver* d, unsigned char *buf, size_t nbytes);
+	int (*write) (struct s710_driver* d, BUF *buf);
 	int (*close) (struct s710_driver* d);
 };
 
@@ -338,22 +338,22 @@ typedef struct workout_t {
 /* driver.c */
 int		 driver_init(const char *driver_name, const char *device);
 int		 driver_open();
-int		 driver_write(unsigned char *buf, size_t nbytes);
+int		 driver_write(BUF *buf);
 int		 driver_read_byte(unsigned char *b);
 int		 driver_close();
 
 /* serial.c */
 int       ir_init(struct s710_driver *d);
 int       ir_read_byte(struct s710_driver *d, unsigned char *byte);
-int       ir_write(struct s710_driver *d, unsigned char *buf, size_t nbytes);
+int       ir_write(struct s710_driver *d, BUF *buf);
 int       serial_init(struct s710_driver *d);
 int       serial_read_byte(struct s710_driver *d, unsigned char *byte);
-int       serial_write(struct s710_driver *d, unsigned char *buf, size_t nbytes);
+int       serial_write(struct s710_driver *d, BUF *buf);
 
 /* usb.c */
 int       usb_init_port(struct s710_driver *d);
 int       usb_read_byte(struct s710_driver *d, unsigned char *byte);
-int       usb_send_packet(struct s710_driver *d, unsigned char *buf, size_t bytes);
+int       usb_send_packet(struct s710_driver *d, BUF *buf);
 int       usb_shutdown_port(struct s710_driver *d);
 
 /* crc.c */

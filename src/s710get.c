@@ -86,7 +86,6 @@ main(int argc, char **argv)
 
 	if (files_get(files)) {
 		files_save(files, filedir);
-		files_print(files); 
 	}
 
 	driver_close();

@@ -78,48 +78,8 @@ files_get(BUF *files)
 	return 1;
 }
 
-/* 
- *  This function is designed to operate both on the files_t that's
- *  filled in by files_get() and the files_t we'd get if we just
- *  slurped in a single file from disk.
- */
-void
-files_print(BUF *f)
-{
-	int       offset = 0;
-	int       size;
-	time_t    ft;
-	int       hours;
-	int       minutes;
-	int       seconds;
-	int       tenths;
-	int       fnum = 0;
-	char      buf[BUFSIZ];
-
-	while (offset < buf_len(f) - 2) {
-		size = (buf_getc(f, offset+1) << 8) + buf_getc(f, offset);
-		ft   = files_timestamp(f, offset);
-		strftime(buf,sizeof(buf),"%a, %d %b %Y %T",localtime(&ft));
-		hours      = BCD(buf_getc(f, offset + 18));
-		minutes    = BCD(buf_getc(f, offset + 17));
-		seconds    = BCD(buf_getc(f, offset + 16));
-		tenths     = UNIB(buf_getc(f, offset + 15));
-
-		printf("File %02d: %s - %02d:%02d:%02d.%d\n",
-			   ++fnum,
-			   buf,
-			   hours,
-			   minutes,
-			   seconds,
-			   tenths);
-
-		offset += size;
-	}
-}
-
-
 int
-files_save(BUF *f, const char *dir)
+files_save(BUF *files, const char *dir)
 {
 	int         saved  = 0;
 	int         offset = 0;
@@ -134,11 +94,11 @@ files_save(BUF *f, const char *dir)
 	gid_t       group = 0;
 	char       *bp;
 
-	while (offset < buf_len(f) - 2) {
-		size  = (buf_getc(f, offset + 1) << 8) + buf_getc(f, offset);
-		ft    = files_timestamp(f, offset);
-		year  = 2000 + BCD(buf_getc(f, offset + 14));
-		month = LNIB(buf_getc(f, offset + 15));
+	while (offset < buf_len(files) - 2) {
+		size  = (buf_getc(files, offset + 1) << 8) + buf_getc(files, offset);
+		ft    = files_timestamp(files, offset);
+		year  = 2000 + BCD(buf_getc(files, offset + 14));
+		month = LNIB(buf_getc(files, offset + 15));
 
 		strftime(tmbuf,sizeof(tmbuf),"%Y%m%dT%H%M%S", localtime(&ft));
 
@@ -146,7 +106,7 @@ files_save(BUF *f, const char *dir)
 		ofd = open(buf, O_CREAT|O_WRONLY, 0644);
 		if (ofd != -1) {
 			printf("File %02d: Saved as %s\n", saved+1,buf);
-			bp = buf_get(f);
+			bp = buf_get(files);
 			write(ofd, &bp[offset], size);
 			fchown(ofd, owner, group);
 			close(ofd);

@@ -373,8 +373,7 @@ packet_t *packet_recv();
 
 /* files.c */
 int       files_get(BUF *files);
-int       files_save(BUF *f, const char *dir);
-void      files_print(BUF *f);
+int       files_save(BUF *files, const char *dir);
 
 /* packet.c */
 packet_t *packet_get(S710_Packet_Index idx);

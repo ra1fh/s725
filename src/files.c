@@ -10,13 +10,14 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "buf.h"
 #include "s710.h"
 
 #define HASH_MARKS   40
 
-static time_t file_timestamp (unsigned char *data);
-static void   prep_hash_marks();
-static void   print_hash_marks(float pct, int bytes);
+static time_t files_timestamp (BUF *f, size_t offset);
+static void   files_prep_hash_marks();
+static void   files_print_hash_marks(int pct, int bytes);
 
 /* 
  * This function reads the user's workout data from the watch and stores
@@ -25,42 +26,44 @@ static void   print_hash_marks(float pct, int bytes);
  * way to check integrity of the data.  
  */
 int
-files_get(files_t *files)
+files_get(BUF *files)
 {
 	packet_t      *p;
-	int            ok = 0;
 	int            p_remaining = 1;
+	int            p_first = 0;
+	unsigned short p_bytes = 0;
 	unsigned int   start;
-	unsigned int   offset = 0;
 
-	/* send the first packet - S710_GET_FILES */
+	buf_empty(files);
+
 	printf("\nReading ");
-	prep_hash_marks();
-	print_hash_marks(0,0);
+	files_prep_hash_marks();
+	files_print_hash_marks(0, 0);
 
 	p = packet_get_response(S710_GET_FILES);
-	files->bytes = 0;
-	files->cursor = 0;
-
-	if (p != NULL)
-		ok = 1;
-	else
+	
+	if (p == NULL) {
 		printf("[error]");
+		return 0;
+	}
 
 	while (p != NULL) {
-		/* handle this packet */
+		/* Bit 8: first packet, Bit 7-1: packets remaining */
+		p_first     = p->data[0] & 0x80;
 		p_remaining = p->data[0] & 0x7f;
-		if (p->data[0] & 0x80) {
-			files->bytes = (p->data[1] << 8) + p->data[2];
+		if (p_first) {
+			/* Byte 1 and 2 of first packet: total size in bytes */
+			p_bytes = (p->data[1] << 8) + p->data[2];
+			/* Byte 3 and 4 of first packet: magic bytes */
 			start = 5;
 		} else {
 			start = 1;
 		}
+		
+		buf_append(files, &p->data[start], p->length - start);
 
-		memcpy(&files->data[offset],&p->data[start],p->length - start);
-		offset += p->length - start;
-		if (files->bytes > 0) 
-			print_hash_marks((float)offset/files->bytes,files->bytes);
+		if (p_bytes > 0) 
+			files_print_hash_marks(buf_len(files) * 100 / p_bytes, p_bytes);
 
 		/* free this packet and get the next one */
 		free(p);
@@ -70,11 +73,10 @@ files_get(files_t *files)
 	printf("\n\n");
 
 	if (p_remaining != 0)
-		ok = 0;
+		return 0;
 
-	return ok;
+	return 1;
 }
-
 
 /* 
  *  This function is designed to operate both on the files_t that's
@@ -82,7 +84,7 @@ files_get(files_t *files)
  *  slurped in a single file from disk.
  */
 void
-files_print(files_t *f)
+files_print(BUF *f)
 {
 	int       offset = 0;
 	int       size;
@@ -94,14 +96,14 @@ files_print(files_t *f)
 	int       fnum = 0;
 	char      buf[BUFSIZ];
 
-	while (offset < f->bytes-2) {
-		size = (f->data[offset+1] << 8) + f->data[offset];
-		ft   = file_timestamp(&f->data[offset]);
+	while (offset < buf_len(f) - 2) {
+		size = (buf_getc(f, offset+1) << 8) + buf_getc(f, offset);
+		ft   = files_timestamp(f, offset);
 		strftime(buf,sizeof(buf),"%a, %d %b %Y %T",localtime(&ft));
-		hours      = BCD(f->data[offset+18]);
-		minutes    = BCD(f->data[offset+17]);
-		seconds    = BCD(f->data[offset+16]);
-		tenths     = UNIB(f->data[offset+15]);
+		hours      = BCD(buf_getc(f, offset + 18));
+		minutes    = BCD(buf_getc(f, offset + 17));
+		seconds    = BCD(buf_getc(f, offset + 16));
+		tenths     = UNIB(buf_getc(f, offset + 15));
 
 		printf("File %02d: %s - %02d:%02d:%02d.%d\n",
 			   ++fnum,
@@ -117,7 +119,7 @@ files_print(files_t *f)
 
 
 int
-files_save(files_t *f, const char *dir)
+files_save(BUF *f, const char *dir)
 {
 	int         saved  = 0;
 	int         offset = 0;
@@ -130,22 +132,23 @@ files_save(files_t *f, const char *dir)
 	int         month;
 	uid_t       owner = 0;
 	gid_t       group = 0;
+	char       *bp;
 
-
-	while (offset < f->bytes-2) {
-		size  = (f->data[offset+1] << 8) + f->data[offset];
-		ft    = file_timestamp(&f->data[offset]);
-		year  = 2000 + BCD(f->data[offset+14]);
-		month = LNIB(f->data[offset+15]);
+	while (offset < buf_len(f) - 2) {
+		size  = (buf_getc(f, offset + 1) << 8) + buf_getc(f, offset);
+		ft    = files_timestamp(f, offset);
+		year  = 2000 + BCD(buf_getc(f, offset + 14));
+		month = LNIB(buf_getc(f, offset + 15));
 
 		strftime(tmbuf,sizeof(tmbuf),"%Y%m%dT%H%M%S", localtime(&ft));
 
 		snprintf(buf, sizeof(buf), "%s/%s.%05d.srd",dir,tmbuf,size);
-		ofd = open(buf,O_CREAT|O_WRONLY,0644);
+		ofd = open(buf, O_CREAT|O_WRONLY, 0644);
 		if (ofd != -1) {
-			printf("File %02d: Saved as %s\n",saved+1,buf);
-			write(ofd,&f->data[offset],size);
-			fchown(ofd,owner,group);
+			printf("File %02d: Saved as %s\n", saved+1,buf);
+			bp = buf_get(f);
+			write(ofd, &bp[offset], size);
+			fchown(ofd, owner, group);
 			close(ofd);
 		} else {
 			printf("File %02d: Unable to save %s: %s\n",
@@ -155,68 +158,64 @@ files_save(files_t *f, const char *dir)
 		offset += size;
 		saved++;
 	}
-
 	printf("Saved %d file%s\n",saved,(saved==1)?"":"s");
 
 	return saved;
 }
 
-
 static time_t
-file_timestamp (unsigned char *data)
+files_timestamp (BUF *f, size_t offset)
 {
 	struct tm t;
 	time_t    ft;
 
-	t.tm_sec   = BCD(data[10]);
-	t.tm_min   = BCD(data[11]);
-	t.tm_hour  = BCD(data[12] & 0x7f);
+	t.tm_sec   = BCD(buf_getc(f, offset + 10));
+	t.tm_min   = BCD(buf_getc(f, offset + 11));
+	t.tm_hour  = BCD(buf_getc(f, offset + 12) & 0x7f);
 
 	/* PATCH for AM/PM mode detection from Berend Ozceri */
-	t.tm_hour += (data[13] & 0x80) ?                       /* am/pm mode?   */
-		((data[12] & 0x80) ? ((t.tm_hour < 12) ? 12 : 0) : /* yes, pm set   */
+	t.tm_hour += (buf_getc(f, offset + 13) & 0x80) ?                       /* am/pm mode?   */
+		((buf_getc(f, offset + 12) & 0x80) ? ((t.tm_hour < 12) ? 12 : 0) : /* yes, pm set   */
 		 ((t.tm_hour >= 12) ? -12 : 0)) :                  /* yes, pm unset */
 		0;                                                 /* no            */
 
-	t.tm_mon   = LNIB(data[15]) - 1;
-	t.tm_mday  = BCD(data[13] & 0x7f);
-	t.tm_year  = 100 + BCD(data[14]);
+	t.tm_mon   = LNIB(buf_getc(f, offset + 15) - 1);
+	t.tm_mday  = BCD(buf_getc(f, offset + 13) & 0x7f);
+	t.tm_year  = 100 + BCD(buf_getc(f, offset + 14));
 	t.tm_isdst = -1;
 	ft         = mktime(&t);
   
 	return ft;
 }
 
-
 static void
-prep_hash_marks()
+files_prep_hash_marks()
 {
 	int i;
 
 	printf("[%5d bytes] [",0);
 	for (i = 0; i < HASH_MARKS; i++)
 		putchar(' ');
-	printf("] [%5.1f%%]",0.0);
+	printf("] [%5d%%]", 0);
 	fflush(stdout);
 }
 
-
 static void
-print_hash_marks(float pct, int bytes)
+files_print_hash_marks(int pct, int bytes)
 {
 	float here;
 	int   i;
 
 	for (i = 0; i < HASH_MARKS+25; i++)
 		putchar('\b');
-	printf("[%5d bytes] [",bytes);
+	printf("[%5d bytes] [", bytes);
 	for (i = 0; i < HASH_MARKS; i++) {
-		here = (float)i/HASH_MARKS;
+		here = i * 100 / HASH_MARKS;
 		if (here < pct)
 			putchar('#');
 		else
 			putchar(' ');
 	}
-	printf("] [%5.1f%%]",pct * 100.0);
+	printf("] [%5d%%]", pct);
 	fflush(stdout);
 }

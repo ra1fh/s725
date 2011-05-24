@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <time.h>
 
+#include "buf.h"
+
 /* constants */
 
 #define S710_SPEED_KPH       "kph"
@@ -234,15 +236,6 @@ typedef struct exercise_t {
 	S710_Heart_Rate         recovery_hr;
 } exercise_t;
 
-/* workout data */
-
-typedef struct files_t {
-	unsigned short          bytes;
-	unsigned short          cursor;
-	unsigned char           data[32768];
-} files_t;
-
-
 /* lap data */
 
 typedef struct lap_data_t {
@@ -379,9 +372,9 @@ int       packet_send(packet_t *packet);
 packet_t *packet_recv();
 
 /* files.c */
-int       files_get(files_t *files);
-int       files_save(files_t *f, const char *dir);
-void      files_print(files_t *f);
+int       files_get(BUF *files);
+int       files_save(BUF *f, const char *dir);
+void      files_print(BUF *f);
 
 /* packet.c */
 packet_t *packet_get(S710_Packet_Index idx);

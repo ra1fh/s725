@@ -32,7 +32,7 @@ main(int argc, char **argv)
 	const char		 *driver_name = "ir";
 	const char		 *device = NULL;
 	int				  ch;
-	files_t           files;
+	BUF              *files;
 
 	while ( (ch = getopt(argc,argv,"d:f:h")) != -1 ) {
 		switch (ch) {
@@ -82,9 +82,11 @@ main(int argc, char **argv)
 		return 1;
 	}
 
-	if (files_get(&files)) {
-		files_save(&files, filedir);
-		files_print(&files); 
+	files = buf_alloc(0);
+
+	if (files_get(files)) {
+		files_save(files, filedir);
+		files_print(files); 
 	}
 
 	driver_close();

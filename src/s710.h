@@ -19,13 +19,6 @@
 #define S710_TEMPERATURE_C   "C"
 #define S710_TEMPERATURE_F   "F"
 
-#define S710_REQUEST         0xa3
-#define S710_RESPONSE        0x5c
-
-#define S710_USB_VENDOR_ID   0x0da4
-#define S710_USB_PRODUCT_ID  1
-#define S710_USB_INTERFACE   0
-
 #define S710_MODE_HEART_RATE  0
 #define S710_MODE_ALTITUDE    2
 #define S710_MODE_CADENCE     4
@@ -61,47 +54,6 @@
 #define S710_HEADER_SIZE_S625X 130
 #define S710_HEADER_SIZE_S710  109
 #define S710_HEADER_SIZE_S610   78
-
-typedef enum {
-	S710_PACKET_INDEX_INVALID = -1,
-	S710_GET_OVERVIEW = 0,
-	S710_GET_USER,
-	S710_GET_WATCH,
-	S710_GET_LOGO,
-	S710_GET_BIKE,
-	S710_GET_EXERCISE_1,
-	S710_GET_EXERCISE_2,
-	S710_GET_EXERCISE_3,
-	S710_GET_EXERCISE_4,
-	S710_GET_EXERCISE_5,
-	S710_GET_REMINDER_1,
-	S710_GET_REMINDER_2,
-	S710_GET_REMINDER_3,
-	S710_GET_REMINDER_4,
-	S710_GET_REMINDER_5,
-	S710_GET_REMINDER_6,
-	S710_GET_REMINDER_7,
-	S710_GET_FILES,
-	S710_CONTINUE_TRANSFER,
-	S710_CLOSE_CONNECTION,
-	S710_SET_USER,
-	S710_SET_WATCH,
-	S710_SET_LOGO,
-	S710_SET_BIKE,
-	S710_SET_EXERCISE_1,
-	S710_SET_EXERCISE_2,
-	S710_SET_EXERCISE_3,
-	S710_SET_EXERCISE_4,
-	S710_SET_EXERCISE_5,
-	S710_SET_REMINDER_1,
-	S710_SET_REMINDER_2,
-	S710_SET_REMINDER_3,
-	S710_SET_REMINDER_4,
-	S710_SET_REMINDER_5,
-	S710_SET_REMINDER_6,
-	S710_SET_REMINDER_7,
-	S710_HARD_RESET
-} S710_Packet_Index;
 
 typedef enum {
 	S710_UNITS_METRIC,
@@ -193,24 +145,6 @@ typedef struct S710_HR_Limit {
 	S710_Heart_Rate  lower;
 	S710_Heart_Rate  upper;
 } S710_HR_Limit;
-
-/* basic communication packet */
-
-typedef const char    *PacketName;
-typedef unsigned char  PacketType;
-typedef unsigned char  PacketID;
-typedef unsigned short PacketLength;
-typedef unsigned short PacketChecksum;
-typedef unsigned char  PacketData[1];
-
-typedef struct packet_t {
-	PacketName     name;
-	PacketType     type;
-	PacketID       id;
-	PacketLength   length;
-	PacketChecksum checksum;
-	PacketData     data;
-} packet_t;
 
 /* overview data */
 
@@ -367,18 +301,9 @@ void crc_block   ( unsigned short      * context,
 void      label_extract(unsigned char *buf, S710_Label *label, int bytes);
 void      label_encode(S710_Label label, unsigned char *buf, int bytes);
 
-/* comm.c */
-int       packet_send(packet_t *packet);
-packet_t *packet_recv();
-
 /* files.c */
 int       files_get(BUF *files);
 int       files_save(BUF *files, const char *dir);
-
-/* packet.c */
-packet_t *packet_get(S710_Packet_Index idx);
-packet_t *packet_get_response(S710_Packet_Index request);
-void      packet_print(packet_t *pkt, FILE *fp);
 
 /* time.c */
 void   		print_s710_time(S710_Time* t, const char *format, FILE *fp);

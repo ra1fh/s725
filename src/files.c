@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 #include "buf.h"
+#include "packet.h"
 #include "s710.h"
 
 #define HASH_MARKS   40
@@ -49,18 +50,20 @@ files_get(BUF *files)
 
 	while (p != NULL) {
 		/* Bit 8: first packet, Bit 7-1: packets remaining */
-		p_first     = p->data[0] & 0x80;
-		p_remaining = p->data[0] & 0x7f;
+		p_first     = packet_data(p)[0] & 0x80;
+		p_remaining = packet_data(p)[0] & 0x7f;
 		if (p_first) {
 			/* Byte 1 and 2 of first packet: total size in bytes */
-			p_bytes = (p->data[1] << 8) + p->data[2];
+			p_bytes = (packet_data(p)[1] << 8) + packet_data(p)[2];
 			/* Byte 3 and 4 of first packet: magic bytes */
 			start = 5;
 		} else {
 			start = 1;
 		}
-		
-		buf_append(files, &p->data[start], p->length - start);
+
+		unsigned char *pd = packet_data(p);
+		int len = packet_len(p);
+		buf_append(files, &pd[start], len - start);
 
 		if (p_bytes > 0) 
 			files_print_hash_marks(buf_len(files) * 100 / p_bytes, p_bytes);

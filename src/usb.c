@@ -12,6 +12,10 @@
 
 #include "s710.h"
 
+#define S710_USB_VENDOR_ID   0x0da4
+#define S710_USB_PRODUCT_ID  1
+#define S710_USB_INTERFACE   0
+
 struct s710_usb_data {
 	struct usb_device *device;
 	usb_dev_handle    *handle;

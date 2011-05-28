@@ -9,10 +9,8 @@
 
 #include "driver.h"
 #include "packet.h"
-#include "utils.h"
 
 /* defines the packet types */
-
 typedef const char    *PacketName;
 typedef unsigned char  PacketType;
 typedef unsigned char  PacketID;
@@ -29,17 +27,8 @@ struct packet {
 	PacketData     data;
 };
 
-unsigned char*
-packet_data(packet_t *p)
-{
-	return p->data;
-}
-
-unsigned short
-packet_len(packet_t *p)
-{
-	return p->length;
-}
+void packet_crc_process(unsigned short *context, unsigned char ch);
+void packet_crc_block(unsigned short *context, const unsigned char *blk, int len);
 
 static packet_t gPacket[] = {
 
@@ -197,8 +186,19 @@ static packet_t gPacket[] = {
 
 static int gNumPackets = sizeof(gPacket)/sizeof(gPacket[0]);
 
-/* return a packet pointer for a given packet index */
+unsigned char*
+packet_data(packet_t *p)
+{
+	return p->data;
+}
 
+unsigned short
+packet_len(packet_t *p)
+{
+	return p->length;
+}
+
+/* return a packet pointer for a given packet index */
 packet_t *
 packet_get ( S710_Packet_Index idx )
 {
@@ -206,7 +206,6 @@ packet_get ( S710_Packet_Index idx )
 }
 
 /* get a single-packet response to a request */
-
 packet_t *
 packet_get_response(S710_Packet_Index request)
 {
@@ -301,16 +300,16 @@ packet_recv() {
 	unsigned short  crc = 0;
 
 	r = driver_read_byte(&c);
-	crc_process ( &crc, c );
+	packet_crc_process (&crc, c);
 
 	if ( c == S710_RESPONSE ) {
 		r = driver_read_byte(&id);
-		crc_process ( &crc, id );
+		packet_crc_process ( &crc, id );
 		r = driver_read_byte(&c);
-		crc_process ( &crc, c );
+		packet_crc_process ( &crc, c );
 		r = packet_recv_short (&len);
-		crc_process ( &crc, len >> 8 );
-		crc_process ( &crc, len & 0xff );
+		packet_crc_process ( &crc, len >> 8 );
+		packet_crc_process ( &crc, len & 0xff );
 		if ( r ) {
 			len -= 5;
 			siz = (len <= 1) ? 0 : len - 1;
@@ -325,7 +324,7 @@ packet_recv() {
 				p->length = len;
 				for ( i = 0; i < len; i++ ) {
 					r = driver_read_byte(&p->data[i]);
-					crc_process ( &crc, p->data[i] );
+					packet_crc_process ( &crc, p->data[i] );
 					if ( !r ) {
 						fprintf(stderr, "driver_read_byte failed\n");
 						free ( p );
@@ -381,12 +380,12 @@ packet_checksum(packet_t *p)
 {
 	unsigned short crc = 0;
 
-	crc_process ( &crc, S710_REQUEST );
-	crc_process ( &crc, p->id );
-	crc_process ( &crc, 0 );
-	crc_process ( &crc, ( p->length + 5 ) >> 8 );
-	crc_process ( &crc, ( p->length + 5 ) & 0xff );
-	crc_block ( &crc, p->data, p->length );
+	packet_crc_process ( &crc, S710_REQUEST );
+	packet_crc_process ( &crc, p->id );
+	packet_crc_process ( &crc, 0 );
+	packet_crc_process ( &crc, ( p->length + 5 ) >> 8 );
+	packet_crc_process ( &crc, ( p->length + 5 ) & 0xff );
+	packet_crc_block ( &crc, p->data, p->length );
 	return crc;
 }
 
@@ -408,3 +407,34 @@ packet_serialize(packet_t *p, BUF *buf)
 
 	return buf_len(buf);
 }
+
+/* 
+ * Thanks to Stefan Kleditzsch for decoding the checksum algorithm!
+ */
+
+/*
+ * crc16 checksum function with polynom=0x8005
+ */
+void
+packet_crc_process(unsigned short *context, unsigned char ch)
+{
+	unsigned short uch  = (unsigned short) ch;
+	int i;
+
+	*context ^= (uch << 8);
+
+	for (i = 0; i < 8; i++) {
+		if (*context & 0x8000)
+			*context = (*context << 1)^0x8005;
+		else
+			*context <<= 1;
+	}
+}
+
+void
+packet_crc_block(unsigned short *context, const unsigned char *blk, int len)
+{
+	while (len -- > 0)
+		packet_crc_process(context, * blk ++);
+}
+

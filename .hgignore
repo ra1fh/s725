@@ -5,8 +5,11 @@
 .*\.lai$
 .*\.Po$
 .*\.Plo$
+.*\.srd$
 .*~$
 .*\.104r.expand$
+cscope.out
+cscope.files
 Makefile$
 ^libtool$
 ^config\.(log|status)$

@@ -11,11 +11,11 @@
 #include <errno.h>
 #include <unistd.h>
 
+#include "utils.h"
 #include "workout.h"
 #include "workout_int.h"
 #include "workout_label.h"
 #include "workout_time.h"
-#include "utils.h"
 
 int  		workout_bytes_per_lap(S710_HRM_Type type, unsigned char bt, unsigned char bi);
 int  		workout_header_size(workout_t * w);
@@ -129,7 +129,6 @@ workout_read_recording_interval(workout_t * w, unsigned char * buf)
 	w->recording_interval = workout_get_recording_interval(buf[0]);
 }
 
-
 static void
 workout_read_hr_limits(workout_t * w, unsigned char * buf)
 {
@@ -188,14 +187,12 @@ workout_read_bestlap_split(workout_t * w, unsigned char * buf)
 	w->bestlap_split.hours   = BCD(buf[3]);
 }
 
-
 static void
 workout_read_energy(workout_t * w, unsigned char * buf)
 {
 	w->energy       = BCD(buf[0])/10 + 10 * BCD(buf[1]) + 1000 * BCD(buf[2]);
 	w->total_energy = BCD(buf[3]) + 100 * BCD(buf[4]) + 10000 * BCD(buf[5]);
 }
-
 
 static void
 workout_read_cumulative_exercise(workout_t * w, unsigned char * buf)
@@ -205,7 +202,6 @@ workout_read_cumulative_exercise(workout_t * w, unsigned char * buf)
 	w->cumulative_exercise.minutes = BCD(buf[2]);
 	w->cumulative_exercise.hours   = BCD(buf[0]) + BCD(buf[1]) * 100;
 }
-
 
 static void
 workout_read_ride_info(workout_t * w, unsigned char * buf)
@@ -268,7 +264,6 @@ workout_read_ride_info(workout_t * w, unsigned char * buf)
 	/* there is no max_power LR balance */
 	w->max_power.lr_balance  = 0;
 }
-
 
 /*
  * Extract the lap data. 
@@ -372,7 +367,6 @@ workout_read_laps(workout_t * w, unsigned char * buf)
 	}
 }
 
-
 static int
 workout_read_samples(workout_t * w, unsigned char * buf)
 {
@@ -448,7 +442,6 @@ workout_read_samples(workout_t * w, unsigned char * buf)
 	return ok;
 }
 
-
 static void
 workout_compute_speed_info(workout_t * w)
 {
@@ -472,7 +465,6 @@ workout_compute_speed_info(workout_t * w)
 		w->median_speed = avg;
 	}
 }
-
 
 /* 
  * don't call this unless you're sure it's going to be ok.
@@ -538,12 +530,10 @@ workout_extract(unsigned char *buf, S710_HRM_Type type)
 	return w;
 }
 
-
 /* 
  * Attempt to auto-detect the HRM type based on some information in the file.
  * This may not always succeed, but it seems to work relatively well.
  */
-
 static S710_HRM_Type
 workout_detect_hrm_type(unsigned char * buf, unsigned int bytes)
 {
@@ -649,14 +639,12 @@ workout_read(char *filename)
 }
 
 /*
-   "what" is the bitwise or of at least one of:
-
-   S710_WORKOUT_HEADER
-   S710_WORKOUT_LAPS
-   S710_WORKOUT_SAMPLES
-
-   or it can just be S710_WORKOUT_FULL (everything)
-*/
+ * "what" is the bitwise or of at least one of:
+ * S710_WORKOUT_HEADER
+ * S710_WORKOUT_LAPS
+ * S710_WORKOUT_SAMPLES
+ * or it can just be S710_WORKOUT_FULL (everything)
+ */
 void
 workout_print(workout_t * w, FILE * fp, int what)
 {
@@ -954,7 +942,6 @@ workout_header_size(workout_t * w)
 	return size;
 }
 
-
 int
 workout_bytes_per_lap(S710_HRM_Type type, unsigned char bt, unsigned char bi)
 {
@@ -979,7 +966,6 @@ workout_bytes_per_lap(S710_HRM_Type type, unsigned char bt, unsigned char bi)
 	return lap_size;
 }
 
-
 int
 workout_bytes_per_sample(unsigned char bt)
 {
@@ -1000,7 +986,6 @@ workout_bytes_per_sample(unsigned char bt)
 
 	return recsiz;
 }
-
 
 int
 workout_allocate_sample_space (workout_t * w)
@@ -1030,7 +1015,6 @@ workout_allocate_sample_space (workout_t * w)
 
 	return ok;
 }
-
 
 void
 workout_free (workout_t *w)

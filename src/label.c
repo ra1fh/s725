@@ -3,7 +3,8 @@
  */
 
 #include <string.h>
-#include "s710.h"
+
+#include "label.h"
 
 static char alpha_map(unsigned char c);
 static unsigned char inverse_alpha_map(char c);

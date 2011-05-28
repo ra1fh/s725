@@ -86,21 +86,7 @@ typedef enum {
 	S710_HRM_UNKNOWN = 255
 } S710_HRM_Type;
 
-/* helpful macros */
-
-#define UNIB(x)      ((x)>>4)
-#define LNIB(x)      ((x)&0x0f)
-#define BINU(x)      ((x)<<4)
-#define BINL(x)      ((x)&0x0f)
-#define BCD(x)       (UNIB(x)*10 + LNIB(x))
-#define HEX(x)       ((((x)/10)<<4) + ((x)%10))
-#define DIGITS01(x)  ((x)%100)
-#define DIGITS23(x)  (((x)/100)%100)
-#define DIGITS45(x)  (((x)/10000)%100)
-
-#define CLAMP(a,b,c) if((a)<(b))(a)=(b);if((a)>(c))(a)=(c)
-
-typedef char           S710_Label[8];
+typedef char S710_Label[8];
 
 typedef struct S710_Time {
 	int    hours;
@@ -252,23 +238,6 @@ typedef struct workout_t {
 #define S710_HAS_BIKE1(x)     S710_HAS_FIELD(x,BIKE1)
 
 /* function prototypes */
-
-/* label.c */
-void      label_extract(unsigned char *buf, S710_Label *label, int bytes);
-void      label_encode(S710_Label label, unsigned char *buf, int bytes);
-
-/* files.c */
-int       files_get(BUF *files);
-int       files_save(BUF *files, const char *dir);
-
-/* time.c */
-void   		print_s710_time(S710_Time* t, const char *format, FILE *fp);
-time_t 		s710_time_to_tenths(S710_Time *t);
-time_t 		s710_time_to_seconds(S710_Time *t);
-void   		diff_s710_time(S710_Time *t1, S710_Time *t2, S710_Time *diff);
-void   		sum_s710_time(S710_Time *t1, S710_Time *t2, S710_Time *sum);
-void   		increment_s710_time(S710_Time *t, unsigned int seconds);
-float  		get_hours_from_s710_time(S710_Time *t);
 
 /* workout_print.c */
 void		workout_print(workout_t * w, FILE * fp, int what);

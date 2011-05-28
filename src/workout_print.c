@@ -1,5 +1,8 @@
+
 #include <string.h>
+
 #include "s710.h"
+#include "time_helper.h"
 
 /*
    "what" is the bitwise or of at least one of:
@@ -66,7 +69,7 @@ workout_print(workout_t * w, FILE * fp, int what)
 
 		/* exercise duration */
 		fprintf(fp,"Exercise duration:       ");
-		print_s710_time(&w->duration,"hmst",fp);
+		s710_time_print(&w->duration,"hmst",fp);
 		fprintf(fp,"\n");
 
 		if ( S710_HAS_SPEED(w->mode) )
@@ -137,13 +140,13 @@ workout_print(workout_t * w, FILE * fp, int what)
 			fprintf(fp,"HR Limit %d:              %d to %3d\n",
 					i+1,w->hr_limit[i].lower,w->hr_limit[i].upper);
 			fprintf(fp,"\tTime below:      ");
-			print_s710_time(&w->hr_zone[i][0],"hms",fp);
+			s710_time_print(&w->hr_zone[i][0],"hms",fp);
 			fprintf(fp,"\n");
 			fprintf(fp,"\tTime within:     ");
-			print_s710_time(&w->hr_zone[i][1],"hms",fp);
+			s710_time_print(&w->hr_zone[i][1],"hms",fp);
 			fprintf(fp,"\n");
 			fprintf(fp,"\tTime above:      ");
-			print_s710_time(&w->hr_zone[i][2],"hms",fp);
+			s710_time_print(&w->hr_zone[i][2],"hms",fp);
 			fprintf(fp,"\n");
 		}
 
@@ -153,12 +156,12 @@ workout_print(workout_t * w, FILE * fp, int what)
 
 		/* cumulative counters */
 		fprintf(fp,"Cumulative exercise:     ");
-		print_s710_time(&w->cumulative_exercise,"hm",fp);
+		s710_time_print(&w->cumulative_exercise,"hm",fp);
 		fprintf(fp,"\n");
 
 		if ( S710_HAS_SPEED(w->mode) ) {
 			fprintf(fp,"Cumulative ride time:    ");
-			print_s710_time(&w->cumulative_ride,"hm",fp);
+			s710_time_print(&w->cumulative_ride,"hm",fp);
 			fprintf(fp,"\n");
 			fprintf(fp,"Odometer:                %d %s\n",
 					w->odometer, w->units.distance);
@@ -175,10 +178,10 @@ workout_print(workout_t * w, FILE * fp, int what)
 			l = &w->lap_data[i];
 			fprintf(fp,"Lap %d:\n",i+1);
 			fprintf(fp,"\tLap split:          ");
-			print_s710_time(&l->split,"hmst",fp);
+			s710_time_print(&l->split,"hmst",fp);
 			fprintf(fp,"\n");
 			fprintf(fp,"\tLap cumulative:     ");
-			print_s710_time(&l->cumulative,"hmst",fp);
+			s710_time_print(&l->cumulative,"hmst",fp);
 			fprintf(fp,"\n");
 			fprintf(fp,"\tLap HR:             %d bpm\n",l->lap_hr);
 			fprintf(fp,"\tAverage HR:         %d bpm\n",l->avg_hr);
@@ -250,7 +253,7 @@ workout_print(workout_t * w, FILE * fp, int what)
 
 		memset(&s,0,sizeof(s));
 		for ( i = 0; i < w->samples; i++ ) {
-			print_s710_time(&s,"hms",fp);
+			s710_time_print(&s,"hms",fp);
 			fprintf(fp,"\t\t%3d",w->hr_data[i]);
 
 			if ( S710_HAS_ALTITUDE(w->mode) ) {
@@ -281,7 +284,7 @@ workout_print(workout_t * w, FILE * fp, int what)
 			}
 			fprintf(fp,"\n");
 
-			increment_s710_time(&s,w->recording_interval);
+			s710_time_increment(&s,w->recording_interval);
 		}
 	}
 }

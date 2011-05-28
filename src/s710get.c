@@ -9,8 +9,8 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "s710.h"
 #include "driver.h"
+#include "files.h"
 
 static void     usage(void);
 

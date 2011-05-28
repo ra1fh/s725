@@ -5,7 +5,11 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+
 #include "s710.h"
+#include "label.h"
+#include "time_helper.h"
+#include "utils.h"
 
 static void workout_read_preamble(workout_t * w, unsigned char * buf);
 static void workout_read_date(workout_t * w, unsigned char * buf);
@@ -291,7 +295,7 @@ workout_read_laps(workout_t * w, unsigned char * buf)
 		if ( i == 0 ) 
 			memcpy(&l->split,&l->cumulative,sizeof(S710_Time));
 		else
-			diff_s710_time(&w->lap_data[i-1].cumulative,&l->cumulative,&l->split);
+			s710_time_diff(&w->lap_data[i-1].cumulative,&l->cumulative,&l->split);
 
 		/* heart rate data */
 		l->lap_hr = buf[offset+3];

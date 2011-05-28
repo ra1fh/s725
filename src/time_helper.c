@@ -2,25 +2,7 @@
  * time helper functions
  */
 
-#include "s710.h"
-
-/*
- * Get a S710 time and returns that time span as
- * hours and fractions of hours
- */
-float
-get_hours_from_s710_time(S710_Time *t)
-{
-
-	long seconds;
-
-	seconds  = t->seconds;
-	seconds += t->minutes * 60;
-	seconds += t->hours * 3600;
-
-	return (float)seconds / 3600.0;
-}
-
+#include "time_helper.h"
 
 /*
  * Tenths of a second.
@@ -36,20 +18,10 @@ s710_time_to_tenths(S710_Time *t)
 }
 
 /*
- * Rounds to the nearest second.
- */
-time_t
-s710_time_to_seconds(S710_Time *t)
-{
-	return s710_time_to_tenths(t)/10;
-}
-
-
-/*
  * This probably doesn't work if the S710_Time argument is negative.
  */
 void
-increment_s710_time(S710_Time *t, unsigned int seconds)
+s710_time_increment(S710_Time *t, unsigned int seconds)
 {
 	int   hours;
 	int   minutes;
@@ -75,7 +47,7 @@ increment_s710_time(S710_Time *t, unsigned int seconds)
 
 
 void
-diff_s710_time(S710_Time *t1, S710_Time *t2, S710_Time *diff)
+s710_time_diff(S710_Time *t1, S710_Time *t2, S710_Time *diff)
 {
 	int t_t1;
 	int t_t2;
@@ -115,48 +87,6 @@ diff_s710_time(S710_Time *t1, S710_Time *t2, S710_Time *diff)
 	}
 }
 
-
-void
-sum_s710_time(S710_Time *t1, S710_Time *t2, S710_Time *sum)
-{
-	int t_t1;
-	int t_t2;
-	int t_sum;
-	int negative = 0;
-
-	/* first compute t1 and t2 in tenths of a second */
-	t_t1 = ((t1->hours * 60 + t1->minutes) * 60 + t1->seconds) * 10 + t1->tenths;
-	t_t2 = ((t2->hours * 60 + t2->minutes) * 60 + t2->seconds) * 10 + t2->tenths;
-
-	t_sum = t_t2 + t_t1;
-	if ( t_sum < 0 ) {
-		negative = 1;
-		t_sum = -t_sum;
-	}
-
-	sum->tenths = t_sum % 10;
-	t_sum = (t_sum - sum->tenths) / 10;
-
-	/* now t_sum is in seconds */
-	sum->seconds = t_sum % 60;
-	t_sum = (t_sum - sum->seconds) / 60;
-
-	/* now t_sum is in minutes */
-	sum->minutes = t_sum % 60;
-	t_sum = (t_sum - sum->minutes) / 60;
-
-	/* the rest is the hours */
-	sum->hours = t_sum;
-
-	/* if we got a negative time, switch the sign of everything. */
-	if ( negative ) {
-		sum->hours   = -sum->hours;
-		sum->minutes = -sum->minutes;
-		sum->seconds = -sum->seconds;
-		sum->tenths  = -sum->tenths;
-	}
-}
-
 /*
  * write time to given fp
  *
@@ -170,7 +100,7 @@ sum_s710_time(S710_Time *t1, S710_Time *t2, S710_Time *sum)
  * "st"   => 56.7
  */
 void
-print_s710_time(S710_Time *t, const char *format, FILE *fp)
+s710_time_print(S710_Time *t, const char *format, FILE *fp)
 {
 	const char *p;
 	int   r = 0;

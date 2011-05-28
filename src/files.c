@@ -12,7 +12,7 @@
 
 #include "buf.h"
 #include "packet.h"
-#include "s710.h"
+#include "utils.h"
 
 #define HASH_MARKS   40
 

@@ -1,10 +1,12 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
 #include <sys/time.h>
-#include "s710.h"
+
+#include "workout.h"
 
 static void usage(void);
 

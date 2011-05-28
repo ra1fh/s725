@@ -24,10 +24,10 @@ S710GET_SRCS = driver.c files.c serial.c usb.c packet.c  \
 	utils.c xmalloc.c buf.c
 
 SRDCAT_SRCS = label.c time_helper.c \
-	workout_print.c workout_read.c workout_util.c xmalloc.c buf.c
+	workout.c xmalloc.c buf.c
 
 SRDHEAD_SRCS = label.c time_helper.c \
-	workout_print.c workout_read.c workout_util.c xmalloc.c buf.c
+	workout.c xmalloc.c buf.c
 
 PROG_SRCS= $(patsubst %,%.c,$(PROGS))
 

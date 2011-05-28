@@ -1,15 +1,27 @@
+/*
+ * workout parsing functions
+ */
+
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <unistd.h>
 
-#include "s710.h"
 #include "label.h"
 #include "time_helper.h"
+#include "workout.h"
 #include "utils.h"
+
+#define S710_HAS_FIELD(x,y)   (((x) & S710_MODE_##y) != 0)
+#define S710_HAS_CADENCE(x)   S710_HAS_FIELD(x,CADENCE)
+#define S710_HAS_POWER(x)     S710_HAS_FIELD(x,POWER)
+#define S710_HAS_SPEED(x)     S710_HAS_FIELD(x,SPEED)
+#define S710_HAS_ALTITUDE(x)  S710_HAS_FIELD(x,ALTITUDE)
+#define S710_HAS_BIKE1(x)     S710_HAS_FIELD(x,BIKE1)
 
 static void workout_read_preamble(workout_t * w, unsigned char * buf);
 static void workout_read_date(workout_t * w, unsigned char * buf);
@@ -599,7 +611,7 @@ workout_read(char *filename, S710_HRM_Type type)
 	if ( stat(filename,&sb) != -1 ) {
 		if ( (fd = open(filename,O_RDONLY)) != -1 ) {
 			if ( sb.st_size < sizeof(buf) ) {
-				if ( read(fd,buf,sb.st_size) == sb.st_size ) {
+				if (read(fd,buf,sb.st_size) == sb.st_size) {
 					if ( buf[0] + (buf[1]<<8) == sb.st_size ) {
 						/* 
 						 * if type == S710_HRM_AUTO, try to guess the "real" type.
@@ -638,4 +650,402 @@ workout_read(char *filename, S710_HRM_Type type)
 	}
 
 	return w;
+}
+
+/*
+   "what" is the bitwise or of at least one of:
+
+   S710_WORKOUT_HEADER
+   S710_WORKOUT_LAPS
+   S710_WORKOUT_SAMPLES
+
+   or it can just be S710_WORKOUT_FULL (everything)
+*/
+void
+workout_print(workout_t * w, FILE * fp, int what)
+{
+	const char*  hrm_type = "Unknown";
+	int          i;
+	int          j;
+	float        vam;
+	char         buf[BUFSIZ];
+	lap_data_t  *l;
+	S710_Time    s;
+
+	if (what & S710_WORKOUT_HEADER) {
+		/* exercise date */
+		strftime(buf,sizeof(buf),"%Y-%m-%d %H:%M:%S (%a, %d %b %Y)",
+				 localtime(&w->unixtime));
+		fprintf(fp,"Workout date:            %s\n",buf);
+
+		/* HRM type */
+		switch ( w->type ) {
+		case S710_HRM_S610:
+			hrm_type = "S610";
+			break;
+		case S710_HRM_S625X:
+			hrm_type = "S625X";
+			break;
+		case S710_HRM_S710:
+			hrm_type = "S710";
+			break;
+		default:
+			break;
+		}
+		fprintf(fp,"HRM Type:                %s\n",hrm_type);
+
+		/* user id */
+		fprintf(fp,"User ID:                 %d\n",w->user_id);
+
+		/* exercise number and label */
+		if ( w->exercise_number > 0 && w->exercise_number <= 5 ) {
+			fprintf(fp,"Exercise:                %d (%s)\n",
+					w->exercise_number,
+					w->exercise_label);
+		}
+
+		/* workout mode */
+		fprintf(fp,"Mode:                    HR");
+		if ( S710_HAS_ALTITUDE(w->mode) ) fprintf(fp,", Altitude");
+		if ( S710_HAS_SPEED(w->mode) )
+			fprintf(fp,", Bike %d (Speed%s%s)",
+					S710_HAS_BIKE1(w->mode) ? 1 : 2,
+					S710_HAS_POWER(w->mode) ? ", Power" : "",
+					S710_HAS_CADENCE(w->mode) ? ", Cadence" : "");
+		fprintf(fp,"\n");
+
+		/* exercise duration */
+		fprintf(fp,"Exercise duration:       ");
+		s710_time_print(&w->duration,"hmst",fp);
+		fprintf(fp,"\n");
+
+		if ( S710_HAS_SPEED(w->mode) )
+			fprintf(fp,"Exercise distance:       %.1f %s\n",
+					w->exercise_distance/10.0, w->units.distance);
+
+		/* recording interval */
+		fprintf(fp,"Recording interval:      %d seconds\n",
+				w->recording_interval);
+
+		/* average, maximum heart rate */
+		fprintf(fp,"Average heart rate:      %d bpm\n",w->avg_hr);
+		fprintf(fp,"Maximum heart rate:      %d bpm\n",w->max_hr);
+
+		/* average, maximum cadence */
+		if ( S710_HAS_CADENCE(w->mode) ) {
+			fprintf(fp,"Average cadence:         %d rpm\n",w->avg_cad);
+			fprintf(fp,"Maximum cadence:         %d rpm\n",w->max_cad);
+		}
+
+		/* average, maximum speed */
+		if ( S710_HAS_SPEED(w->mode) ) {
+			fprintf(fp,"Average speed:           %.1f %s\n",
+					w->avg_speed/16.0, w->units.speed);
+			fprintf(fp,"Maximum speed:           %.1f %s\n",
+					w->max_speed/16.0, w->units.speed);
+		}
+
+		if ( w->type != S710_HRM_S610 ) {
+			/* min, avg, max temperature */
+			fprintf(fp,"Minumum temperature:     %d %s\n",
+					w->min_temp, w->units.temperature);
+			fprintf(fp,"Average temperature:     %d %s\n",
+					w->avg_temp, w->units.temperature);
+			fprintf(fp,"Maximum temperature:     %d %s\n",
+					w->max_temp, w->units.temperature);
+		}
+
+		/* altitude, ascent */
+		if ( S710_HAS_ALTITUDE(w->mode) ) {
+			fprintf(fp,"Minimum altitude:        %d %s\n",
+					w->min_alt, w->units.altitude);
+			fprintf(fp,"Average altitude:        %d %s\n",
+					w->avg_alt, w->units.altitude);
+			fprintf(fp,"Maximum altitude:        %d %s\n",
+					w->max_alt, w->units.altitude);
+			fprintf(fp,"Ascent:                  %d %s\n",
+					w->ascent, w->units.altitude);
+		}
+
+		/* power data */
+		if (  S710_HAS_POWER(w->mode)  ) {
+			fprintf(fp,"Average power:           %d W\n",
+					w->avg_power.power);
+			fprintf(fp,"Average LR balance:      %d-%d\n",
+					w->avg_power.lr_balance >> 1,
+					100 - (w->avg_power.lr_balance >> 1));
+			fprintf(fp,"Average pedal index:     %d %%\n",
+					w->avg_power.pedal_index >> 1);
+			fprintf(fp,"Maximum power:           %d W\n",
+					w->max_power.power);
+			fprintf(fp,"Maximum pedal index:     %d %%\n",
+					w->max_power.pedal_index >> 1);
+		}
+
+		/* HR limits */
+		for ( i = 0; i < 3; i++ ) {
+			fprintf(fp,"HR Limit %d:              %d to %3d\n",
+					i+1,w->hr_limit[i].lower,w->hr_limit[i].upper);
+			fprintf(fp,"\tTime below:      ");
+			s710_time_print(&w->hr_zone[i][0],"hms",fp);
+			fprintf(fp,"\n");
+			fprintf(fp,"\tTime within:     ");
+			s710_time_print(&w->hr_zone[i][1],"hms",fp);
+			fprintf(fp,"\n");
+			fprintf(fp,"\tTime above:      ");
+			s710_time_print(&w->hr_zone[i][2],"hms",fp);
+			fprintf(fp,"\n");
+		}
+
+		/* energy, total energy (units??) */
+		fprintf(fp,"Energy:                  %d\n",w->energy);
+		fprintf(fp,"Total energy:            %d\n",w->total_energy);
+
+		/* cumulative counters */
+		fprintf(fp,"Cumulative exercise:     ");
+		s710_time_print(&w->cumulative_exercise,"hm",fp);
+		fprintf(fp,"\n");
+
+		if ( S710_HAS_SPEED(w->mode) ) {
+			fprintf(fp,"Cumulative ride time:    ");
+			s710_time_print(&w->cumulative_ride,"hm",fp);
+			fprintf(fp,"\n");
+			fprintf(fp,"Odometer:                %d %s\n",
+					w->odometer, w->units.distance);
+		}
+
+		/* laps */
+		fprintf(fp,"Laps:                    %d\n",w->laps);
+		fprintf(fp,"\n\n");
+	}
+
+	if ( what & S710_WORKOUT_LAPS ) {
+		/* lap data */
+		for ( i = 0; i < w->laps; i++ ) {
+			l = &w->lap_data[i];
+			fprintf(fp,"Lap %d:\n",i+1);
+			fprintf(fp,"\tLap split:          ");
+			s710_time_print(&l->split,"hmst",fp);
+			fprintf(fp,"\n");
+			fprintf(fp,"\tLap cumulative:     ");
+			s710_time_print(&l->cumulative,"hmst",fp);
+			fprintf(fp,"\n");
+			fprintf(fp,"\tLap HR:             %d bpm\n",l->lap_hr);
+			fprintf(fp,"\tAverage HR:         %d bpm\n",l->avg_hr);
+			fprintf(fp,"\tMaximum HR:         %d bpm\n",l->max_hr);
+
+			if ( S710_HAS_ALTITUDE(w->mode) ) {
+				fprintf(fp,"\tLap altitude:       %d %s\n",
+						l->alt,w->units.altitude);
+				fprintf(fp,"\tLap ascent:         %d %s\n",
+						l->ascent,w->units.altitude);
+				fprintf(fp,"\tLap cumulat. asc:   %d %s\n",
+						l->cumul_ascent,w->units.altitude);
+				fprintf(fp,"\tLap temperature:    %d %s\n",
+						l->temp,w->units.temperature);
+			}
+
+			if ( S710_HAS_CADENCE(w->mode) )
+				fprintf(fp,"\tLap cadence:        %d rpm\n",l->cad);
+
+			if ( S710_HAS_SPEED(w->mode) ) {
+				float  lap_speed = 0;
+				time_t tenths;
+
+				fprintf(fp,"\tLap distance:       %.1f %s\n",
+						l->distance/10.0, w->units.distance);
+				fprintf(fp,"\tLap cumulat. dist:  %.1f %s\n",
+						l->cumul_distance/10.0, w->units.distance);
+				fprintf(fp,"\tLap speed at end:   %.1f %s\n",
+						l->speed/16.0, w->units.speed);
+				tenths = s710_time_to_tenths(&l->split);
+				if ( tenths > 0 ) {
+					/* note the cancelling factors of 10 */
+					lap_speed = l->distance / ((float)tenths/3600.0);
+				}
+				fprintf(fp,"\tLap speed ave:      %.1f %s\n",
+						lap_speed, w->units.speed);
+			}
+
+			if ( S710_HAS_POWER(w->mode) ) {
+				fprintf(fp,"\tLap power:          %d W\n",
+						l->power.power);
+				fprintf(fp,"\tLap LR balance:     %d-%d\n",
+						l->power.lr_balance >> 1,
+						100 - (l->power.lr_balance >> 1));
+				fprintf(fp,"\tLap pedal index:    %d%%\n",
+						l->power.pedal_index >> 1);
+			}
+
+			fprintf(fp,"\n");
+		}
+	}
+
+	if ( what & S710_WORKOUT_SAMPLES ) {
+		/* sample data */
+		fprintf(fp,"\nRecorded data:\n\n");
+		fprintf(fp,"Time\t\t HR");
+
+		if ( S710_HAS_ALTITUDE(w->mode) ) {
+			fprintf(fp,"\t Alt\t    VAM");
+		}
+
+		if ( S710_HAS_SPEED(w->mode) ) {
+			fprintf(fp,"\t  Spd");
+			if ( S710_HAS_POWER(w->mode) ) { fprintf(fp,"\tPower  LR Bal   PI"); }
+			if ( S710_HAS_CADENCE(w->mode) ) { fprintf(fp,"\tCad"); }
+			fprintf(fp,"\t  Dist");
+		}
+		fprintf(fp,"\n");
+
+		memset(&s,0,sizeof(s));
+		for ( i = 0; i < w->samples; i++ ) {
+			s710_time_print(&s,"hms",fp);
+			fprintf(fp,"\t\t%3d",w->hr_data[i]);
+
+			if ( S710_HAS_ALTITUDE(w->mode) ) {
+				/* compute VAM as the average of the past 60 seconds... */
+				j = (i >= 60/w->recording_interval) ? i-60/w->recording_interval : 0;
+				if ( i > j ) {
+					vam = (float)(w->alt_data[i] - w->alt_data[j]) * 3600.0 /
+						((i-j) * w->recording_interval);
+				} else {
+					vam = 0.0;
+				}
+				fprintf(fp,"\t%4d\t%7.1f",w->alt_data[i],vam);
+			}
+
+			if ( S710_HAS_SPEED(w->mode) ) {
+				fprintf(fp,"\t%5.1f",w->speed_data[i]/16.0);
+				if ( S710_HAS_POWER(w->mode) ) { fprintf(fp,"\t%5d\t%2d-%2d\t%2d",
+														 w->power_data[i].power,
+														 w->power_data[i].lr_balance >> 1,
+														 100 - (w->power_data[i].lr_balance >> 1),
+														 w->power_data[i].pedal_index >> 1);
+				}
+
+				if ( S710_HAS_CADENCE(w->mode) ) {
+					fprintf(fp,"\t%3d",w->cad_data[i]);
+				}
+				fprintf(fp,"\t%6.2f",w->dist_data[i]);
+			}
+			fprintf(fp,"\n");
+
+			s710_time_increment(&s,w->recording_interval);
+		}
+	}
+}
+
+int
+workout_header_size(workout_t * w)
+{
+	int size = 0;
+
+	switch ( w->type ) {
+	case S710_HRM_S610:
+		size = S710_HEADER_SIZE_S610;
+		break;
+	case S710_HRM_S625X:
+		size = S710_HEADER_SIZE_S625X;
+		break;
+	case S710_HRM_S710:
+		size = S710_HEADER_SIZE_S710;
+		break;
+	default:
+		break;
+	}
+
+	return size;
+}
+
+
+int
+workout_bytes_per_lap(S710_HRM_Type type, unsigned char bt, unsigned char bi)
+{
+	int lap_size = 6;
+
+	/* Compute the number of bytes per lap. */
+	if ( S710_HAS_ALTITUDE(bt) )  lap_size += 5;
+	if ( S710_HAS_SPEED(bt) ) {
+		if ( S710_HAS_CADENCE(bt) ) lap_size += 1;
+		if ( S710_HAS_POWER(bt) )   lap_size += 4;
+		lap_size += 4;
+	}
+  
+	/* 
+	 * This is Matti Tahvonen's fix for handling laps with interval mode.
+	 * Applies to the S625X and the S710/S720i.
+	 */
+	if ( type != S710_HRM_S610 && bi != 0 ) {
+		lap_size += 5;
+	}
+
+	return lap_size;
+}
+
+
+int
+workout_bytes_per_sample(unsigned char bt)
+{
+	int recsiz = 1;
+
+	if (S710_HAS_ALTITUDE(bt))
+		recsiz += 2;
+
+	if (S710_HAS_SPEED(bt)) {
+		if (S710_HAS_ALTITUDE(bt))
+			recsiz -= 1;
+		recsiz += 2;
+		if (S710_HAS_POWER(bt))
+			recsiz += 4;
+		if (S710_HAS_CADENCE(bt))
+			recsiz += 1;
+	}
+
+	return recsiz;
+}
+
+
+int
+workout_allocate_sample_space (workout_t * w)
+{
+	int ok = 1;
+
+#define  MAKEBUF(a,b)											\
+	if ((w->a = calloc(w->samples,sizeof(b))) == NULL) {		\
+		fprintf(stderr,"%s: calloc(%d,%ld): %s\n",				\
+				#a,w->samples,(long)sizeof(b),strerror(errno));	\
+		ok = 0;													\
+	}
+
+	MAKEBUF(hr_data,S710_Heart_Rate);
+	if (S710_HAS_ALTITUDE(w->mode))
+		MAKEBUF(alt_data, S710_Altitude);
+	if (S710_HAS_SPEED(w->mode)) {
+		MAKEBUF(speed_data, S710_Speed);
+		MAKEBUF(dist_data, S710_Distance);
+		if (S710_HAS_POWER(w->mode))
+			MAKEBUF(power_data, S710_Power);
+		if (S710_HAS_CADENCE(w->mode))
+			MAKEBUF(cad_data, S710_Cadence);
+	}
+
+#undef MAKEBUF
+
+	return ok;
+}
+
+
+void
+workout_free (workout_t *w)
+{
+	if ( w != NULL ) {
+		if ( w->lap_data )   free(w->lap_data);
+		if ( w->alt_data )   free(w->alt_data);
+		if ( w->speed_data ) free(w->speed_data);
+		if ( w->dist_data )  free(w->dist_data);
+		if ( w->cad_data )   free(w->cad_data);
+		if ( w->power_data ) free(w->power_data);
+		free(w);
+	}
 }

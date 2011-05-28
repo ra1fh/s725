@@ -2,13 +2,13 @@
  * time helper functions
  */
 
-#include "time_helper.h"
+#include "workout_time.h"
 
 /*
  * Tenths of a second.
  */
 time_t
-s710_time_to_tenths(S710_Time *t)
+workout_time_to_tenths(S710_Time *t)
 {
 	time_t tm;
 
@@ -21,7 +21,7 @@ s710_time_to_tenths(S710_Time *t)
  * This probably doesn't work if the S710_Time argument is negative.
  */
 void
-s710_time_increment(S710_Time *t, unsigned int seconds)
+workout_time_increment(S710_Time *t, unsigned int seconds)
 {
 	int   hours;
 	int   minutes;
@@ -47,7 +47,7 @@ s710_time_increment(S710_Time *t, unsigned int seconds)
 
 
 void
-s710_time_diff(S710_Time *t1, S710_Time *t2, S710_Time *diff)
+workout_time_diff(S710_Time *t1, S710_Time *t2, S710_Time *diff)
 {
 	int t_t1;
 	int t_t2;
@@ -100,7 +100,7 @@ s710_time_diff(S710_Time *t1, S710_Time *t2, S710_Time *diff)
  * "st"   => 56.7
  */
 void
-s710_time_print(S710_Time *t, const char *format, FILE *fp)
+workout_time_print(S710_Time *t, const char *format, FILE *fp)
 {
 	const char *p;
 	int   r = 0;

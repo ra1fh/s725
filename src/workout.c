@@ -11,202 +11,16 @@
 #include <errno.h>
 #include <unistd.h>
 
-#include "label.h"
-#include "time_helper.h"
 #include "workout.h"
+#include "workout_int.h"
+#include "workout_label.h"
+#include "workout_time.h"
 #include "utils.h"
 
-#define S710_HAS_FIELD(x,y)   (((x) & S710_MODE_##y) != 0)
-#define S710_HAS_CADENCE(x)   S710_HAS_FIELD(x,CADENCE)
-#define S710_HAS_POWER(x)     S710_HAS_FIELD(x,POWER)
-#define S710_HAS_SPEED(x)     S710_HAS_FIELD(x,SPEED)
-#define S710_HAS_ALTITUDE(x)  S710_HAS_FIELD(x,ALTITUDE)
-#define S710_HAS_BIKE1(x)     S710_HAS_FIELD(x,BIKE1)
-
-/* constants */
-#define S710_SPEED_KPH       "kph"
-#define S710_SPEED_MPH       "mph"
-#define S710_DISTANCE_KM     "km"
-#define S710_DISTANCE_MI     "mi"
-#define S710_ALTITUDE_M      "m"
-#define S710_ALTITUDE_FT     "ft"
-#define S710_TEMPERATURE_C   "C"
-#define S710_TEMPERATURE_F   "F"
-
-#define S710_MODE_HEART_RATE  0
-#define S710_MODE_ALTITUDE    2
-#define S710_MODE_CADENCE     4
-#define S710_MODE_POWER       8
-#define S710_MODE_BIKE1      16
-#define S710_MODE_BIKE2      32
-#define S710_MODE_SPEED      (S710_MODE_BIKE1 | S710_MODE_BIKE2)
-
-#define S710_AM_PM_MODE_UNSET 0
-#define S710_AM_PM_MODE_SET   1
-#define S710_AM_PM_MODE_PM    2
-
-#define S710_TIC_PLAIN        0
-#define S710_TIC_LINES        1
-#define S710_TIC_SHADE        2
-#define S710_TIC_SHADE_RED    (S710_TIC_SHADE | 4)
-#define S710_TIC_SHADE_GREEN  (S710_TIC_SHADE | 8)
-#define S710_TIC_SHADE_BLUE   (S710_TIC_SHADE | 16)
-
-#define S710_Y_AXIS_LEFT        -1
-#define S710_Y_AXIS_RIGHT        1
-
-#define S710_X_MARGIN         15
-#define S710_Y_MARGIN         15
-
-#define S710_BLANK_SAMPLE_LIMIT  2880 /* 4 hours at 5 second intervals. */
-
-#define S710_HEADER_SIZE_S625X 130
-#define S710_HEADER_SIZE_S710  109
-#define S710_HEADER_SIZE_S610   78
-
-typedef enum {
-	S710_HRM_AUTO    =  0,
-	S710_HRM_S610    = 11,  /* same as in hrm files */
-	S710_HRM_S710    = 12,  /* same as in hrm files */
-	S710_HRM_S810    = 13,  /* same as in hrm files */
-	S710_HRM_S625X   = 22,  /* same as in hrm files */
-	S710_HRM_UNKNOWN = 255
-} S710_HRM_Type;
-
-typedef enum {
-	S710_UNITS_METRIC,
-	S710_UNITS_ENGLISH
-} S710_Units;
-
-typedef enum {
-	S710_HT_SHOW_LIMITS,
-	S710_HT_STORE_LAP,
-	S710_HT_SWITCH_DISP
-} S710_Heart_Touch;
-
-typedef enum {
-	S710_RECORD_INT_05,
-	S710_RECORD_INT_15,
-	S710_RECORD_INT_60
-} S710_Recording_Interval;
-
-typedef enum {
-	S710_INTERVAL_MODE_OFF = 0,
-	S710_INTERVAL_MODE_ON  = 1
-} S710_Interval_Mode;
-
-/* basic types */
-typedef unsigned char  S710_Heart_Rate;
-typedef unsigned char  S710_Cadence;
-typedef short          S710_Altitude;
-typedef unsigned short S710_Speed;     /* 1/16ths of a km/hr */
-typedef float          S710_Distance;
-
-typedef struct S710_Power {
-	unsigned short power;
-	unsigned char  lr_balance;
-	unsigned char  pedal_index;
-} S710_Power;
-
-typedef char S710_Temperature;
-
-typedef struct S710_HR_Limit {
-	S710_Heart_Rate  lower;
-	S710_Heart_Rate  upper;
-} S710_HR_Limit;
-
-/* exercise data */
-typedef struct exercise_t {
-	unsigned int            which;
-	S710_Label              label;
-	S710_Time               timer[3];
-	S710_HR_Limit           hr_limit[3];
-	S710_Time               recovery_time;
-	S710_Heart_Rate         recovery_hr;
-} exercise_t;
-
-/* lap data */
-typedef struct lap_data_t {
-	S710_Time        split;
-	S710_Time        cumulative;
-	S710_Heart_Rate  lap_hr;
-	S710_Heart_Rate  avg_hr;
-	S710_Heart_Rate  max_hr;
-	S710_Altitude    alt;
-	S710_Altitude    ascent;
-	S710_Altitude    cumul_ascent;
-	S710_Temperature temp;
-	S710_Cadence     cad;
-	int              distance;
-	int              cumul_distance;
-	S710_Speed       speed;
-	S710_Power       power;
-} lap_data_t;
-
-/* units info */
-typedef struct units_data_t {
-	S710_Units       system;       /* S710_UNITS_METRIC or S710_UNITS_ENGLISH */
-	const char      *altitude;     /* "m" or "ft" */
-	const char      *speed;        /* "kph" or "mph" */
-	const char      *distance;     /* "km" or "mi" */
-	const char      *temperature;  /* "C" or "F" */
-} units_data_t;
-
-/* a single workout */
-struct workout_t {
-	S710_HRM_Type           type;
-	struct tm               date;
-	int                     ampm;
-	time_t                  unixtime;
-	int                     user_id;
-	S710_Interval_Mode      interval_mode;
-	int                     exercise_number;
-	S710_Label              exercise_label;
-	S710_Time               duration;
-	S710_Heart_Rate         avg_hr;
-	S710_Heart_Rate         max_hr;
-	int                     bytes;
-	int                     laps;
-	int                     manual_laps;
-	int                     samples;
-	units_data_t            units;
-	int                     mode;
-	int                     recording_interval;
-	int                     filtered;
-	S710_HR_Limit           hr_limit[3];
-	S710_Time               hr_zone[3][3];
-	S710_Time               bestlap_split;
-	S710_Time               cumulative_exercise;
-	S710_Time               cumulative_ride;
-	int                     odometer;
-	int                     exercise_distance;
-	S710_Cadence            avg_cad;
-	S710_Cadence            max_cad;
-	S710_Altitude           min_alt;
-	S710_Altitude           avg_alt;
-	S710_Altitude           max_alt;
-	S710_Temperature        min_temp;
-	S710_Temperature        avg_temp;
-	S710_Temperature        max_temp;
-	S710_Altitude           ascent;
-	S710_Power              avg_power;
-	S710_Power              max_power;
-	S710_Speed              avg_speed;
-	S710_Speed              max_speed;
-	S710_Speed              median_speed;
-	S710_Speed		  highest_speed;
-	int                     energy;
-	int                     total_energy;
-	lap_data_t             *lap_data;
-	S710_Heart_Rate        *hr_data;
-	S710_Altitude          *alt_data;
-	S710_Speed             *speed_data;
-	S710_Distance          *dist_data;       /* computed from speed_data */
-	S710_Cadence           *cad_data;
-	S710_Power             *power_data;
-};
-
 int  		workout_bytes_per_lap(S710_HRM_Type type, unsigned char bt, unsigned char bi);
+int  		workout_header_size(workout_t * w);
+int  		workout_bytes_per_sample(unsigned char bt);
+int  		workout_allocate_sample_space(workout_t * w);
 static void workout_read_preamble(workout_t * w, unsigned char * buf);
 static void workout_read_date(workout_t * w, unsigned char * buf);
 static void workout_read_duration(workout_t * w, unsigned char * buf);
@@ -232,7 +46,7 @@ workout_read_preamble(workout_t * w, unsigned char * buf)
 
 	w->exercise_number = buf[2];
 	if ( w->exercise_number > 0 && w->exercise_number <= 5 ) {
-		label_extract(&buf[3],&w->exercise_label,7);
+		workout_label_extract(&buf[3],&w->exercise_label,7);
 	} else {
 		strlcpy(w->exercise_label,"<empty>", sizeof(w->exercise_label));
 	}
@@ -491,7 +305,7 @@ workout_read_laps(workout_t * w, unsigned char * buf)
 		if ( i == 0 ) 
 			memcpy(&l->split,&l->cumulative,sizeof(S710_Time));
 		else
-			s710_time_diff(&w->lap_data[i-1].cumulative,&l->cumulative,&l->split);
+			workout_time_diff(&w->lap_data[i-1].cumulative,&l->cumulative,&l->split);
 
 		/* heart rate data */
 		l->lap_hr = buf[offset+3];
@@ -898,7 +712,7 @@ workout_print(workout_t * w, FILE * fp, int what)
 
 		/* exercise duration */
 		fprintf(fp,"Exercise duration:       ");
-		s710_time_print(&w->duration,"hmst",fp);
+		workout_time_print(&w->duration,"hmst",fp);
 		fprintf(fp,"\n");
 
 		if ( S710_HAS_SPEED(w->mode) )
@@ -969,13 +783,13 @@ workout_print(workout_t * w, FILE * fp, int what)
 			fprintf(fp,"HR Limit %d:              %d to %3d\n",
 					i+1,w->hr_limit[i].lower,w->hr_limit[i].upper);
 			fprintf(fp,"\tTime below:      ");
-			s710_time_print(&w->hr_zone[i][0],"hms",fp);
+			workout_time_print(&w->hr_zone[i][0],"hms",fp);
 			fprintf(fp,"\n");
 			fprintf(fp,"\tTime within:     ");
-			s710_time_print(&w->hr_zone[i][1],"hms",fp);
+			workout_time_print(&w->hr_zone[i][1],"hms",fp);
 			fprintf(fp,"\n");
 			fprintf(fp,"\tTime above:      ");
-			s710_time_print(&w->hr_zone[i][2],"hms",fp);
+			workout_time_print(&w->hr_zone[i][2],"hms",fp);
 			fprintf(fp,"\n");
 		}
 
@@ -985,12 +799,12 @@ workout_print(workout_t * w, FILE * fp, int what)
 
 		/* cumulative counters */
 		fprintf(fp,"Cumulative exercise:     ");
-		s710_time_print(&w->cumulative_exercise,"hm",fp);
+		workout_time_print(&w->cumulative_exercise,"hm",fp);
 		fprintf(fp,"\n");
 
 		if ( S710_HAS_SPEED(w->mode) ) {
 			fprintf(fp,"Cumulative ride time:    ");
-			s710_time_print(&w->cumulative_ride,"hm",fp);
+			workout_time_print(&w->cumulative_ride,"hm",fp);
 			fprintf(fp,"\n");
 			fprintf(fp,"Odometer:                %d %s\n",
 					w->odometer, w->units.distance);
@@ -1007,10 +821,10 @@ workout_print(workout_t * w, FILE * fp, int what)
 			l = &w->lap_data[i];
 			fprintf(fp,"Lap %d:\n",i+1);
 			fprintf(fp,"\tLap split:          ");
-			s710_time_print(&l->split,"hmst",fp);
+			workout_time_print(&l->split,"hmst",fp);
 			fprintf(fp,"\n");
 			fprintf(fp,"\tLap cumulative:     ");
-			s710_time_print(&l->cumulative,"hmst",fp);
+			workout_time_print(&l->cumulative,"hmst",fp);
 			fprintf(fp,"\n");
 			fprintf(fp,"\tLap HR:             %d bpm\n",l->lap_hr);
 			fprintf(fp,"\tAverage HR:         %d bpm\n",l->avg_hr);
@@ -1040,7 +854,7 @@ workout_print(workout_t * w, FILE * fp, int what)
 						l->cumul_distance/10.0, w->units.distance);
 				fprintf(fp,"\tLap speed at end:   %.1f %s\n",
 						l->speed/16.0, w->units.speed);
-				tenths = s710_time_to_tenths(&l->split);
+				tenths = workout_time_to_tenths(&l->split);
 				if ( tenths > 0 ) {
 					/* note the cancelling factors of 10 */
 					lap_speed = l->distance / ((float)tenths/3600.0);
@@ -1082,7 +896,7 @@ workout_print(workout_t * w, FILE * fp, int what)
 
 		memset(&s,0,sizeof(s));
 		for ( i = 0; i < w->samples; i++ ) {
-			s710_time_print(&s,"hms",fp);
+			workout_time_print(&s,"hms",fp);
 			fprintf(fp,"\t\t%3d",w->hr_data[i]);
 
 			if ( S710_HAS_ALTITUDE(w->mode) ) {
@@ -1113,7 +927,7 @@ workout_print(workout_t * w, FILE * fp, int what)
 			}
 			fprintf(fp,"\n");
 
-			s710_time_increment(&s,w->recording_interval);
+			workout_time_increment(&s,w->recording_interval);
 		}
 	}
 }

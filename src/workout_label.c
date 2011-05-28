@@ -4,13 +4,13 @@
 
 #include <string.h>
 
-#include "label.h"
+#include "workout_label.h"
 
 static char alpha_map(unsigned char c);
 static unsigned char inverse_alpha_map(char c);
 
 void
-label_extract(unsigned char *buf, S710_Label *label, int bytes)
+workout_label_extract(unsigned char *buf, S710_Label *label, int bytes)
 {
 	int   i;
 	char *p = (char *)label;
@@ -23,7 +23,7 @@ label_extract(unsigned char *buf, S710_Label *label, int bytes)
 }
 
 void
-label_encode(S710_Label label, unsigned char *buf, int bytes)
+workout_label_encode(S710_Label label, unsigned char *buf, int bytes)
 {
 	int   i;
 	unsigned char *p = buf;

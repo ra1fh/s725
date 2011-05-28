@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include "s710.h"
+#include "driver.h"
 
 static void     usage(void);
 

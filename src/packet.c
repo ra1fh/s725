@@ -1,9 +1,15 @@
+/*
+ * sending/receiving of packets
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 
+#include "driver.h"
 #include "packet.h"
+#include "utils.h"
 
 /* defines the packet types */
 
@@ -251,21 +257,11 @@ packet_print(packet_t *p, FILE *fp)
 	fprintf(fp,"\n");
 }
 
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <termios.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <sys/time.h>
-#include "s710.h"
-
 /* This file needs to be rewritten.  */
 #define READ_TRIES   10
 
 /* static helper functions */
-static int packet_recv_short(unsigned short *s, struct s710_driver *d);
+static int packet_recv_short(unsigned short *s);
 static unsigned short packet_checksum(packet_t *p);
 static int packet_serialize(packet_t *p, BUF *buf);
 
@@ -294,7 +290,7 @@ packet_send(packet_t *p)
  * receive a packet from the S710 driver (allocates memory)
  */
 packet_t *
-packet_recv(struct s710_driver *d) {
+packet_recv() {
 	int             r;
 	int             i;
 	unsigned char   c = 0;
@@ -312,7 +308,7 @@ packet_recv(struct s710_driver *d) {
 		crc_process ( &crc, id );
 		r = driver_read_byte(&c);
 		crc_process ( &crc, c );
-		r = packet_recv_short ( &len, d );
+		r = packet_recv_short (&len);
 		crc_process ( &crc, len >> 8 );
 		crc_process ( &crc, len & 0xff );
 		if ( r ) {
@@ -338,7 +334,7 @@ packet_recv(struct s710_driver *d) {
 					}
 				}
 				if ( p != NULL ) {
-					packet_recv_short ( &p->checksum, d );
+					packet_recv_short (&p->checksum);
 
 					if ( crc != p->checksum ) {
 	    
@@ -366,7 +362,7 @@ packet_recv(struct s710_driver *d) {
  * read a short from fd
  */
 static int
-packet_recv_short(unsigned short *s, struct s710_driver *d)
+packet_recv_short(unsigned short *s)
 {
 	int           r = 0;
 	unsigned char u = 0;

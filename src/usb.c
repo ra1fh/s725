@@ -1,5 +1,5 @@
 /*
- * usb support
+ * usb driver
  */
 
 #include <sys/time.h>
@@ -10,11 +10,22 @@
 #include <string.h>
 #include <usb.h>
 
-#include "s710.h"
+#include "driver_int.h"
 
-#define S710_USB_VENDOR_ID   0x0da4
-#define S710_USB_PRODUCT_ID  1
-#define S710_USB_INTERFACE   0
+static int usb_init_port(struct s710_driver *d);
+static int usb_read_byte(struct s710_driver *d, unsigned char *byte);
+static int usb_send_packet(struct s710_driver *d, BUF *buf);
+static int usb_shutdown_port(struct s710_driver *d);
+
+static int find_first_altsetting(struct usb_device*, int*, int*, int*);
+static int find_endpoint(struct usb_device *, int, int, int, int, int);
+
+struct s710_driver_ops usb_driver_ops = {
+	.init = usb_init_port,
+	.read = usb_read_byte,
+	.write = usb_send_packet,
+	.close = usb_shutdown_port,
+};
 
 struct s710_usb_data {
 	struct usb_device *device;
@@ -23,18 +34,12 @@ struct s710_usb_data {
 	int                interface;
 };
 
-static int find_first_altsetting(struct usb_device *dev,
-								 int               *config,
-								 int               *interface,
-								 int               *altsetting);
-static int find_endpoint        (struct usb_device *dev,
-								 int                config,
-								 int                interface,
-								 int                altsetting,
-								 int                dir,
-								 int                type);
+#define S710_USB_VENDOR_ID   0x0da4
+#define S710_USB_PRODUCT_ID  1
+#define S710_USB_INTERFACE   0
 
-int
+
+static int
 usb_init_port(struct s710_driver *d)
 {
 	int ret = -1;
@@ -126,7 +131,7 @@ usb_init_port(struct s710_driver *d)
 /*
  * I need to revisit this function at some point.
  */
-int
+static int
 usb_read_byte(struct s710_driver *d, unsigned char *byte)
 {
 	int r = 0;
@@ -168,7 +173,7 @@ usb_read_byte(struct s710_driver *d, unsigned char *byte)
 /*
  * send a packet to the polar device over the usb interface
  */
-int
+static int
 usb_send_packet(struct s710_driver *d, BUF *buf)
 {
 	int  ret = 0;
@@ -190,7 +195,7 @@ usb_send_packet(struct s710_driver *d, BUF *buf)
 
 
 
-int
+static int
 usb_shutdown_port(struct s710_driver *d)
 {
 	int ret = -1;

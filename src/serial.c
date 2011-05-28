@@ -1,82 +1,50 @@
-#include <stdio.h>
+/*
+ * serial/ir driver
+ */
+
+#include <sys/types.h>
+
 #include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <fcntl.h>
-#include "s710.h"
+
+#include "driver_int.h"
 
 #define SERIAL_READ_TRIES 10
 
-unsigned char gByteMap[256];
+static int ir_init(struct s710_driver *d);
+static int ir_read_byte(struct s710_driver *d, unsigned char *byte);
+static int ir_write(struct s710_driver *d, BUF *buf);
+
+static int serial_init(struct s710_driver *d);
+static int serial_write(struct s710_driver *d, BUF *buf);
+static int serial_read_byte(struct s710_driver *d, unsigned char *byte);
 
 static void compute_byte_map(void);
 
-int
-ir_init(struct s710_driver *d)
-{
-	return serial_init(d);
-}
+struct s710_driver_ops serial_driver_ops = {
+	.init = serial_init,
+	.read = serial_read_byte,
+	.write = serial_write,
+	.close = NULL,
+};
 
-int
-ir_read_byte(struct s710_driver *d, unsigned char *byte)
-{
-	return serial_read_byte(d, byte);
-}
+struct s710_driver_ops ir_driver_ops = {
+	.init = ir_init,
+	.read = ir_read_byte,
+	.write = ir_write,
+	.close = NULL,
+};
 
-int
-ir_write(struct s710_driver *d, BUF *buf)
-{
-	unsigned int i;
-	unsigned char c;
-	int ret = 0;
-
-	for ( i = 0; i < buf_len(buf); i++ ) {
-		c = buf_getc(buf, i);
-		if ((write((int)d->data, &c, 1)) < 0)
-			ret = -1;
-	}
-    
-	/*
-	 * the data that gets echoed back is not RS-232 data.  it is garbage 
-	 * data that we have to flush.  there is a pause of at least 0.1 
-	 * seconds before the real data shows up.
-	 */
-	usleep(100000);
-	tcflush((int)d->data,TCIFLUSH);
-	return ret;
-}
-
-int
-serial_write(struct s710_driver *d, BUF *buf)
-{
-	unsigned int i;
-	unsigned char c;
-	int ret = 0;
-
-	for ( i = 0; i < buf_len(buf); i++ ) {
-		c = buf_getc(buf, i);
-		if (write((int)d->data, &gByteMap[c], 1) < 0)
-			ret = -1;
-	}
-    
-	/*
-	 * the data that gets echoed back is not RS-232 data.  it is garbage 
-	 * data that we have to flush.  there is a pause of at least 0.1 
-	 * seconds before the real data shows up.
-	 */
-	usleep(100000);
-	tcflush((int)d->data,TCIFLUSH);
-	return ret;
-}
+unsigned char gByteMap[256];
 
 /* 
  * initialize the serial port
  */
-int  
+static int  
 serial_init(struct s710_driver *d)
 {
 	struct termios t;
@@ -123,8 +91,7 @@ serial_init(struct s710_driver *d)
 	return fd;
 }
 
-
-int
+static int
 serial_read_byte(struct s710_driver *d, unsigned char *byte)
 {
 	int r = 0;
@@ -176,6 +143,64 @@ serial_read_byte(struct s710_driver *d, unsigned char *byte)
 #endif
 
 	return r;
+}
+
+static int
+serial_write(struct s710_driver *d, BUF *buf)
+{
+	unsigned int i;
+	unsigned char c;
+	int ret = 0;
+
+	for ( i = 0; i < buf_len(buf); i++ ) {
+		c = buf_getc(buf, i);
+		if (write((int)d->data, &gByteMap[c], 1) < 0)
+			ret = -1;
+	}
+    
+	/*
+	 * the data that gets echoed back is not RS-232 data.  it is garbage 
+	 * data that we have to flush.  there is a pause of at least 0.1 
+	 * seconds before the real data shows up.
+	 */
+	usleep(100000);
+	tcflush((int)d->data,TCIFLUSH);
+	return ret;
+}
+
+static int
+ir_init(struct s710_driver *d)
+{
+	return serial_init(d);
+}
+
+static int
+ir_read_byte(struct s710_driver *d, unsigned char *byte)
+{
+	return serial_read_byte(d, byte);
+}
+
+static int
+ir_write(struct s710_driver *d, BUF *buf)
+{
+	unsigned int i;
+	unsigned char c;
+	int ret = 0;
+
+	for ( i = 0; i < buf_len(buf); i++ ) {
+		c = buf_getc(buf, i);
+		if ((write((int)d->data, &c, 1)) < 0)
+			ret = -1;
+	}
+    
+	/*
+	 * the data that gets echoed back is not RS-232 data.  it is garbage 
+	 * data that we have to flush.  there is a pause of at least 0.1 
+	 * seconds before the real data shows up.
+	 */
+	usleep(100000);
+	tcflush((int)d->data,TCIFLUSH);
+	return ret;
 }
 
 static void

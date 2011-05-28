@@ -1,5 +1,5 @@
 /*
- * basic communication packet
+ * sending/receiving of packets
  */
 
 #ifndef PACKET_H

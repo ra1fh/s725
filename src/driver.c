@@ -1,31 +1,16 @@
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "s710.h"
+#include "driver.h"
+#include "driver_int.h"
 
-static struct s710_driver_ops serial_driver_ops = {
-	.init = serial_init,
-	.read = serial_read_byte,
-	.write = serial_write,
-	.close = NULL,
-};
-
-static struct s710_driver_ops ir_driver_ops = {
-	.init = ir_init,
-	.read = ir_read_byte,
-	.write = ir_write,
-	.close = NULL,
-};
-
-static struct s710_driver_ops usb_driver_ops = {
-	.init = usb_init_port,
-	.read = usb_read_byte,
-	.write = usb_send_packet,
-	.close = usb_shutdown_port,
-};
+extern struct s710_driver_ops serial_driver_ops;
+extern struct s710_driver_ops ir_driver_ops;
+extern struct s710_driver_ops usb_driver_ops;
 
 static struct s710_driver *driver;
 

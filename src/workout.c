@@ -65,6 +65,15 @@
 #define S710_HEADER_SIZE_S610   78
 
 typedef enum {
+	S710_HRM_AUTO    =  0,
+	S710_HRM_S610    = 11,  /* same as in hrm files */
+	S710_HRM_S710    = 12,  /* same as in hrm files */
+	S710_HRM_S810    = 13,  /* same as in hrm files */
+	S710_HRM_S625X   = 22,  /* same as in hrm files */
+	S710_HRM_UNKNOWN = 255
+} S710_HRM_Type;
+
+typedef enum {
 	S710_UNITS_METRIC,
 	S710_UNITS_ENGLISH
 } S710_Units;
@@ -197,6 +206,7 @@ struct workout_t {
 	S710_Power             *power_data;
 };
 
+int  		workout_bytes_per_lap(S710_HRM_Type type, unsigned char bt, unsigned char bi);
 static void workout_read_preamble(workout_t * w, unsigned char * buf);
 static void workout_read_date(workout_t * w, unsigned char * buf);
 static void workout_read_duration(workout_t * w, unsigned char * buf);
@@ -773,10 +783,10 @@ workout_detect_hrm_type(unsigned char * buf, unsigned int bytes)
 	return type;
 }
 
-
 workout_t *
-workout_read(char *filename, S710_HRM_Type type)
+workout_read(char *filename)
 {
+	int            type;
 	int            fd;
 	struct stat    sb;
 	workout_t *    w = NULL;
@@ -788,13 +798,11 @@ workout_read(char *filename, S710_HRM_Type type)
 				if (read(fd,buf,sb.st_size) == sb.st_size) {
 					if ( buf[0] + (buf[1]<<8) == sb.st_size ) {
 						/* 
-						 * if type == S710_HRM_AUTO, try to guess the "real" type.
-						 * we do this using some heuristics that may or may not be
-						 * reliable. 
+						 * try to guess the "real" type.  we do this
+						 * using some heuristics that may or may not
+						 * be reliable.
 						 */
-						if ( type == S710_HRM_AUTO ) {
-							type = workout_detect_hrm_type(buf,sb.st_size);
-						}
+						type = workout_detect_hrm_type(buf,sb.st_size);
 	    
 						/* we're good to go */
 						if ( type != S710_HRM_UNKNOWN ) {

@@ -27,21 +27,25 @@ usage(void) {
 int
 main(int argc, char **argv)
 {
-	const char		 *filedir = NULL;
 	char			  path[PATH_MAX];
-	int				  ok;
-	const char		 *driver_name = "ir";
-	const char		 *device = NULL;
-	int				  ch;
+	const char		 *opt_filedir = NULL;
+	const char		 *opt_driver_name = "ir";
+	const char		 *opt_device = NULL;
 	BUF              *files;
+	int				  opt_raw = 0;
+	int				  ch;
+	int				  ok;
 
-	while ( (ch = getopt(argc,argv,"d:f:h")) != -1 ) {
+	while ( (ch = getopt(argc,argv,"d:f:hr")) != -1 ) {
 		switch (ch) {
 		case 'd':
-			driver_name = optarg;
+			opt_driver_name = optarg;
 			break;
 		case 'f':
-			filedir = optarg;
+			opt_filedir = optarg;
+			break;
+		case 'r':
+			opt_raw = 1;
 			break;
 		case 'h':
 			usage();
@@ -54,9 +58,9 @@ main(int argc, char **argv)
 	}
 	argc -= optind;
 	argv += optind;
-	device = argv[0];
+	opt_device = argv[0];
 
-	ok = driver_init (driver_name , device);
+	ok = driver_init (opt_driver_name , opt_device);
 
 	if ( ok != 1 ) {
 		printf("problem with driver_init\n");
@@ -64,17 +68,15 @@ main(int argc, char **argv)
 		return 1;
 	}
 
-	if (filedir) {
-		filedir = realpath(filedir, path);
-	} else if ((filedir = getenv("S710_FILEDIR")) != NULL) {
-		filedir = realpath(filedir,path);
+	if (opt_filedir) {
+		opt_filedir = realpath(opt_filedir, path);
 	} else {
 		getcwd(path, sizeof(path));
-		filedir = path;
+		opt_filedir = path;
 	}
 
-	if (!filedir) {
-		printf("could not resolve path. check S710_FILEDIR or -f\n");
+	if (!opt_filedir) {
+		printf("could not resolve path. check -f\n");
 		return 1;
 	}
 
@@ -86,7 +88,7 @@ main(int argc, char **argv)
 	files = buf_alloc(0);
 
 	if (files_get(files)) {
-		files_save(files, filedir);
+		files_save(files, opt_filedir);
 	}
 
 	buf_free(files);

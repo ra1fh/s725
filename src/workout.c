@@ -653,7 +653,7 @@ workout_print(workout_t * w, FILE * fp, int what)
 		/* exercise date */
 		strftime(buf,sizeof(buf),"%Y-%m-%d %H:%M:%S (%a, %d %b %Y)",
 				 localtime(&w->unixtime));
-		fprintf(fp,"Workout date:            %s\n",buf);
+		fprintf(fp,"# Workout date:            %s\n",buf);
 
 		/* HRM type */
 		switch ( w->type ) {
@@ -669,20 +669,20 @@ workout_print(workout_t * w, FILE * fp, int what)
 		default:
 			break;
 		}
-		fprintf(fp,"HRM Type:                %s\n",hrm_type);
+		fprintf(fp,"# HRM Type:                %s\n",hrm_type);
 
 		/* user id */
-		fprintf(fp,"User ID:                 %d\n",w->user_id);
+		fprintf(fp,"# User ID:                 %d\n",w->user_id);
 
 		/* exercise number and label */
 		if ( w->exercise_number > 0 && w->exercise_number <= 5 ) {
-			fprintf(fp,"Exercise:                %d (%s)\n",
+			fprintf(fp,"# Exercise:                %d (%s)\n",
 					w->exercise_number,
 					w->exercise_label);
 		}
 
 		/* workout mode */
-		fprintf(fp,"Mode:                    HR");
+		fprintf(fp,"# Mode:                    HR");
 		if ( S710_HAS_ALTITUDE(w->mode) ) fprintf(fp,", Altitude");
 		if ( S710_HAS_SPEED(w->mode) )
 			fprintf(fp,", Bike %d (Speed%s%s)",
@@ -692,176 +692,176 @@ workout_print(workout_t * w, FILE * fp, int what)
 		fprintf(fp,"\n");
 
 		/* exercise duration */
-		fprintf(fp,"Exercise duration:       ");
+		fprintf(fp,"# Exercise duration:       ");
 		workout_time_print(&w->duration,"hmst",fp);
 		fprintf(fp,"\n");
 
 		if ( S710_HAS_SPEED(w->mode) )
-			fprintf(fp,"Exercise distance:       %.1f %s\n",
+			fprintf(fp,"# Exercise distance:       %.1f %s\n",
 					w->exercise_distance/10.0, w->units.distance);
 
 		/* recording interval */
-		fprintf(fp,"Recording interval:      %d seconds\n",
+		fprintf(fp,"# Recording interval:      %d seconds\n",
 				w->recording_interval);
 
 		/* average, maximum heart rate */
-		fprintf(fp,"Average heart rate:      %d bpm\n",w->avg_hr);
-		fprintf(fp,"Maximum heart rate:      %d bpm\n",w->max_hr);
+		fprintf(fp,"# Average heart rate:      %d bpm\n",w->avg_hr);
+		fprintf(fp,"# Maximum heart rate:      %d bpm\n",w->max_hr);
 
 		/* average, maximum cadence */
 		if ( S710_HAS_CADENCE(w->mode) ) {
-			fprintf(fp,"Average cadence:         %d rpm\n",w->avg_cad);
-			fprintf(fp,"Maximum cadence:         %d rpm\n",w->max_cad);
+			fprintf(fp,"# Average cadence:         %d rpm\n",w->avg_cad);
+			fprintf(fp,"# Maximum cadence:         %d rpm\n",w->max_cad);
 		}
 
 		/* average, maximum speed */
 		if ( S710_HAS_SPEED(w->mode) ) {
-			fprintf(fp,"Average speed:           %.1f %s\n",
+			fprintf(fp,"# Average speed:           %.1f %s\n",
 					w->avg_speed/16.0, w->units.speed);
-			fprintf(fp,"Maximum speed:           %.1f %s\n",
+			fprintf(fp,"# Maximum speed:           %.1f %s\n",
 					w->max_speed/16.0, w->units.speed);
 		}
 
 		if ( w->type != S710_HRM_S610 ) {
 			/* min, avg, max temperature */
-			fprintf(fp,"Minumum temperature:     %d %s\n",
+			fprintf(fp,"# Minumum temperature:     %d %s\n",
 					w->min_temp, w->units.temperature);
-			fprintf(fp,"Average temperature:     %d %s\n",
+			fprintf(fp,"# Average temperature:     %d %s\n",
 					w->avg_temp, w->units.temperature);
-			fprintf(fp,"Maximum temperature:     %d %s\n",
+			fprintf(fp,"# Maximum temperature:     %d %s\n",
 					w->max_temp, w->units.temperature);
 		}
 
 		/* altitude, ascent */
 		if ( S710_HAS_ALTITUDE(w->mode) ) {
-			fprintf(fp,"Minimum altitude:        %d %s\n",
+			fprintf(fp,"# Minimum altitude:        %d %s\n",
 					w->min_alt, w->units.altitude);
-			fprintf(fp,"Average altitude:        %d %s\n",
+			fprintf(fp,"# Average altitude:        %d %s\n",
 					w->avg_alt, w->units.altitude);
-			fprintf(fp,"Maximum altitude:        %d %s\n",
+			fprintf(fp,"# Maximum altitude:        %d %s\n",
 					w->max_alt, w->units.altitude);
-			fprintf(fp,"Ascent:                  %d %s\n",
+			fprintf(fp,"# Ascent:                  %d %s\n",
 					w->ascent, w->units.altitude);
 		}
 
 		/* power data */
 		if (  S710_HAS_POWER(w->mode)  ) {
-			fprintf(fp,"Average power:           %d W\n",
+			fprintf(fp,"# Average power:           %d W\n",
 					w->avg_power.power);
-			fprintf(fp,"Average LR balance:      %d-%d\n",
+			fprintf(fp,"# Average LR balance:      %d-%d\n",
 					w->avg_power.lr_balance >> 1,
 					100 - (w->avg_power.lr_balance >> 1));
 			fprintf(fp,"Average pedal index:     %d %%\n",
 					w->avg_power.pedal_index >> 1);
-			fprintf(fp,"Maximum power:           %d W\n",
+			fprintf(fp,"# Maximum power:           %d W\n",
 					w->max_power.power);
-			fprintf(fp,"Maximum pedal index:     %d %%\n",
+			fprintf(fp,"# Maximum pedal index:     %d %%\n",
 					w->max_power.pedal_index >> 1);
 		}
 
 		/* HR limits */
 		for ( i = 0; i < 3; i++ ) {
-			fprintf(fp,"HR Limit %d:              %d to %3d\n",
+			fprintf(fp,"# HR Limit %d:              %d to %3d\n",
 					i+1,w->hr_limit[i].lower,w->hr_limit[i].upper);
-			fprintf(fp,"\tTime below:      ");
+			fprintf(fp,"# \tTime below:      ");
 			workout_time_print(&w->hr_zone[i][0],"hms",fp);
 			fprintf(fp,"\n");
-			fprintf(fp,"\tTime within:     ");
+			fprintf(fp,"# \tTime within:     ");
 			workout_time_print(&w->hr_zone[i][1],"hms",fp);
 			fprintf(fp,"\n");
-			fprintf(fp,"\tTime above:      ");
+			fprintf(fp,"# \tTime above:      ");
 			workout_time_print(&w->hr_zone[i][2],"hms",fp);
 			fprintf(fp,"\n");
 		}
 
 		/* energy, total energy (units??) */
-		fprintf(fp,"Energy:                  %d\n",w->energy);
-		fprintf(fp,"Total energy:            %d\n",w->total_energy);
+		fprintf(fp,"# Energy:                  %d\n",w->energy);
+		fprintf(fp,"# Total energy:            %d\n",w->total_energy);
 
 		/* cumulative counters */
-		fprintf(fp,"Cumulative exercise:     ");
+		fprintf(fp,"# Cumulative exercise:     ");
 		workout_time_print(&w->cumulative_exercise,"hm",fp);
 		fprintf(fp,"\n");
 
 		if ( S710_HAS_SPEED(w->mode) ) {
-			fprintf(fp,"Cumulative ride time:    ");
+			fprintf(fp,"# Cumulative ride time:    ");
 			workout_time_print(&w->cumulative_ride,"hm",fp);
 			fprintf(fp,"\n");
-			fprintf(fp,"Odometer:                %d %s\n",
+			fprintf(fp,"# Odometer:                %d %s\n",
 					w->odometer, w->units.distance);
 		}
 
 		/* laps */
-		fprintf(fp,"Laps:                    %d\n",w->laps);
-		fprintf(fp,"\n\n");
+		fprintf(fp,"# Laps:                    %d\n",w->laps);
+		fprintf(fp,"# \n# \n");
 	}
 
 	if ( what & S710_WORKOUT_LAPS ) {
 		/* lap data */
 		for ( i = 0; i < w->laps; i++ ) {
 			l = &w->lap_data[i];
-			fprintf(fp,"Lap %d:\n",i+1);
-			fprintf(fp,"\tLap split:          ");
+			fprintf(fp,"# Lap %d:\n",i+1);
+			fprintf(fp,"# \tLap split:          ");
 			workout_time_print(&l->split,"hmst",fp);
 			fprintf(fp,"\n");
-			fprintf(fp,"\tLap cumulative:     ");
+			fprintf(fp,"# \tLap cumulative:     ");
 			workout_time_print(&l->cumulative,"hmst",fp);
 			fprintf(fp,"\n");
-			fprintf(fp,"\tLap HR:             %d bpm\n",l->lap_hr);
-			fprintf(fp,"\tAverage HR:         %d bpm\n",l->avg_hr);
-			fprintf(fp,"\tMaximum HR:         %d bpm\n",l->max_hr);
+			fprintf(fp,"# \tLap HR:             %d bpm\n",l->lap_hr);
+			fprintf(fp,"# \tAverage HR:         %d bpm\n",l->avg_hr);
+			fprintf(fp,"# \tMaximum HR:         %d bpm\n",l->max_hr);
 
 			if ( S710_HAS_ALTITUDE(w->mode) ) {
-				fprintf(fp,"\tLap altitude:       %d %s\n",
+				fprintf(fp,"# \tLap altitude:       %d %s\n",
 						l->alt,w->units.altitude);
-				fprintf(fp,"\tLap ascent:         %d %s\n",
+				fprintf(fp,"# \tLap ascent:         %d %s\n",
 						l->ascent,w->units.altitude);
-				fprintf(fp,"\tLap cumulat. asc:   %d %s\n",
+				fprintf(fp,"# \tLap cumulat. asc:   %d %s\n",
 						l->cumul_ascent,w->units.altitude);
-				fprintf(fp,"\tLap temperature:    %d %s\n",
+				fprintf(fp,"# \tLap temperature:    %d %s\n",
 						l->temp,w->units.temperature);
 			}
 
 			if ( S710_HAS_CADENCE(w->mode) )
-				fprintf(fp,"\tLap cadence:        %d rpm\n",l->cad);
+				fprintf(fp,"# \tLap cadence:        %d rpm\n",l->cad);
 
 			if ( S710_HAS_SPEED(w->mode) ) {
 				float  lap_speed = 0;
 				time_t tenths;
 
-				fprintf(fp,"\tLap distance:       %.1f %s\n",
+				fprintf(fp,"# \tLap distance:       %.1f %s\n",
 						l->distance/10.0, w->units.distance);
-				fprintf(fp,"\tLap cumulat. dist:  %.1f %s\n",
+				fprintf(fp,"# \tLap cumulat. dist:  %.1f %s\n",
 						l->cumul_distance/10.0, w->units.distance);
-				fprintf(fp,"\tLap speed at end:   %.1f %s\n",
+				fprintf(fp,"# \tLap speed at end:   %.1f %s\n",
 						l->speed/16.0, w->units.speed);
 				tenths = workout_time_to_tenths(&l->split);
 				if ( tenths > 0 ) {
 					/* note the cancelling factors of 10 */
 					lap_speed = l->distance / ((float)tenths/3600.0);
 				}
-				fprintf(fp,"\tLap speed ave:      %.1f %s\n",
+				fprintf(fp,"# \tLap speed ave:      %.1f %s\n",
 						lap_speed, w->units.speed);
 			}
 
 			if ( S710_HAS_POWER(w->mode) ) {
-				fprintf(fp,"\tLap power:          %d W\n",
+				fprintf(fp,"# \tLap power:          %d W\n",
 						l->power.power);
-				fprintf(fp,"\tLap LR balance:     %d-%d\n",
+				fprintf(fp,"# \tLap LR balance:     %d-%d\n",
 						l->power.lr_balance >> 1,
 						100 - (l->power.lr_balance >> 1));
-				fprintf(fp,"\tLap pedal index:    %d%%\n",
+				fprintf(fp,"# \tLap pedal index:    %d%%\n",
 						l->power.pedal_index >> 1);
 			}
 
-			fprintf(fp,"\n");
+			fprintf(fp,"# \n");
 		}
 	}
 
 	if ( what & S710_WORKOUT_SAMPLES ) {
 		/* sample data */
-		fprintf(fp,"\nRecorded data:\n\n");
-		fprintf(fp,"Time\t\t HR");
+		fprintf(fp,"# \n# Recorded data:\n# \n");
+		fprintf(fp,"# Time\t\t HR");
 
 		if ( S710_HAS_ALTITUDE(w->mode) ) {
 			fprintf(fp,"\t Alt\t    VAM");

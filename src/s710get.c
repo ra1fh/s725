@@ -106,13 +106,12 @@ main(int argc, char **argv)
 				w = workout_read_buf(buf);
 				ft = files_timestamp(buf, 0);
 				strftime(tmbuf,sizeof(tmbuf),"%Y%m%dT%H%M%S", localtime(&ft));
-				snprintf(fnbuf, sizeof(fnbuf), "%s/%s.%05d.txt",opt_filedir,tmbuf,(int) sizeof(tmbuf));
+				snprintf(fnbuf, sizeof(fnbuf), "%s/%s.%05zd.txt",opt_filedir,tmbuf, buf_len(buf));
 
 				if (w) {
 					f = fopen(fnbuf, "w");
 					fprintf(stderr, "opened %s for writing\n", fnbuf);
 					if (f) {
-						workout_print(w, f, S710_WORKOUT_HEADER|S710_WORKOUT_LAPS);
 						workout_print(w, f, S710_WORKOUT_FULL);
 					} else {
 						fprintf(stderr, "failed to open %s for writing\n", fnbuf);

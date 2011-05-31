@@ -11,6 +11,7 @@
 
 #include "driver.h"
 #include "files.h"
+#include "workout.h"
 
 static void     usage(void);
 
@@ -32,9 +33,14 @@ main(int argc, char **argv)
 	const char		 *opt_driver_name = "ir";
 	const char		 *opt_device = NULL;
 	BUF              *files;
+	BUF              *buf;
+	workout_t        *w;
+	int               offset;
 	int				  opt_raw = 0;
 	int				  ch;
 	int				  ok;
+	time_t  	     ft;
+	FILE*             f;
 
 	while ( (ch = getopt(argc,argv,"d:f:hr")) != -1 ) {
 		switch (ch) {
@@ -88,7 +94,33 @@ main(int argc, char **argv)
 	files = buf_alloc(0);
 
 	if (files_get(files)) {
-		files_save(files, opt_filedir);
+		if (opt_raw) {
+			files_save(files, opt_filedir);
+		} else {
+			buf = buf_alloc(0);
+			offset = 0;
+			while (files_split(files, &offset, buf)) {
+				char        tmbuf[128];
+				char        fnbuf[BUFSIZ];
+
+				w = workout_read_buf(buf);
+				ft = files_timestamp(buf, 0);
+				strftime(tmbuf,sizeof(tmbuf),"%Y%m%dT%H%M%S", localtime(&ft));
+				snprintf(fnbuf, sizeof(fnbuf), "%s/%s.%05d.txt",opt_filedir,tmbuf,(int) sizeof(tmbuf));
+
+				if (w) {
+					f = fopen(fnbuf, "w");
+					fprintf(stderr, "opened %s for writing\n", fnbuf);
+					if (f) {
+						workout_print(w, f, S710_WORKOUT_HEADER|S710_WORKOUT_LAPS);
+						workout_print(w, f, S710_WORKOUT_FULL);
+					} else {
+						fprintf(stderr, "failed to open %s for writing\n", fnbuf);
+					}
+					workout_free(w);
+				}
+			}
+		}
 	}
 
 	buf_free(files);

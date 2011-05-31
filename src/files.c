@@ -11,12 +11,12 @@
 #include <unistd.h>
 
 #include "buf.h"
+#include "files.h"
 #include "packet.h"
 #include "utils.h"
 
 #define HASH_MARKS   40
 
-static time_t files_timestamp (BUF *f, size_t offset);
 static void   files_prep_hash_marks();
 static void   files_print_hash_marks(int pct, int bytes);
 
@@ -82,6 +82,23 @@ files_get(BUF *files)
 }
 
 int
+files_split(BUF *files, int *offset, BUF *out)
+{
+	int         size;
+	char       *bp;
+
+	if (*offset < buf_len(files) - 2) {
+		size  = (buf_getc(files, *offset + 1) << 8) + buf_getc(files, *offset);
+		buf_empty(out);
+		bp = buf_get(files);
+		buf_append(out, &bp[*offset], size);
+		*offset += size;
+		return 1;
+	}
+	return 0;
+}
+
+int
 files_save(BUF *files, const char *dir)
 {
 	int         saved  = 0;
@@ -91,21 +108,17 @@ files_save(BUF *files, const char *dir)
 	char        tmbuf[128];
 	time_t      ft;
 	int         ofd;
-	int         year;
-	int         month;
 	uid_t       owner = 0;
 	gid_t       group = 0;
 	char       *bp;
 
 	while (offset < buf_len(files) - 2) {
 		size  = (buf_getc(files, offset + 1) << 8) + buf_getc(files, offset);
+
 		ft    = files_timestamp(files, offset);
-		year  = 2000 + BCD(buf_getc(files, offset + 14));
-		month = LNIB(buf_getc(files, offset + 15));
-
 		strftime(tmbuf,sizeof(tmbuf),"%Y%m%dT%H%M%S", localtime(&ft));
-
 		snprintf(buf, sizeof(buf), "%s/%s.%05d.srd",dir,tmbuf,size);
+
 		ofd = open(buf, O_CREAT|O_WRONLY, 0644);
 		if (ofd != -1) {
 			printf("File %02d: Saved as %s\n", saved+1,buf);
@@ -126,7 +139,7 @@ files_save(BUF *files, const char *dir)
 	return saved;
 }
 
-static time_t
+time_t
 files_timestamp (BUF *f, size_t offset)
 {
 	struct tm t;

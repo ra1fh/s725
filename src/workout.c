@@ -588,52 +588,45 @@ workout_detect_hrm_type(unsigned char * buf, unsigned int bytes)
 }
 
 workout_t *
-workout_read(char *filename)
+workout_read_buf(BUF *buf)
 {
 	int            type;
-	int            fd;
-	struct stat    sb;
 	workout_t *    w = NULL;
-	unsigned char  buf[65536];
+	off_t          size;
 
-	if ( stat(filename,&sb) != -1 ) {
-		if ( (fd = open(filename,O_RDONLY)) != -1 ) {
-			if ( sb.st_size < sizeof(buf) ) {
-				if (read(fd,buf,sb.st_size) == sb.st_size) {
-					if ( buf[0] + (buf[1]<<8) == sb.st_size ) {
-						/* 
-						 * try to guess the "real" type.  we do this
-						 * using some heuristics that may or may not
-						 * be reliable.
-						 */
-						type = workout_detect_hrm_type(buf,sb.st_size);
-	    
-						/* we're good to go */
-						if ( type != S710_HRM_UNKNOWN ) {
-							w = workout_extract(buf, type);
-						} else {
-							fprintf(stderr,"%s: unable to auto-detect HRM type\n",
-									filename);
-						}
-					} else {
-						fprintf(stderr,"%s: invalid data [%d] [%d] (size %ld)\n",
-								filename,buf[0],buf[1],(long)sb.st_size);
-					}
-				} else {
-					fprintf(stderr,"%s: read(%ld): %s\n",
-							filename,(long)sb.st_size,strerror(errno));
-				}
-			} else {
-				fprintf(stderr,"%s: file size of %ld bytes is too big!\n",
-						filename,(long)sb.st_size);
-			}
-			close(fd);
-		} else {
-			fprintf(stderr,"open(%s): %s\n",filename,strerror(errno));
-		}
-	} else {
-		fprintf(stderr,"stat(%s): %s\n",filename,strerror(errno));
+	if (buf_len(buf) < 2) {
+		fprintf(stderr, "workout_read_buf: buffer size too small\n");
+		return NULL;
 	}
+
+	size = buf_get(buf)[0] + (buf_get(buf)[1]<<8);
+	
+	if (size != buf_len(buf)) {
+		fprintf(stderr, "workout_read_buf: len does not match buffer len\n");
+		return NULL;
+	}
+
+	type = workout_detect_hrm_type(buf_get(buf),buf_len(buf));
+
+	if ( type == S710_HRM_UNKNOWN ) {
+		fprintf(stderr,"workout_read_buf: unable to auto-detect HRM type\n");
+		return NULL;
+	}
+
+	w = workout_extract(buf_get(buf), type);
+
+	return w;
+}
+
+workout_t *
+workout_read(char *filename)
+{
+	workout_t *    w = NULL;
+	BUF           *buf;
+
+	buf = buf_load(filename);
+	if (buf)
+		w = workout_read_buf(buf);
 
 	return w;
 }

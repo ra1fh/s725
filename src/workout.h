@@ -7,6 +7,8 @@
 
 #include <stdio.h>
 
+#include "buf.h"
+
 #define S710_WORKOUT_HEADER   1
 #define S710_WORKOUT_LAPS     2
 #define S710_WORKOUT_SAMPLES  4
@@ -14,8 +16,9 @@
 
 typedef struct workout_t workout_t;
 
+workout_t*  workout_read_buf(BUF *buf);
 workout_t*	workout_read(char* filename);
-void		workout_print(workout_t * w, FILE * fp, int what);
+void		workout_print(workout_t * w, FILE *fp, int what);
 void 		workout_free(workout_t * w);
 
 #endif	/* WORKOUT_H */

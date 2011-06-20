@@ -187,11 +187,77 @@ a.itr:hover {
 } 
 </style>'
 
+PLOT_DIST = '
+set terminal pngcairo enhanced size 700, 700;
+set output "@OUT@";
+set tmargin 0;
+set bmargin 1;
+set lmargin 5;
+set rmargin 5;
+set multiplot layout 4,1 title "@TITLE@\n";
+set origin 1,1;
+min=4000;
+max=0;
+grab(x)=(x<min)?min=x:(x>max)?max=x:0;
+plot "@IN@" using 3:(grab($3));
+set key autotitle column nobox samplen 1;
+set grid;
+set origin 0,0.56;
+set size 1, 0.36;
+set yrange [80:200];
+set xtics nomirror format "";
+set ytics 10 nomirror;
+rgb(r,g,b) = 65536 * int(r) + 256 * int(g) + int(b);
+plot "" using 6:($2>80 ? $2 :1/0) title "HR" with lines lc rgb "dark-red";
+set yrange [*:*];
+set origin 0,0.33;
+set xtics nomirror format "";
+set ytics 10 nomirror;
+plot "" using 6:5 title "Speed" with lines lc rgb "dark-blue";
+set origin 0,0.1;
+set xtics nomirror format "%g";
+set ytics 50 nomirror;
+plot "" using 6:3:(rgb(0,(($3-min)/(max-min)*255),0)) title "Alt" with lines lc rgb variable;'
 
-def process_srd(srd, dest)
-    puts "processing #{srd}"
+PLOT_TIME = '
+set terminal pngcairo enhanced size 700, 700;
+set output "@OUT@";
+set tmargin 0;
+set bmargin 1;
+set lmargin 5;
+set rmargin 5;
+set multiplot layout 4,1 title "@TITLE@\n";
+set origin 1,1;
+min=4000;
+max=0;
+grab(x)=(x<min)?min=x:(x>max)?max=x:0;
+plot "@IN@" using 3:(grab($3));
+set key autotitle column nobox samplen 1;
+set grid;
+set origin 0,0.56;
+set size 1, 0.36;
+set yrange [80:200];
+set timefmt "%H:%M:%S";
+set xdata time;
+set xtics nomirror format "";
+set ytics 10 nomirror;
+rgb(r,g,b) = 65536 * int(r) + 256 * int(g) + int(b);
+plot "" using 1:($2>80 ? $2 :1/0) title "HR" with lines lc rgb "dark-red";
+set yrange [*:*];
+set origin 0,0.33;
+set xtics nomirror format "";
+set ytics 10 nomirror;
+plot "" using 1:5 title "Speed" with lines lc rgb "dark-blue";
+set origin 0,0.1;
+set xtics nomirror format "%g";
+set ytics 50 nomirror;
+plot "" using 1:3:(rgb(0,(($3-min)/(max-min)*255),0)) title "Alt" with lines lc rgb variable;
+'
+
+def process_txt(txt, dest)
+    puts "processing #{txt}"
     info = SrdInfo.new
-    info.basename = File.basename(srd, ".srd")
+    info.basename = File.basename(txt, ".txt")
     info.time = Time.parse(info.basename.split('.').first)
     info.destdir  = "#{dest}/#{info.time.strftime("%Y%m")}/"
     info.html = info.destdir + "/" + info.basename + ".html"
@@ -204,8 +270,12 @@ def process_srd(srd, dest)
         return info
     end
 
-    head = `srdhead #{srd}`
-    command = "cd #{info.destdir}; srdplot #{srd}"
+    head = ""
+    plotcmd = PLOT_TIME.dup.gsub("@IN@", txt).gsub("@OUT@", info.basename + "-time.png").gsub("@TITLE@", "Time")
+    command = "cd #{info.destdir}; gnuplot -e '#{plotcmd}'"
+    system(command)
+    plotcmd = PLOT_DIST.dup.gsub("@IN@", txt).gsub("@OUT@", info.basename + "-dist.png").gsub("@TITLE@", "Distance")
+    command = "cd #{info.destdir}; gnuplot -e '#{plotcmd}'"
     system(command)
 
     File.open(info.html, "w") do | h |
@@ -216,22 +286,20 @@ def process_srd(srd, dest)
         h.puts info.text
         h.puts head
         h.puts "</pre>"
+        if false
         h.puts "<h2>Histogram</h2>"
         h.puts "<p>"
         s = ".hr.h.png"; h.puts html_img(info.destdir + "/" + info.basename + s, s)
         s = ".hr.z.png"; h.puts html_img(info.destdir + "/" + info.basename + s, s)
         h.puts "</p>"
+        end
         h.puts "<h2>Distance</h2>"
         h.puts "<p>"
-        s = ".alt.d.png"; h.puts html_img(info.destdir + "/" + info.basename + s, s)
-        s = ".hr.d.png";  h.puts html_img(info.destdir + "/" + info.basename + s, s)
-        s = ".spd.d.png"; h.puts html_img(info.destdir + "/" + info.basename + s, s)
+        s = ".png"; h.puts html_img(info.destdir + "/" + info.basename + "-dist.png", s)
         h.puts "</p>"
         h.puts "<h2>Time</h2>"
         h.puts "<p>"
-        s = ".alt.t.png"; h.puts html_img(info.destdir + "/" + info.basename + s, s)
-        s = ".hr.t.png";  h.puts html_img(info.destdir + "/" + info.basename + s, s)
-        s = ".spd.t.png"; h.puts html_img(info.destdir + "/" + info.basename + s, s)
+        s = ".png"; h.puts html_img(info.destdir + "/" + info.basename + "-time.png", s)
         h.puts "</p>"
         h.puts html_foot()
     end
@@ -407,9 +475,9 @@ end
 info = []
 Find.find(source) do | file |
     next unless File.file?(file)
-    next unless file =~ /\.srd$/
+    next unless file =~ /\.txt$/
     file = File.expand_path(file)
-    info << process_srd(file, dest)
+    info << process_txt(file, dest)
 end
 overview = generate_index(info)
 generate_overview(overview, dest)

@@ -358,10 +358,10 @@ def generate_index(info)
             container[dir].each do | i |
                 entries[i.time.day] ||= []
                 entries[i.time.day] << '<a class="itr"  href="' + i.basename + '.html">' + 
-                    '<b>' + i.time.hour.to_s + ':' + i.time.min.to_s + '</b>' + 
+                    '<b>' + i.time.strftime("%H:%M") + '</b>' + 
                     '<span class="bpop" style="left:-6em; width:16em; top:-4.5em; ">' + 
-                    'Workout: ' + i.time.hour.to_s + ':' + i.time.min.to_s +
-                    '<br/>' + i.text.to_s + '<br/></span></a>'
+                    'Workout: ' + i.time.strftime("%H:%M") + '<br/>' + 
+                    i.text.to_s + '<br/></span></a>'
 
             end
             title = "#{Date::MONTHNAMES[month]} #{year}"

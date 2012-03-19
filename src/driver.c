@@ -38,6 +38,8 @@ driver_init (const char *driver_name, const char *device)
 			driver->dops = &usb_driver_ops;
 			needpath = 0;
 			printf("needpath=0\n");
+		} else {
+			return 0;
 		}
 	}
 

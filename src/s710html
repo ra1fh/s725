@@ -12,6 +12,33 @@ require 'fileutils'
 
 class SrdInfo
     attr_accessor :time, :basename, :destdir, :text, :html
+    attr_accessor :summary, :dist
+
+    def parse(s)
+        @summary = []
+        @summary << s.grep(/Exercise duration:/)
+        @summary << s.grep(/Exercise distance:/)
+        @summary << "\n"
+        @summary << s.grep(/Average heart rate:/)
+        @summary << s.grep(/Maximum heart rate:/)
+        @summary << "\n"
+        @summary << s.grep(/Average speed:/)
+        @summary << s.grep(/Maximum speed:/)
+        @summary << "\n"
+        @summary << s.grep(/Minimum altitude:/)
+        @summary << s.grep(/Average altitude:/)
+        @summary << s.grep(/Maximum altitude:/)
+        @summary << s.grep(/Ascent:/)
+
+        dist = s.grep(/Exercise distance:/).first
+        if dist
+            @dist = dist.split(':').last.to_f
+        end
+    end
+
+    def to_s
+        @summary.compact.join
+    end
 end
 
 def html_img(file,alt)
@@ -254,6 +281,41 @@ set ytics 100 nomirror;
 plot "" using 1:3:(rgb(0,(($3-min)/(max-min)*255),0)) title "Alt" with lines lc rgb variable;
 '
 
+PLOT_TIME = '
+set terminal pngcairo enhanced size 700, 700;
+set output "@OUT@";
+set tmargin 0;
+set bmargin 1;
+set lmargin 5;
+set rmargin 5;
+set multiplot layout 4,1 title "@TITLE@\n";
+set origin 1,1;
+min=4000;
+max=0;
+grab(x)=(x<min)?min=x:(x>max)?max=x:0;
+plot "@IN@" using 3:(grab($3));
+set key autotitle column nobox samplen 1;
+set grid;
+set origin 0,0.56;
+set size 1, 0.36;
+set yrange [80:200];
+set timefmt "%H:%M:%S";
+set xdata time;
+set xtics nomirror format "";
+set ytics 10 nomirror;
+rgb(r,g,b) = 65536 * int(r) + 256 * int(g) + int(b);
+plot "" using 1:($2>80 ? $2 :1/0) title "HR" with lines lc rgb "dark-red";
+set yrange [*:*];
+set origin 0,0.33;
+set xtics nomirror format "";
+set ytics 10 nomirror;
+plot "" using 1:5 title "Speed" with lines lc rgb "dark-blue";
+set origin 0,0.1;
+set xtics nomirror format "%g";
+set ytics 100 nomirror;
+plot "" using 1:3:(rgb(0,(($3-min)/(max-min)*255),0)) title "Alt" with lines lc rgb variable;
+'
+
 def process_txt(txt, dest)
     puts "processing #{txt}"
     info = SrdInfo.new
@@ -261,6 +323,9 @@ def process_txt(txt, dest)
     info.time = Time.parse(info.basename.split('.').first)
     info.destdir  = "#{dest}/#{info.time.strftime("%Y%m")}/"
     info.html = info.destdir + "/" + info.basename + ".html"
+
+    data = File.read(txt)
+    info.parse(data)
 
     if not File.directory? info.destdir
         FileUtils.mkdir_p info.destdir
@@ -270,21 +335,21 @@ def process_txt(txt, dest)
         return info
     end
 
-    head = ""
     plotcmd = PLOT_TIME.dup.gsub("@IN@", txt).gsub("@OUT@", info.basename + "-time.png").gsub("@TITLE@", "Time")
     command = "cd #{info.destdir}; gnuplot -e '#{plotcmd}'"
     system(command)
-    plotcmd = PLOT_DIST.dup.gsub("@IN@", txt).gsub("@OUT@", info.basename + "-dist.png").gsub("@TITLE@", "Distance")
-    command = "cd #{info.destdir}; gnuplot -e '#{plotcmd}'"
-    system(command)
+    if info.dist > 0
+        plotcmd = PLOT_DIST.dup.gsub("@IN@", txt).gsub("@OUT@", info.basename + "-dist.png").gsub("@TITLE@", "Distance")
+        command = "cd #{info.destdir}; gnuplot -e '#{plotcmd}'"
+        system(command)
+    end
 
     File.open(info.html, "w") do | h |
         h.puts html_head(info.basename)
         h.puts "<h1>#{info.time}</h1>"
         h.puts "<h2>Summary</h2>"
         h.puts "<pre>"
-        h.puts info.text
-        h.puts head
+        h.puts info.to_s
         h.puts "</pre>"
         if false
         h.puts "<h2>Histogram</h2>"
@@ -293,10 +358,12 @@ def process_txt(txt, dest)
         s = ".hr.z.png"; h.puts html_img(info.destdir + "/" + info.basename + s, s)
         h.puts "</p>"
         end
-        h.puts "<h2>Distance</h2>"
-        h.puts "<p>"
-        s = ".png"; h.puts html_img(info.destdir + "/" + info.basename + "-dist.png", s)
-        h.puts "</p>"
+        if info.dist > 0
+            h.puts "<h2>Distance</h2>"
+            h.puts "<p>"
+            s = ".png"; h.puts html_img(info.destdir + "/" + info.basename + "-dist.png", s)
+            h.puts "</p>"
+        end
         h.puts "<h2>Time</h2>"
         h.puts "<p>"
         s = ".png"; h.puts html_img(info.destdir + "/" + info.basename + "-time.png", s)

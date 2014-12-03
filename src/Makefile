@@ -14,7 +14,7 @@ BIN_GROUP= root
 CC= gcc
 
 INCDIRS= -I$(PREFIX)/include
-LDFLAGS= -L$(PREFIX)/lib
+LDFLAGS= -L$(PREFIX)/lib 
 
 INSTALLDIR= install -d
 INSTALLBIN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 555
@@ -32,7 +32,7 @@ SRDHEAD_SRCS = workout_label.c workout_time.c \
 
 PROG_SRCS= $(patsubst %,%.c,$(PROGS))
 
-LIBS+= 
+LIBS+= $(shell pkg-config --libs glib-2.0)	
 
 S710GET_OBJS= $(patsubst %.c,%.o,$(S710GET_SRCS))
 SRDCAT_OBJS= $(patsubst %.c,%.o,$(SRDCAT_SRCS))
@@ -44,6 +44,9 @@ ifeq ($(shell pkg-config --exists libusb && echo yes), yes)
 	CFLAGS += $(shell pkg-config --cflags libusb)
 	LIBS   += $(shell pkg-config --libs libusb)	
 endif
+
+CFLAGS += $(shell pkg-config --cflags glib-2.0)
+LIBS += $(shell pkg-config --libs glib-2.0)
 
 ifneq (, $(filter Linux GNU GNU/%, $(shell uname -s)))
 INCDIRS+= -Icompat

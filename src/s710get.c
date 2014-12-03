@@ -9,6 +9,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <glib.h>
+
 #include "driver.h"
 #include "files.h"
 #include "workout.h"
@@ -29,6 +31,7 @@ int
 main(int argc, char **argv)
 {
 	char			  path[PATH_MAX];
+	char              inipath[PATH_MAX];
 	const char		 *opt_filedir = NULL;
 	const char		 *opt_driver_name = "ir";
 	const char		 *opt_device = NULL;
@@ -41,6 +44,18 @@ main(int argc, char **argv)
 	int				  ok;
 	time_t  	     ft;
 	FILE*             f;
+	GKeyFile         *keyfile;
+
+	keyfile = g_key_file_new();
+	snprintf(inipath, PATH_MAX, "%s/.s710getrc", getenv("HOME"));
+	if (g_key_file_load_from_file(keyfile, inipath, G_KEY_FILE_NONE, NULL)) {
+		opt_device = g_key_file_get_string(keyfile, "main", "device", NULL);
+		opt_driver_name = g_key_file_get_string(keyfile, "main", "driver", NULL);
+		if (!opt_driver_name)
+			opt_driver_name = "ir";
+	} else {
+		fprintf(stderr, "failed to parse %s\n", inipath);
+	}
 
 	while ( (ch = getopt(argc,argv,"d:f:hr")) != -1 ) {
 		switch (ch) {
@@ -64,7 +79,11 @@ main(int argc, char **argv)
 	}
 	argc -= optind;
 	argv += optind;
-	opt_device = argv[0];
+	if (argv[0]) 
+		opt_device = argv[0];
+	
+	fprintf(stderr, "opt_device='%s'\n", opt_device);
+	fprintf(stderr, "opt_driver='%s'\n", opt_driver_name);
 
 	ok = driver_init (opt_driver_name , opt_device);
 

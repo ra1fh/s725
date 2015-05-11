@@ -12,35 +12,35 @@
 
 #include "driver_int.h"
 
-static int usb_init_port(struct s710_driver *d);
-static int usb_read_byte(struct s710_driver *d, unsigned char *byte);
-static int usb_send_packet(struct s710_driver *d, BUF *buf);
-static int usb_shutdown_port(struct s710_driver *d);
+static int usb_init_port(struct s725_driver *d);
+static int usb_read_byte(struct s725_driver *d, unsigned char *byte);
+static int usb_send_packet(struct s725_driver *d, BUF *buf);
+static int usb_shutdown_port(struct s725_driver *d);
 
 static int find_first_altsetting(struct usb_device*, int*, int*, int*);
 static int find_endpoint(struct usb_device *, int, int, int, int, int);
 
-struct s710_driver_ops usb_driver_ops = {
+struct s725_driver_ops usb_driver_ops = {
 	.init = usb_init_port,
 	.read = usb_read_byte,
 	.write = usb_send_packet,
 	.close = usb_shutdown_port,
 };
 
-struct s710_usb_data {
+struct s725_usb_data {
 	struct usb_device *device;
 	usb_dev_handle    *handle;
 	int                endpoint;
 	int                interface;
 };
 
-#define S710_USB_VENDOR_ID   0x0da4
-#define S710_USB_PRODUCT_ID  1
-#define S710_USB_INTERFACE   0
+#define S725_USB_VENDOR_ID   0x0da4
+#define S725_USB_PRODUCT_ID  1
+#define S725_USB_INTERFACE   0
 
 
 static int
-usb_init_port(struct s710_driver *d)
+usb_init_port(struct s725_driver *d)
 {
 	int ret = -1;
 	struct usb_bus                  *bi;
@@ -48,9 +48,9 @@ usb_init_port(struct s710_driver *d)
 	int                              config = -1;
 	int                              interface = -1;
 	int                              altsetting = -1;
-	struct s710_usb_data                  *data;
+	struct s725_usb_data                  *data;
 
-	if ((data = calloc(1,sizeof(struct s710_usb_data))) != NULL) {
+	if ((data = calloc(1,sizeof(struct s725_usb_data))) != NULL) {
 
 		fprintf(stderr,"usb_set_debug(99)\n");
 
@@ -63,14 +63,14 @@ usb_init_port(struct s710_driver *d)
 
 		for (bi = usb_busses; bi != NULL; bi = bi->next) {
 			for (di = bi->devices; di != NULL; di = di->next) {
-				if (di->descriptor.idVendor  == S710_USB_VENDOR_ID &&
-					 di->descriptor.idProduct == S710_USB_PRODUCT_ID) {
+				if (di->descriptor.idVendor  == S725_USB_VENDOR_ID &&
+					 di->descriptor.idProduct == S725_USB_PRODUCT_ID) {
 					data->device = di;
 					fprintf(stderr,
 							"Found Polar USB interface "
 							"[Vendor %04x, ProdID %04x] on %s/%s\n",
-							S710_USB_VENDOR_ID,
-							S710_USB_PRODUCT_ID,
+							S725_USB_VENDOR_ID,
+							S725_USB_PRODUCT_ID,
 							bi->dirname,
 							di->filename);
 					break;
@@ -132,27 +132,27 @@ usb_init_port(struct s710_driver *d)
  * I need to revisit this function at some point.
  */
 static int
-usb_read_byte(struct s710_driver *d, unsigned char *byte)
+usb_read_byte(struct s725_driver *d, unsigned char *byte)
 {
 	int r = 0;
 	static char buf[BUFSIZ];
 	static int  bytes;
 	static int  idx;
 	int         i = 0;
-	struct s710_usb_data *data = (struct s710_usb_data *)d->data;
+	struct s725_usb_data *data = (struct s725_usb_data *)d->data;
 
 	if (idx == bytes) {
 		idx = 0;
 		do {
-#ifdef S710_USB_BULK_READ
+#ifdef S725_USB_BULK_READ
 			bytes = usb_bulk_read(data->handle,
 								  data->endpoint,
 								  buf,sizeof(buf),5000);
-#else /* not S710_USB_BULK_READ */
+#else /* not S725_USB_BULK_READ */
 			bytes = usb_interrupt_read(data->handle,
 									   data->endpoint,
 									   buf,sizeof(buf),5000);
-#endif /* S710_USB_BULK_READ */
+#endif /* S725_USB_BULK_READ */
 			if (bytes == 0 && errno == EOVERFLOW) {
 				usb_reset(data->handle);
 				usb_shutdown_port(d);
@@ -174,10 +174,10 @@ usb_read_byte(struct s710_driver *d, unsigned char *byte)
  * send a packet to the polar device over the usb interface
  */
 static int
-usb_send_packet(struct s710_driver *d, BUF *buf)
+usb_send_packet(struct s725_driver *d, BUF *buf)
 {
 	int  ret = 0;
-	struct s710_usb_data *data = (struct s710_usb_data *)d->data;
+	struct s725_usb_data *data = (struct s725_usb_data *)d->data;
 
 	/* packets are sent via USB control transfers. */
 
@@ -196,10 +196,10 @@ usb_send_packet(struct s710_driver *d, BUF *buf)
 
 
 static int
-usb_shutdown_port(struct s710_driver *d)
+usb_shutdown_port(struct s725_driver *d)
 {
 	int ret = -1;
-	struct s710_usb_data *data = (struct s710_usb_data *)d->data;
+	struct s725_usb_data *data = (struct s725_usb_data *)d->data;
 
 	fprintf(stderr,"Resetting endpoint\n");
 	usb_resetep(data->handle,data->endpoint);

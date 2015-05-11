@@ -19,10 +19,10 @@ static void     usage(void);
 
 static void
 usage(void) {
-	printf("usage: s710get [-h] [-d driver] [-f filedir] [device file]\n");
+	printf("usage: s725get [-h] [-d driver] [-f filedir] [device file]\n");
 	printf("       driver       may be either serial, ir, or usb. default: ir.\n");
 	printf("       filedir      is the directory where output files are written to.\n");
-	printf("                    alternative is S710_FILEDIR environment variable.\n");
+	printf("                    alternative is S725_FILEDIR environment variable.\n");
 	printf("                    default: current working directory\n");
 	printf("       device file  is required for serial and ir drivers.\n");
 }
@@ -47,7 +47,7 @@ main(int argc, char **argv)
 	GKeyFile         *keyfile;
 
 	keyfile = g_key_file_new();
-	snprintf(inipath, PATH_MAX, "%s/.s710getrc", getenv("HOME"));
+	snprintf(inipath, PATH_MAX, "%s/.s725getrc", getenv("HOME"));
 	if (g_key_file_load_from_file(keyfile, inipath, G_KEY_FILE_NONE, NULL)) {
 		opt_device = g_key_file_get_string(keyfile, "main", "device", NULL);
 		opt_driver_name = g_key_file_get_string(keyfile, "main", "driver", NULL);
@@ -131,7 +131,7 @@ main(int argc, char **argv)
 					f = fopen(fnbuf, "w");
 					fprintf(stderr, "opened %s for writing\n", fnbuf);
 					if (f) {
-						workout_print(w, f, S710_WORKOUT_FULL);
+						workout_print(w, f, S725_WORKOUT_FULL);
 					} else {
 						fprintf(stderr, "failed to open %s for writing\n", fnbuf);
 					}

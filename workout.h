@@ -9,10 +9,10 @@
 
 #include "buf.h"
 
-#define S710_WORKOUT_HEADER   1
-#define S710_WORKOUT_LAPS     2
-#define S710_WORKOUT_SAMPLES  4
-#define S710_WORKOUT_FULL     7
+#define S725_WORKOUT_HEADER   1
+#define S725_WORKOUT_LAPS     2
+#define S725_WORKOUT_SAMPLES  4
+#define S725_WORKOUT_FULL     7
 
 typedef struct workout_t workout_t;
 

@@ -10,12 +10,12 @@ static char alpha_map(unsigned char c);
 static unsigned char inverse_alpha_map(char c);
 
 void
-workout_label_extract(unsigned char *buf, S710_Label *label, int bytes)
+workout_label_extract(unsigned char *buf, S725_Label *label, int bytes)
 {
 	int   i;
 	char *p = (char *)label;
 
-	for ( i = 0; i < bytes && i < (int) sizeof(S710_Label)-1; i++ ) {
+	for ( i = 0; i < bytes && i < (int) sizeof(S725_Label)-1; i++ ) {
 		*(p+i) = alpha_map(buf[i]);
 	}
 
@@ -23,7 +23,7 @@ workout_label_extract(unsigned char *buf, S710_Label *label, int bytes)
 }
 
 void
-workout_label_encode(S710_Label label, unsigned char *buf, int bytes)
+workout_label_encode(S725_Label label, unsigned char *buf, int bytes)
 {
 	int   i;
 	unsigned char *p = buf;
@@ -32,7 +32,7 @@ workout_label_encode(S710_Label label, unsigned char *buf, int bytes)
 	memset(buf,10,bytes);
 
 	/* now encode the actual characters */
-	for ( i = 0; i < bytes && i < (int) sizeof(S710_Label)-1; i++ ) {
+	for ( i = 0; i < bytes && i < (int) sizeof(S725_Label)-1; i++ ) {
 		*(p+i) = inverse_alpha_map(label[i]);
 	}
 }

@@ -8,7 +8,7 @@
  * Tenths of a second.
  */
 time_t
-workout_time_to_tenths(S710_Time *t)
+workout_time_to_tenths(S725_Time *t)
 {
 	time_t tm;
 
@@ -18,10 +18,10 @@ workout_time_to_tenths(S710_Time *t)
 }
 
 /*
- * This probably doesn't work if the S710_Time argument is negative.
+ * This probably doesn't work if the S725_Time argument is negative.
  */
 void
-workout_time_increment(S710_Time *t, unsigned int seconds)
+workout_time_increment(S725_Time *t, unsigned int seconds)
 {
 	int   hours;
 	int   minutes;
@@ -47,7 +47,7 @@ workout_time_increment(S710_Time *t, unsigned int seconds)
 
 
 void
-workout_time_diff(S710_Time *t1, S710_Time *t2, S710_Time *diff)
+workout_time_diff(S725_Time *t1, S725_Time *t2, S725_Time *diff)
 {
 	int t_t1;
 	int t_t2;
@@ -100,7 +100,7 @@ workout_time_diff(S710_Time *t1, S710_Time *t2, S710_Time *diff)
  * "st"   => 56.7
  */
 void
-workout_time_print(S710_Time *t, const char *format, FILE *fp)
+workout_time_print(S725_Time *t, const char *format, FILE *fp)
 {
 	const char *p;
 	int   r = 0;

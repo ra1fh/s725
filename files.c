@@ -41,7 +41,7 @@ files_get(BUF *files)
 	files_prep_hash_marks();
 	files_print_hash_marks(0, 0);
 
-	p = packet_get_response(S710_GET_FILES);
+	p = packet_get_response(S725_GET_FILES);
 	
 	if (p == NULL) {
 		printf("[error]");
@@ -70,7 +70,7 @@ files_get(BUF *files)
 
 		/* free this packet and get the next one */
 		free(p);
-		p = packet_get_response(S710_CONTINUE_TRANSFER);
+		p = packet_get_response(S725_CONTINUE_TRANSFER);
 	}
 
 	printf("\n\n");

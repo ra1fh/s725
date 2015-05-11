@@ -4,7 +4,7 @@
 VERSION= 0.1
 DATE= $(shell date +%Y%m%d-%H%M)
 
-PROGS=   s710get srdcat srdhead
+PROGS=   s725get srdcat srdhead
 
 PREFIX?= /usr/local
 
@@ -20,7 +20,7 @@ INSTALLDIR= install -d
 INSTALLBIN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 555
 INSTALLMAN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 444
 
-S710GET_SRCS = driver.c files.c serial.c usb.c packet.c  \
+S725GET_SRCS = driver.c files.c serial.c usb.c packet.c  \
 	workout.c workout_label.c workout_time.c \
 	xmalloc.c buf.c
 
@@ -34,7 +34,7 @@ PROG_SRCS= $(patsubst %,%.c,$(PROGS))
 
 LIBS+= $(shell pkg-config --libs glib-2.0)	
 
-S710GET_OBJS= $(patsubst %.c,%.o,$(S710GET_SRCS))
+S725GET_OBJS= $(patsubst %.c,%.o,$(S725GET_SRCS))
 SRDCAT_OBJS= $(patsubst %.c,%.o,$(SRDCAT_SRCS))
 SRDHEAD_OBJS= $(patsubst %.c,%.o,$(SRDHEAD_SRCS))
 PROG_OBJS= $(patsubst %,%.o,$(PROGS))
@@ -65,11 +65,11 @@ ifdef EGYPT
 CFLAGS+= -fdump-rtl-expand 
 endif
 
-CLEANFILES= $(S710GET_OBJS) $(SRDCAT_OBJS) $(SRDHEAD_OBJS) $(PROGS) $(PROG_OBJS) $(COMPAT_OBJS) .depend
+CLEANFILES= $(S725GET_OBJS) $(SRDCAT_OBJS) $(SRDHEAD_OBJS) $(PROGS) $(PROG_OBJS) $(COMPAT_OBJS) .depend
 
 all: $(PROGS)
 
-s710get: s710get.o $(S710GET_OBJS) $(COMPAT_OBJS)
+s725get: s725get.o $(S725GET_OBJS) $(COMPAT_OBJS)
 	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ 
 
 srdcat: srdcat.o $(SRDCAT_OBJS) $(COMPAT_OBJS)
@@ -78,7 +78,7 @@ srdcat: srdcat.o $(SRDCAT_OBJS) $(COMPAT_OBJS)
 srdhead: srdhead.o $(SRDHEAD_OBJS) $(COMPAT_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $+
 
-depend: $(S710GET_SRCS) $(SRDCAT_SRCS) $(SRDHEAD_SRCS)
+depend: $(S725GET_SRCS) $(SRDCAT_SRCS) $(SRDHEAD_SRCS)
 	$(CC) $(CPPFLAGS) -MM $+ > .depend
 
 doxygen:
@@ -93,7 +93,7 @@ clean:
 install:
 	$(INSTALLDIR) $(DESTDIR)$(PREFIX)/bin
 	$(INSTALLBIN) $(PROGS) $(DESTDIR)$(PREFIX)/bin
-	$(INSTALLBIN) s710html $(DESTDIR)$(PREFIX)/bin
+	$(INSTALLBIN) s725html $(DESTDIR)$(PREFIX)/bin
 
 ifeq ($(wildcard .depend),.depend)
 include .depend

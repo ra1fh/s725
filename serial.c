@@ -15,24 +15,24 @@
 
 #define SERIAL_READ_TRIES 10
 
-static int ir_init(struct s710_driver *d);
-static int ir_read_byte(struct s710_driver *d, unsigned char *byte);
-static int ir_write(struct s710_driver *d, BUF *buf);
+static int ir_init(struct s725_driver *d);
+static int ir_read_byte(struct s725_driver *d, unsigned char *byte);
+static int ir_write(struct s725_driver *d, BUF *buf);
 
-static int serial_init(struct s710_driver *d);
-static int serial_write(struct s710_driver *d, BUF *buf);
-static int serial_read_byte(struct s710_driver *d, unsigned char *byte);
+static int serial_init(struct s725_driver *d);
+static int serial_write(struct s725_driver *d, BUF *buf);
+static int serial_read_byte(struct s725_driver *d, unsigned char *byte);
 
 static void compute_byte_map(void);
 
-struct s710_driver_ops serial_driver_ops = {
+struct s725_driver_ops serial_driver_ops = {
 	.init = serial_init,
 	.read = serial_read_byte,
 	.write = serial_write,
 	.close = NULL,
 };
 
-struct s710_driver_ops ir_driver_ops = {
+struct s725_driver_ops ir_driver_ops = {
 	.init = ir_init,
 	.read = ir_read_byte,
 	.write = ir_write,
@@ -45,7 +45,7 @@ unsigned char gByteMap[256];
  * initialize the serial port
  */
 static int  
-serial_init(struct s710_driver *d)
+serial_init(struct s725_driver *d)
 {
 	struct termios t;
 	int fd;
@@ -73,7 +73,7 @@ serial_init(struct s710_driver *d)
 	t.c_oflag = 0;
 	t.c_lflag = 0;
 
-#ifdef S710_SERIAL_ALT_INTER_CHAR_TIMER_IMP
+#ifdef S725_SERIAL_ALT_INTER_CHAR_TIMER_IMP
 	t.c_cc[VTIME]    = 0;
 	t.c_cc[VMIN]     = 0;
 #else
@@ -92,7 +92,7 @@ serial_init(struct s710_driver *d)
 }
 
 static int
-serial_read_byte(struct s710_driver *d, unsigned char *byte)
+serial_read_byte(struct s725_driver *d, unsigned char *byte)
 {
 	int r = 0;
 	int i = SERIAL_READ_TRIES;
@@ -100,7 +100,7 @@ serial_read_byte(struct s710_driver *d, unsigned char *byte)
 	static struct timeval tf;
 	static int    n;
 	float el;
-#ifdef S710_SERIAL_ALT_INTER_CHAR_TIMER_IMP
+#ifdef S725_SERIAL_ALT_INTER_CHAR_TIMER_IMP
 	struct timeval timeout;
 	fd_set readbits;
 	int rc;
@@ -111,7 +111,7 @@ serial_read_byte(struct s710_driver *d, unsigned char *byte)
 	memcpy(&ti,&tf,sizeof(struct timeval));
 
 	do {
-#ifdef S710_SERIAL_ALT_INTER_CHAR_TIMER_IMP
+#ifdef S725_SERIAL_ALT_INTER_CHAR_TIMER_IMP
 		timeout.tv_sec = 0;
 		timeout.tv_usec = 10000; /* wait for data 10ms at most */
 
@@ -146,7 +146,7 @@ serial_read_byte(struct s710_driver *d, unsigned char *byte)
 }
 
 static int
-serial_write(struct s710_driver *d, BUF *buf)
+serial_write(struct s725_driver *d, BUF *buf)
 {
 	unsigned int i;
 	unsigned char c;
@@ -169,19 +169,19 @@ serial_write(struct s710_driver *d, BUF *buf)
 }
 
 static int
-ir_init(struct s710_driver *d)
+ir_init(struct s725_driver *d)
 {
 	return serial_init(d);
 }
 
 static int
-ir_read_byte(struct s710_driver *d, unsigned char *byte)
+ir_read_byte(struct s725_driver *d, unsigned char *byte)
 {
 	return serial_read_byte(d, byte);
 }
 
 static int
-ir_write(struct s710_driver *d, BUF *buf)
+ir_write(struct s725_driver *d, BUF *buf)
 {
 	unsigned int i;
 	unsigned char c;

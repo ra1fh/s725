@@ -513,7 +513,7 @@ OPT[:print] = false
 
 
 ARGV.options do | opts |
-    opts.banner = "Usage: s710html [options]"
+    opts.banner = "Usage: s725html [options]"
 	opts.on("-s SOURCE", "source directory") do | arg |
         OPT[:source] = arg
     end

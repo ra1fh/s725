@@ -17,7 +17,7 @@
 #include "workout_label.h"
 #include "workout_time.h"
 
-int  		workout_bytes_per_lap(S710_HRM_Type type, unsigned char bt, unsigned char bi);
+int  		workout_bytes_per_lap(S725_HRM_Type type, unsigned char bt, unsigned char bi);
 int  		workout_header_size(workout_t * w);
 int  		workout_bytes_per_sample(unsigned char bt);
 int  		workout_allocate_sample_space(workout_t * w);
@@ -35,8 +35,8 @@ static void workout_read_ride_info(workout_t * w, unsigned char * buf);
 static void workout_read_laps(workout_t * w, unsigned char * buf);
 static int  workout_read_samples(workout_t * w, unsigned char * buf);
 static void workout_compute_speed_info(workout_t * w);
-static workout_t * workout_extract(unsigned char *buf, S710_HRM_Type type);
-static S710_HRM_Type workout_detect_hrm_type(unsigned char * buf, unsigned int bytes);
+static workout_t * workout_extract(unsigned char *buf, S725_HRM_Type type);
+static S725_HRM_Type workout_detect_hrm_type(unsigned char * buf, unsigned int bytes);
 
 static void
 workout_read_preamble(workout_t * w, unsigned char * buf)
@@ -61,9 +61,9 @@ workout_read_date(workout_t * w, unsigned char * buf)
 	w->date.tm_hour  = BCD(buf[2] & 0x7f);
   
 	/* PATCH for AM/PM mode detection from Berend Ozceri */
-	w->ampm = S710_AM_PM_MODE_UNSET;
-	if ( buf[3] & 0x80 ) w->ampm |= S710_AM_PM_MODE_SET;
-	if ( buf[2] & 0x80 ) w->ampm |= S710_AM_PM_MODE_PM;
+	w->ampm = S725_AM_PM_MODE_UNSET;
+	if ( buf[3] & 0x80 ) w->ampm |= S725_AM_PM_MODE_SET;
+	if ( buf[2] & 0x80 ) w->ampm |= S725_AM_PM_MODE_PM;
   
 	w->date.tm_hour += (buf[3] & 0x80) ?                      /* am/pm mode?   */
 		((buf[2] & 0x80) ? ((w->date.tm_hour < 12) ? 12 : 0) :  /* yes, pm set   */
@@ -92,17 +92,17 @@ static void
 workout_read_units(workout_t * w, unsigned char b)
 {
 	if ( b & 0x02 ) { /* english */
-		w->units.system      = S710_UNITS_ENGLISH;
-		w->units.altitude    = S710_ALTITUDE_FT;
-		w->units.speed       = S710_SPEED_MPH;
-		w->units.distance    = S710_DISTANCE_MI;
-		w->units.temperature = S710_TEMPERATURE_F;
+		w->units.system      = S725_UNITS_ENGLISH;
+		w->units.altitude    = S725_ALTITUDE_FT;
+		w->units.speed       = S725_SPEED_MPH;
+		w->units.distance    = S725_DISTANCE_MI;
+		w->units.temperature = S725_TEMPERATURE_F;
 	} else {         /* metric */
-		w->units.system      = S710_UNITS_METRIC;
-		w->units.altitude    = S710_ALTITUDE_M;
-		w->units.speed       = S710_SPEED_KPH;
-		w->units.distance    = S710_DISTANCE_KM;
-		w->units.temperature = S710_TEMPERATURE_C;
+		w->units.system      = S725_UNITS_METRIC;
+		w->units.altitude    = S725_ALTITUDE_M;
+		w->units.speed       = S725_SPEED_KPH;
+		w->units.distance    = S725_DISTANCE_KM;
+		w->units.temperature = S725_TEMPERATURE_C;
 	}
 }
 
@@ -225,7 +225,7 @@ workout_read_ride_info(workout_t * w, unsigned char * buf)
 	w->max_cad  = buf[12];
 
 	/* min, avg, max temperature */
-	if ( w->units.system == S710_UNITS_ENGLISH ) {
+	if ( w->units.system == S725_UNITS_ENGLISH ) {
 		/* English units */
 		w->min_temp = buf[19];
 		w->avg_temp = buf[20];
@@ -271,8 +271,8 @@ workout_read_ride_info(workout_t * w, unsigned char * buf)
 static void
 workout_read_laps(workout_t * w, unsigned char * buf)
 {
-	S710_Distance  prev_lap_dist;
-	S710_Altitude  prev_lap_ascent;
+	S725_Distance  prev_lap_dist;
+	S725_Altitude  prev_lap_ascent;
 	int            offset;
 	int            lap_size;
 	int            hdr_size;
@@ -298,7 +298,7 @@ workout_read_laps(workout_t * w, unsigned char * buf)
 			((buf[offset] & 0xc0)>>6);
 
 		if ( i == 0 ) 
-			memcpy(&l->split,&l->cumulative,sizeof(S710_Time));
+			memcpy(&l->split,&l->cumulative,sizeof(S725_Time));
 		else
 			workout_time_diff(&w->lap_data[i-1].cumulative,&l->cumulative,&l->split);
 
@@ -309,14 +309,14 @@ workout_read_laps(workout_t * w, unsigned char * buf)
 		offset += 6;
 
 		/* altitude data */
-		if ( S710_HAS_ALTITUDE(w->mode) ) {
+		if ( S725_HAS_ALTITUDE(w->mode) ) {
 			l->alt = buf[offset] + (buf[offset+1]<<8) - 512;
 			/* This ascent data is cumulative from start of the exercise */
 			l->cumul_ascent = buf[offset+2] + (buf[offset+3]<<8);
 			l->ascent = l->cumul_ascent - prev_lap_ascent;
 			prev_lap_ascent = l->cumul_ascent;
 
-			if ( w->units.system == S710_UNITS_ENGLISH ) {  /* English units */
+			if ( w->units.system == S725_UNITS_ENGLISH ) {  /* English units */
 				l->temp = buf[offset+4] + 14;
 				l->alt *= 5;
 			} else {
@@ -327,15 +327,15 @@ workout_read_laps(workout_t * w, unsigned char * buf)
 		}
 
 		/* bike data */
-		if ( S710_HAS_SPEED(w->mode) ) {
+		if ( S725_HAS_SPEED(w->mode) ) {
 			/* cadence data */
-			if ( S710_HAS_CADENCE(w->mode) ) { 
+			if ( S725_HAS_CADENCE(w->mode) ) { 
 				l->cad  = buf[offset]; 
 				offset += 1; 
 			}
 
 			/* next 4 bytes are power data */
-			if ( S710_HAS_POWER(w->mode) ) { 
+			if ( S725_HAS_POWER(w->mode) ) { 
 				l->power.power = buf[offset] + (buf[offset+1]<<8);
 				l->power.lr_balance  = buf[offset+3];   /* ??? switched  ??? */
 				l->power.pedal_index = buf[offset+2];   /* ??? with this ??? */
@@ -403,29 +403,29 @@ workout_read_samples(workout_t * w, unsigned char * buf)
 				w->hr_data[x] = buf[s];
 				s++;
 	
-				if ( S710_HAS_ALTITUDE(w->mode) ) {
+				if ( S725_HAS_ALTITUDE(w->mode) ) {
 					w->alt_data[x] = buf[s] + ((buf[s+1] & 0x1f)<<8) - 512;
-					if ( w->units.system == S710_UNITS_ENGLISH ) {
+					if ( w->units.system == S725_UNITS_ENGLISH ) {
 						w->alt_data[x] *= 5;
 					}
 					s += 2;
 				}
 	
-				if ( S710_HAS_SPEED(w->mode) ) {
-					if ( S710_HAS_ALTITUDE(w->mode) ) s -= 1;
+				if ( S725_HAS_SPEED(w->mode) ) {
+					if ( S725_HAS_ALTITUDE(w->mode) ) s -= 1;
 					w->speed_data[x] = ((buf[s] & 0xe0) << 3) + buf[s+1];
 					s += 2;
-					if ( S710_HAS_POWER(w->mode) ) { 
+					if ( S725_HAS_POWER(w->mode) ) { 
 						w->power_data[x].power = buf[s] + (buf[s+1]<<8);
 						w->power_data[x].lr_balance = buf[s+2];
 						w->power_data[x].pedal_index = buf[s+3];
 						s += 4;
 					}
-					if ( S710_HAS_CADENCE(w->mode) ) w->cad_data[x] = buf[s];
+					if ( S725_HAS_CADENCE(w->mode) ) w->cad_data[x] = buf[s];
 				}
 			}
       
-			if ( S710_HAS_SPEED(w->mode) ) {
+			if ( S725_HAS_SPEED(w->mode) ) {
 				accum = 0;
 				for ( i = 0; i < w->samples; i++ ) {
 					w->dist_data[i] = accum / 57600.0;
@@ -450,7 +450,7 @@ workout_compute_speed_info(workout_t * w)
 	float  avg;
 
 	/* compute median speed and highest sampled speed */
-	if ( S710_HAS_SPEED(w->mode) ) {
+	if ( S725_HAS_SPEED(w->mode) ) {
 		avg = 0;
 		w->highest_speed = 0;
 		j = 0;
@@ -470,7 +470,7 @@ workout_compute_speed_info(workout_t * w)
  * don't call this unless you're sure it's going to be ok.
  */
 static workout_t *
-workout_extract(unsigned char *buf, S710_HRM_Type type)
+workout_extract(unsigned char *buf, S725_HRM_Type type)
 {
 	workout_t * w  = NULL;
 	int         ok = 1;
@@ -499,7 +499,7 @@ workout_extract(unsigned char *buf, S710_HRM_Type type)
 	workout_read_units(w,buf[25]);
 
 	/* recording mode and interval */
-	if ( w->type == S710_HRM_S610 ) {
+	if ( w->type == S725_HRM_S610 ) {
 		w->mode = 0;
 		workout_read_recording_interval  (w,buf+26);
 		workout_read_hr_limits           (w,buf+28);
@@ -534,10 +534,10 @@ workout_extract(unsigned char *buf, S710_HRM_Type type)
  * Attempt to auto-detect the HRM type based on some information in the file.
  * This may not always succeed, but it seems to work relatively well.
  */
-static S710_HRM_Type
+static S725_HRM_Type
 workout_detect_hrm_type(unsigned char * buf, unsigned int bytes)
 {
-	S710_HRM_Type type = S710_HRM_UNKNOWN;
+	S725_HRM_Type type = S725_HRM_UNKNOWN;
 	int           duration = 0;
 	int           samples;
 	int           laps;
@@ -548,14 +548,14 @@ workout_detect_hrm_type(unsigned char * buf, unsigned int bytes)
 
 	if ( buf[34] == 0 && buf[36] == 251 ) { 
 		/* this is a s610 HRM */
-		type = S710_HRM_S610;
+		type = S725_HRM_S610;
 	} else if ( (buf[35] == 0 || buf[35] == 48) && buf[37] == 251 ) {
-		/* this is either an s710 or s625x or...? */
+		/* this is either an s725 or s625x or...? */
 
 		if ( (ri = workout_get_recording_interval(buf[27])) != 0 ) {
 			/* compute the number of bytes per sample and per lap */
 			bps = workout_bytes_per_sample(buf[26]);
-			bpl = workout_bytes_per_lap(S710_HRM_UNKNOWN,buf[26],buf[23]);
+			bpl = workout_bytes_per_lap(S725_HRM_UNKNOWN,buf[26],buf[23]);
       
 			/* obtain the number of laps and samples in the file */
 			duration   = BCD(buf[16])+60*(BCD(buf[17])+60*BCD(buf[18]));
@@ -573,13 +573,13 @@ workout_detect_hrm_type(unsigned char * buf, unsigned int bytes)
 			 */
       
 			/* 
-			 * assume it's an S710 unless the header size matches
+			 * assume it's an S725 unless the header size matches
 			 * the S625x header size.
 			 */
-			if ( header == S710_HEADER_SIZE_S625X ) {
-				type = S710_HRM_S625X; 
+			if ( header == S725_HEADER_SIZE_S625X ) {
+				type = S725_HRM_S625X; 
 			} else {
-				type = S710_HRM_S710;
+				type = S725_HRM_S725;
 			}
 		}
 	}
@@ -608,7 +608,7 @@ workout_read_buf(BUF *buf)
 
 	type = workout_detect_hrm_type(buf_get(buf),buf_len(buf));
 
-	if ( type == S710_HRM_UNKNOWN ) {
+	if ( type == S725_HRM_UNKNOWN ) {
 		fprintf(stderr,"workout_read_buf: unable to auto-detect HRM type\n");
 		return NULL;
 	}
@@ -633,10 +633,10 @@ workout_read(char *filename)
 
 /*
  * "what" is the bitwise or of at least one of:
- * S710_WORKOUT_HEADER
- * S710_WORKOUT_LAPS
- * S710_WORKOUT_SAMPLES
- * or it can just be S710_WORKOUT_FULL (everything)
+ * S725_WORKOUT_HEADER
+ * S725_WORKOUT_LAPS
+ * S725_WORKOUT_SAMPLES
+ * or it can just be S725_WORKOUT_FULL (everything)
  */
 void
 workout_print(workout_t * w, FILE * fp, int what)
@@ -647,9 +647,9 @@ workout_print(workout_t * w, FILE * fp, int what)
 	float        vam;
 	char         buf[BUFSIZ];
 	lap_data_t  *l;
-	S710_Time    s;
+	S725_Time    s;
 
-	if (what & S710_WORKOUT_HEADER) {
+	if (what & S725_WORKOUT_HEADER) {
 		/* exercise date */
 		strftime(buf,sizeof(buf),"%Y-%m-%d %H:%M:%S (%a, %d %b %Y)",
 				 localtime(&w->unixtime));
@@ -657,14 +657,14 @@ workout_print(workout_t * w, FILE * fp, int what)
 
 		/* HRM type */
 		switch ( w->type ) {
-		case S710_HRM_S610:
+		case S725_HRM_S610:
 			hrm_type = "S610";
 			break;
-		case S710_HRM_S625X:
+		case S725_HRM_S625X:
 			hrm_type = "S625X";
 			break;
-		case S710_HRM_S710:
-			hrm_type = "S710";
+		case S725_HRM_S725:
+			hrm_type = "S725";
 			break;
 		default:
 			break;
@@ -683,12 +683,12 @@ workout_print(workout_t * w, FILE * fp, int what)
 
 		/* workout mode */
 		fprintf(fp,"# Mode:                    HR");
-		if ( S710_HAS_ALTITUDE(w->mode) ) fprintf(fp,", Altitude");
-		if ( S710_HAS_SPEED(w->mode) )
+		if ( S725_HAS_ALTITUDE(w->mode) ) fprintf(fp,", Altitude");
+		if ( S725_HAS_SPEED(w->mode) )
 			fprintf(fp,", Bike %d (Speed%s%s)",
-					S710_HAS_BIKE1(w->mode) ? 1 : 2,
-					S710_HAS_POWER(w->mode) ? ", Power" : "",
-					S710_HAS_CADENCE(w->mode) ? ", Cadence" : "");
+					S725_HAS_BIKE1(w->mode) ? 1 : 2,
+					S725_HAS_POWER(w->mode) ? ", Power" : "",
+					S725_HAS_CADENCE(w->mode) ? ", Cadence" : "");
 		fprintf(fp,"\n");
 
 		/* exercise duration */
@@ -696,7 +696,7 @@ workout_print(workout_t * w, FILE * fp, int what)
 		workout_time_print(&w->duration,"hmst",fp);
 		fprintf(fp,"\n");
 
-		if ( S710_HAS_SPEED(w->mode) )
+		if ( S725_HAS_SPEED(w->mode) )
 			fprintf(fp,"# Exercise distance:       %.1f %s\n",
 					w->exercise_distance/10.0, w->units.distance);
 
@@ -709,20 +709,20 @@ workout_print(workout_t * w, FILE * fp, int what)
 		fprintf(fp,"# Maximum heart rate:      %d bpm\n",w->max_hr);
 
 		/* average, maximum cadence */
-		if ( S710_HAS_CADENCE(w->mode) ) {
+		if ( S725_HAS_CADENCE(w->mode) ) {
 			fprintf(fp,"# Average cadence:         %d rpm\n",w->avg_cad);
 			fprintf(fp,"# Maximum cadence:         %d rpm\n",w->max_cad);
 		}
 
 		/* average, maximum speed */
-		if ( S710_HAS_SPEED(w->mode) ) {
+		if ( S725_HAS_SPEED(w->mode) ) {
 			fprintf(fp,"# Average speed:           %.1f %s\n",
 					w->avg_speed/16.0, w->units.speed);
 			fprintf(fp,"# Maximum speed:           %.1f %s\n",
 					w->max_speed/16.0, w->units.speed);
 		}
 
-		if ( w->type != S710_HRM_S610 ) {
+		if ( w->type != S725_HRM_S610 ) {
 			/* min, avg, max temperature */
 			fprintf(fp,"# Minumum temperature:     %d %s\n",
 					w->min_temp, w->units.temperature);
@@ -733,7 +733,7 @@ workout_print(workout_t * w, FILE * fp, int what)
 		}
 
 		/* altitude, ascent */
-		if ( S710_HAS_ALTITUDE(w->mode) ) {
+		if ( S725_HAS_ALTITUDE(w->mode) ) {
 			fprintf(fp,"# Minimum altitude:        %d %s\n",
 					w->min_alt, w->units.altitude);
 			fprintf(fp,"# Average altitude:        %d %s\n",
@@ -745,7 +745,7 @@ workout_print(workout_t * w, FILE * fp, int what)
 		}
 
 		/* power data */
-		if (  S710_HAS_POWER(w->mode)  ) {
+		if (  S725_HAS_POWER(w->mode)  ) {
 			fprintf(fp,"# Average power:           %d W\n",
 					w->avg_power.power);
 			fprintf(fp,"# Average LR balance:      %d-%d\n",
@@ -783,7 +783,7 @@ workout_print(workout_t * w, FILE * fp, int what)
 		workout_time_print(&w->cumulative_exercise,"hm",fp);
 		fprintf(fp,"\n");
 
-		if ( S710_HAS_SPEED(w->mode) ) {
+		if ( S725_HAS_SPEED(w->mode) ) {
 			fprintf(fp,"# Cumulative ride time:    ");
 			workout_time_print(&w->cumulative_ride,"hm",fp);
 			fprintf(fp,"\n");
@@ -796,7 +796,7 @@ workout_print(workout_t * w, FILE * fp, int what)
 		fprintf(fp,"# \n# \n");
 	}
 
-	if ( what & S710_WORKOUT_LAPS ) {
+	if ( what & S725_WORKOUT_LAPS ) {
 		/* lap data */
 		for ( i = 0; i < w->laps; i++ ) {
 			l = &w->lap_data[i];
@@ -811,7 +811,7 @@ workout_print(workout_t * w, FILE * fp, int what)
 			fprintf(fp,"# \tAverage HR:         %d bpm\n",l->avg_hr);
 			fprintf(fp,"# \tMaximum HR:         %d bpm\n",l->max_hr);
 
-			if ( S710_HAS_ALTITUDE(w->mode) ) {
+			if ( S725_HAS_ALTITUDE(w->mode) ) {
 				fprintf(fp,"# \tLap altitude:       %d %s\n",
 						l->alt,w->units.altitude);
 				fprintf(fp,"# \tLap ascent:         %d %s\n",
@@ -822,10 +822,10 @@ workout_print(workout_t * w, FILE * fp, int what)
 						l->temp,w->units.temperature);
 			}
 
-			if ( S710_HAS_CADENCE(w->mode) )
+			if ( S725_HAS_CADENCE(w->mode) )
 				fprintf(fp,"# \tLap cadence:        %d rpm\n",l->cad);
 
-			if ( S710_HAS_SPEED(w->mode) ) {
+			if ( S725_HAS_SPEED(w->mode) ) {
 				float  lap_speed = 0;
 				time_t tenths;
 
@@ -844,7 +844,7 @@ workout_print(workout_t * w, FILE * fp, int what)
 						lap_speed, w->units.speed);
 			}
 
-			if ( S710_HAS_POWER(w->mode) ) {
+			if ( S725_HAS_POWER(w->mode) ) {
 				fprintf(fp,"# \tLap power:          %d W\n",
 						l->power.power);
 				fprintf(fp,"# \tLap LR balance:     %d-%d\n",
@@ -858,19 +858,19 @@ workout_print(workout_t * w, FILE * fp, int what)
 		}
 	}
 
-	if ( what & S710_WORKOUT_SAMPLES ) {
+	if ( what & S725_WORKOUT_SAMPLES ) {
 		/* sample data */
 		fprintf(fp,"# \n# Recorded data:\n# \n");
 		fprintf(fp,"# Time\t\t HR");
 
-		if ( S710_HAS_ALTITUDE(w->mode) ) {
+		if ( S725_HAS_ALTITUDE(w->mode) ) {
 			fprintf(fp,"\t Alt\t    VAM");
 		}
 
-		if ( S710_HAS_SPEED(w->mode) ) {
+		if ( S725_HAS_SPEED(w->mode) ) {
 			fprintf(fp,"\t  Spd");
-			if ( S710_HAS_POWER(w->mode) ) { fprintf(fp,"\tPower  LR Bal   PI"); }
-			if ( S710_HAS_CADENCE(w->mode) ) { fprintf(fp,"\tCad"); }
+			if ( S725_HAS_POWER(w->mode) ) { fprintf(fp,"\tPower  LR Bal   PI"); }
+			if ( S725_HAS_CADENCE(w->mode) ) { fprintf(fp,"\tCad"); }
 			fprintf(fp,"\t  Dist");
 		}
 		fprintf(fp,"\n");
@@ -880,7 +880,7 @@ workout_print(workout_t * w, FILE * fp, int what)
 			workout_time_print(&s,"hms",fp);
 			fprintf(fp,"\t\t%3d",w->hr_data[i]);
 
-			if ( S710_HAS_ALTITUDE(w->mode) ) {
+			if ( S725_HAS_ALTITUDE(w->mode) ) {
 				/* compute VAM as the average of the past 60 seconds... */
 				j = (i >= 60/w->recording_interval) ? i-60/w->recording_interval : 0;
 				if ( i > j ) {
@@ -892,16 +892,16 @@ workout_print(workout_t * w, FILE * fp, int what)
 				fprintf(fp,"\t%4d\t%7.1f",w->alt_data[i],vam);
 			}
 
-			if ( S710_HAS_SPEED(w->mode) ) {
+			if ( S725_HAS_SPEED(w->mode) ) {
 				fprintf(fp,"\t%5.1f",w->speed_data[i]/16.0);
-				if ( S710_HAS_POWER(w->mode) ) { fprintf(fp,"\t%5d\t%2d-%2d\t%2d",
+				if ( S725_HAS_POWER(w->mode) ) { fprintf(fp,"\t%5d\t%2d-%2d\t%2d",
 														 w->power_data[i].power,
 														 w->power_data[i].lr_balance >> 1,
 														 100 - (w->power_data[i].lr_balance >> 1),
 														 w->power_data[i].pedal_index >> 1);
 				}
 
-				if ( S710_HAS_CADENCE(w->mode) ) {
+				if ( S725_HAS_CADENCE(w->mode) ) {
 					fprintf(fp,"\t%3d",w->cad_data[i]);
 				}
 				fprintf(fp,"\t%6.2f",w->dist_data[i]);
@@ -919,14 +919,14 @@ workout_header_size(workout_t * w)
 	int size = 0;
 
 	switch ( w->type ) {
-	case S710_HRM_S610:
-		size = S710_HEADER_SIZE_S610;
+	case S725_HRM_S610:
+		size = S725_HEADER_SIZE_S610;
 		break;
-	case S710_HRM_S625X:
-		size = S710_HEADER_SIZE_S625X;
+	case S725_HRM_S625X:
+		size = S725_HEADER_SIZE_S625X;
 		break;
-	case S710_HRM_S710:
-		size = S710_HEADER_SIZE_S710;
+	case S725_HRM_S725:
+		size = S725_HEADER_SIZE_S725;
 		break;
 	default:
 		break;
@@ -936,23 +936,23 @@ workout_header_size(workout_t * w)
 }
 
 int
-workout_bytes_per_lap(S710_HRM_Type type, unsigned char bt, unsigned char bi)
+workout_bytes_per_lap(S725_HRM_Type type, unsigned char bt, unsigned char bi)
 {
 	int lap_size = 6;
 
 	/* Compute the number of bytes per lap. */
-	if ( S710_HAS_ALTITUDE(bt) )  lap_size += 5;
-	if ( S710_HAS_SPEED(bt) ) {
-		if ( S710_HAS_CADENCE(bt) ) lap_size += 1;
-		if ( S710_HAS_POWER(bt) )   lap_size += 4;
+	if ( S725_HAS_ALTITUDE(bt) )  lap_size += 5;
+	if ( S725_HAS_SPEED(bt) ) {
+		if ( S725_HAS_CADENCE(bt) ) lap_size += 1;
+		if ( S725_HAS_POWER(bt) )   lap_size += 4;
 		lap_size += 4;
 	}
   
 	/* 
 	 * This is Matti Tahvonen's fix for handling laps with interval mode.
-	 * Applies to the S625X and the S710/S720i.
+	 * Applies to the S625X and the S725/S720i.
 	 */
-	if ( type != S710_HRM_S610 && bi != 0 ) {
+	if ( type != S725_HRM_S610 && bi != 0 ) {
 		lap_size += 5;
 	}
 
@@ -964,16 +964,16 @@ workout_bytes_per_sample(unsigned char bt)
 {
 	int recsiz = 1;
 
-	if (S710_HAS_ALTITUDE(bt))
+	if (S725_HAS_ALTITUDE(bt))
 		recsiz += 2;
 
-	if (S710_HAS_SPEED(bt)) {
-		if (S710_HAS_ALTITUDE(bt))
+	if (S725_HAS_SPEED(bt)) {
+		if (S725_HAS_ALTITUDE(bt))
 			recsiz -= 1;
 		recsiz += 2;
-		if (S710_HAS_POWER(bt))
+		if (S725_HAS_POWER(bt))
 			recsiz += 4;
-		if (S710_HAS_CADENCE(bt))
+		if (S725_HAS_CADENCE(bt))
 			recsiz += 1;
 	}
 
@@ -992,16 +992,16 @@ workout_allocate_sample_space (workout_t * w)
 		ok = 0;													\
 	}
 
-	MAKEBUF(hr_data,S710_Heart_Rate);
-	if (S710_HAS_ALTITUDE(w->mode))
-		MAKEBUF(alt_data, S710_Altitude);
-	if (S710_HAS_SPEED(w->mode)) {
-		MAKEBUF(speed_data, S710_Speed);
-		MAKEBUF(dist_data, S710_Distance);
-		if (S710_HAS_POWER(w->mode))
-			MAKEBUF(power_data, S710_Power);
-		if (S710_HAS_CADENCE(w->mode))
-			MAKEBUF(cad_data, S710_Cadence);
+	MAKEBUF(hr_data,S725_Heart_Rate);
+	if (S725_HAS_ALTITUDE(w->mode))
+		MAKEBUF(alt_data, S725_Altitude);
+	if (S725_HAS_SPEED(w->mode)) {
+		MAKEBUF(speed_data, S725_Speed);
+		MAKEBUF(dist_data, S725_Distance);
+		if (S725_HAS_POWER(w->mode))
+			MAKEBUF(power_data, S725_Power);
+		if (S725_HAS_CADENCE(w->mode))
+			MAKEBUF(cad_data, S725_Cadence);
 	}
 
 #undef MAKEBUF

@@ -10,7 +10,7 @@ http://code.google.com/p/s710/.
 
 ### Building
 
-Building s725 require libusb 0.1.8 or later:
+Building s725 requires libusb 0.1.8 or later:
 
         cd src && make
 

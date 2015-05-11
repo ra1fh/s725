@@ -14,7 +14,8 @@ class SrdInfo
     attr_accessor :time, :basename, :destdir, :text, :html
     attr_accessor :summary, :dist
 
-    def parse(s)
+    def parse(str)
+        s = str.lines
         @summary = []
         @summary << s.grep(/Exercise duration:/)
         @summary << s.grep(/Exercise distance:/)
@@ -246,40 +247,40 @@ set xtics nomirror format "%g";
 set ytics 100 nomirror;
 plot "" using 6:3:(rgb(0,(($3-min)/(max-min)*255),0)) title "Alt" with lines lc rgb variable;'
 
-PLOT_TIME = '
-set terminal pngcairo enhanced size 700, 700;
-set output "@OUT@";
-set tmargin 0;
-set bmargin 1;
-set lmargin 5;
-set rmargin 5;
-set multiplot layout 4,1 title "@TITLE@\n";
-set origin 1,1;
-min=4000;
-max=0;
-grab(x)=(x<min)?min=x:(x>max)?max=x:0;
-plot "@IN@" using 3:(grab($3));
-set key autotitle column nobox samplen 1;
-set grid;
-set origin 0,0.56;
-set size 1, 0.36;
-set yrange [80:200];
-set timefmt "%H:%M:%S";
-set xdata time;
-set xtics nomirror format "";
-set ytics 10 nomirror;
-rgb(r,g,b) = 65536 * int(r) + 256 * int(g) + int(b);
-plot "" using 1:($2>80 ? $2 :1/0) title "HR" with lines lc rgb "dark-red";
-set yrange [*:*];
-set origin 0,0.33;
-set xtics nomirror format "";
-set ytics 10 nomirror;
-plot "" using 1:5 title "Speed" with lines lc rgb "dark-blue";
-set origin 0,0.1;
-set xtics nomirror format "%g";
-set ytics 100 nomirror;
-plot "" using 1:3:(rgb(0,(($3-min)/(max-min)*255),0)) title "Alt" with lines lc rgb variable;
-'
+# PLOT_TIME = '
+# set terminal pngcairo enhanced size 700, 700;
+# set output "@OUT@";
+# set tmargin 0;
+# set bmargin 1;
+# set lmargin 5;
+# set rmargin 5;
+# set multiplot layout 4,1 title "@TITLE@\n";
+# set origin 1,1;
+# min=4000;
+# max=0;
+# grab(x)=(x<min)?min=x:(x>max)?max=x:0;
+# plot "@IN@" using 3:(grab($3));
+# set key autotitle column nobox samplen 1;
+# set grid;
+# set origin 0,0.56;
+# set size 1, 0.36;
+# set yrange [80:200];
+# set timefmt "%H:%M:%S";
+# set xdata time;
+# set xtics nomirror format "";
+# set ytics 10 nomirror;
+# rgb(r,g,b) = 65536 * int(r) + 256 * int(g) + int(b);
+# plot "" using 1:($2>80 ? $2 :1/0) title "HR" with lines lc rgb "dark-red";
+# set yrange [*:*];
+# set origin 0,0.33;
+# set xtics nomirror format "";
+# set ytics 10 nomirror;
+# plot "" using 1:5 title "Speed" with lines lc rgb "dark-blue";
+# set origin 0,0.1;
+# set xtics nomirror format "%g";
+# set ytics 100 nomirror;
+# plot "" using 1:3:(rgb(0,(($3-min)/(max-min)*255),0)) title "Alt" with lines lc rgb variable;
+# '
 
 PLOT_TIME = '
 set terminal pngcairo enhanced size 700, 700;

@@ -49,8 +49,10 @@ COMPAT_SRCS+= compat/strlcpy.c
 endif
 
 ifdef DEBUG
-CFLAGS+= -g -ggdb -DDEBUG
+CFLAGS+= -DDEBUG
 endif
+
+CFLAGS+= -g
 
 COMPAT_OBJS= $(patsubst %.c,%.o,$(COMPAT_SRCS))
 

@@ -81,13 +81,8 @@ serial_init(struct s725_driver *d)
 	t.c_oflag = 0;
 	t.c_lflag = 0;
 
-#ifdef S725_SERIAL_ALT_INTER_CHAR_TIMER_IMP
-	t.c_cc[VTIME]    = 0;
-	t.c_cc[VMIN]     = 0;
-#else
 	t.c_cc[VTIME]    = 1; /* inter-character timer of 0.1 second used */
 	t.c_cc[VMIN]     = 0;  /* blocking read until 1 char / timer expires */
-#endif
 
 	/* set up for input */
 
@@ -100,49 +95,19 @@ serial_init(struct s725_driver *d)
 	return fd;
 }
 
-static int
-serial_read_byte(struct s725_driver *d, unsigned char *byte)
+static void
+serial_debug(unsigned char *byte, int r)
 {
-	int r = 0;
-	int i = SERIAL_READ_TRIES;
+#if DEBUG
 	static struct timeval ti;
 	static struct timeval tf;
 	static int    n;
 	float el;
-#ifdef S725_SERIAL_ALT_INTER_CHAR_TIMER_IMP
-	struct timeval timeout;
-	fd_set readbits;
-	int rc;
-#endif
 
 	gettimeofday(&tf,NULL);
 	el = (n++)? (float)tf.tv_sec-ti.tv_sec+(tf.tv_usec-ti.tv_usec)/1000000.0 : 0;
 	memcpy(&ti,&tf,sizeof(struct timeval));
 
-	do {
-#ifdef S725_SERIAL_ALT_INTER_CHAR_TIMER_IMP
-		timeout.tv_sec = 0;
-		timeout.tv_usec = 10000; /* wait for data 10ms at most */
-
-		FD_ZERO(&readbits);
-		FD_SET(DP(d)->fd, &readbits);
-
-		rc = select(DP(d)->fd + 1,&readbits,NULL,NULL,&timeout);
-
-		if( rc == 0 ) {
-			r = 0; /* select timeout, no data available */
-		} else if( rc < 0 ) {
-			r = 0; /* select returned an error */
-			fprintf(stderr,"select(): %s\n",strerror(rc));
-		} else {
-			r = read(DP(d)->fd,byte,1); /* data available, read one byte */
-		}
-#else
-		r = read(DP(d)->fd,byte,1);
-#endif
-	} while ( !r && i-- );
-
-#if 0
 	fprintf(stderr,"%4d: %f",n,el);
 	if ( r != 0 ) {
 		fprintf(stderr," [%02x]\n",*byte);
@@ -150,6 +115,19 @@ serial_read_byte(struct s725_driver *d, unsigned char *byte)
 		fprintf(stderr,"\n");
 	}
 #endif
+}
+	
+static int
+serial_read_byte(struct s725_driver *d, unsigned char *byte)
+{
+	int r = 0;
+	int i = SERIAL_READ_TRIES;
+
+	do {
+		r = read(DP(d)->fd,byte,1);
+	} while ( !r && i-- );
+
+	serial_debug(byte, r);
 
 	return r;
 }

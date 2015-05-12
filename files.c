@@ -85,7 +85,7 @@ int
 files_split(BUF *files, int *offset, BUF *out)
 {
 	int         size;
-	char       *bp;
+	u_char     *bp;
 
 	if (*offset < buf_len(files) - 2) {
 		size  = (buf_getc(files, *offset + 1) << 8) + buf_getc(files, *offset);
@@ -110,7 +110,7 @@ files_save(BUF *files, const char *dir)
 	int         ofd;
 	uid_t       owner = 0;
 	gid_t       group = 0;
-	char       *bp;
+	u_char     *bp;
 
 	while (offset < buf_len(files) - 2) {
 		size  = (buf_getc(files, offset + 1) << 8) + buf_getc(files, offset);

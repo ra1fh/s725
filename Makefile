@@ -8,8 +8,6 @@ PREFIX?= /usr/local
 BIN_OWNER= bin
 BIN_GROUP= root
 
-CC= gcc
-
 INCDIRS= -I$(PREFIX)/include
 LDFLAGS= -L$(PREFIX)/lib 
 

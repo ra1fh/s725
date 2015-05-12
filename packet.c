@@ -216,15 +216,15 @@ packet_get_response(S725_Packet_Index request)
 
 	if (send != NULL && packet_send(send) > 0)
 		recv = packet_recv();
-	if ( recv == NULL ) {
-		if ( send != NULL ) {
-			if ( request != S725_CONTINUE_TRANSFER &&
-				 request != S725_CLOSE_CONNECTION ) {
-				fprintf(stderr,"\n%s: %s\n\n",send->name,
+	if (recv == NULL) {
+		if (send != NULL) {
+			if (request != S725_CONTINUE_TRANSFER &&
+				 request != S725_CLOSE_CONNECTION) {
+				fprintf(stderr, "\n%s: %s\n\n",send->name,
 						(errno) ? strerror(errno) : "No response");
 			}
 		} else {
-			fprintf(stderr,"\n%d: bad packet index\n\n",request);
+			fprintf(stderr, "\n%d: bad packet index\n\n", request);
 		}
 	}
 
@@ -236,24 +236,24 @@ packet_print(packet_t *p, FILE *fp)
 {
 	int i;
 
-	if ( !p ) {
-		fprintf(fp,"\nNULL packet received in print_packet!\n");
+	if (!p) {
+		fprintf(fp, "\nNULL packet received in print_packet!\n");
 		return;
 	}
 
-	fprintf(fp,"\nPacket ID:       0x%02x\n",p->id);
-	fprintf(fp,"Packet size:     %d bytes\n",p->length);
-	if ( p->length ) {
-		fprintf(fp,"Packet data:\n\n");
-		for ( i = 0; i < p->length; i++ ) {
-			fprintf(fp,"%02x ",p->data[i]);
-			if ( i % 16 == 15 ) fprintf(fp,"\n");
+	fprintf(fp, "\nPacket ID:       0x%02x\n", p->id);
+	fprintf(fp, "Packet size:     %d bytes\n", p->length);
+	if (p->length) {
+		fprintf(fp, "Packet data:\n\n");
+		for (i = 0; i < p->length; i++) {
+			fprintf(fp, "%02x ", p->data[i]);
+			if (i % 16 == 15) fprintf(fp, "\n");
 		}
 		fprintf(fp,"\n\n");
 	}
 
-	fprintf(fp,"Packet checksum: 0x%04x\n",p->checksum);
-	fprintf(fp,"\n");
+	fprintf(fp, "Packet checksum: 0x%04x\n", p->checksum);
+	fprintf(fp, "\n");
 }
 
 /* This file needs to be rewritten.  */
@@ -289,7 +289,8 @@ packet_send(packet_t *p)
  * receive a packet from the S725 driver (allocates memory)
  */
 packet_t *
-packet_recv() {
+packet_recv()
+{
 	int             r;
 	int             i;
 	unsigned char   c = 0;
@@ -300,42 +301,56 @@ packet_recv() {
 	unsigned short  crc = 0;
 
 	r = driver_read_byte(&c);
-	packet_crc_process (&crc, c);
+	if (r <= 0)
+		return NULL;
+	packet_crc_process(&crc, c);
 
-	if ( c == S725_RESPONSE ) {
+	if (c == S725_RESPONSE) {
 		r = driver_read_byte(&id);
-		packet_crc_process ( &crc, id );
+		if (r <= 0)
+			return NULL;
+		packet_crc_process(&crc, id);
 		r = driver_read_byte(&c);
-		packet_crc_process ( &crc, c );
+		if (r <= 0)
+			return NULL;
+		packet_crc_process(&crc, c);
 		r = packet_recv_short (&len);
-		packet_crc_process ( &crc, len >> 8 );
-		packet_crc_process ( &crc, len & 0xff );
-		if ( r ) {
+		if (r <= 0)
+			return NULL;
+		packet_crc_process(&crc, len >> 8);
+		packet_crc_process(&crc, len & 0xff);
+		if (r > 0) {
 			len -= 5;
 			siz = (len <= 1) ? 0 : len - 1;
 			p = calloc(1,sizeof(packet_t) + siz);
 
-			if ( !p ) {
-				fprintf(stderr,"calloc(1,%ld): %s\n",
+			if (!p) {
+				fprintf(stderr, "calloc(1,%ld): %s\n",
 						(long)(sizeof(packet_t) + siz), strerror(errno));
 			} else {
 				p->type   = S725_RESPONSE;
 				p->id     = id;
 				p->length = len;
-				for ( i = 0; i < len; i++ ) {
+				for (i = 0; i < len; i++) {
 					r = driver_read_byte(&p->data[i]);
-					packet_crc_process ( &crc, p->data[i] );
-					if ( !r ) {
+					packet_crc_process(&crc, p->data[i]);
+					if (r <= 0) {
 						fprintf(stderr, "driver_read_byte failed\n");
-						free ( p );
+						free(p);
 						p = NULL;
 						break;
 					}
 				}
-				if ( p != NULL ) {
-					packet_recv_short (&p->checksum);
+				if (p != NULL) {
+					r = packet_recv_short(&p->checksum);
+					if (r <= 0) {
+						fprintf(stderr, "driver_read_byte failed (recv_short)\n");
+						free(p);
+						p = NULL;
+						return NULL;
+					}
 
-					if ( crc != p->checksum ) {
+					if (crc != p->checksum) {
 	    
 						/* 
 						   if the checksum failed, we have to jettison the whole 
@@ -344,10 +359,10 @@ packet_recv() {
 						   cancel the download and have the user attempt it again.
 						*/
 	    
-						fprintf ( stderr, 
-								  "\nCRC failed [id %d, length %d]\n", 
-								  p->id, p->length );
-						free ( p );
+						fprintf(stderr, 
+								 "\nCRC failed [id %d, length %d]\n", 
+								 p->id, p->length );
+						free(p);
 						p = NULL;
 					}
 				}
@@ -368,8 +383,11 @@ packet_recv_short(unsigned short *s)
 	unsigned char l = 0;
 
 	r = driver_read_byte(&u);
+	if (r <= 0)
+		return r;
 	r = driver_read_byte(&l);
-
+	if (r <= 0)
+		return r;
 	*s = (unsigned short)(u<<8)|l;
 
 	return r;
@@ -380,12 +398,12 @@ packet_checksum(packet_t *p)
 {
 	unsigned short crc = 0;
 
-	packet_crc_process ( &crc, S725_REQUEST );
-	packet_crc_process ( &crc, p->id );
-	packet_crc_process ( &crc, 0 );
-	packet_crc_process ( &crc, ( p->length + 5 ) >> 8 );
-	packet_crc_process ( &crc, ( p->length + 5 ) & 0xff );
-	packet_crc_block ( &crc, p->data, p->length );
+	packet_crc_process(&crc, S725_REQUEST);
+	packet_crc_process(&crc, p->id);
+	packet_crc_process(&crc, 0);
+	packet_crc_process(&crc, (p->length + 5) >> 8);
+	packet_crc_process(&crc, (p->length + 5) & 0xff);
+	packet_crc_block(&crc, p->data, p->length);
 	return crc;
 }
 
@@ -399,7 +417,7 @@ packet_serialize(packet_t *p, BUF *buf)
 	buf_putc(buf, 0);
 	buf_putc(buf, l >> 8);
 	buf_putc(buf, l & 0xff);
-	if ( p->length > 0 ) {
+	if (p->length > 0) {
 		buf_append(buf, p->data, p->length);
 	}
 	buf_putc(buf, p->checksum >> 8);

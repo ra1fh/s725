@@ -6,12 +6,14 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
 
 #include "driver_int.h"
+#include "xmalloc.h"
 
 #define SERIAL_READ_TRIES 10
 
@@ -38,6 +40,12 @@ struct s725_driver_ops ir_driver_ops = {
 	.write = ir_write,
 	.close = NULL,
 };
+
+struct driver_private {
+	int fd;
+};
+
+#define DP(x) ((struct driver_private *)x->data)
 
 unsigned char gByteMap[256];
 
@@ -86,7 +94,8 @@ serial_init(struct s725_driver *d)
 	tcflush(fd, TCIFLUSH);
 	tcsetattr(fd,TCSANOW,&t);
 
-	d->data  = (void *)fd;
+	d->data = xmalloc(sizeof(struct driver_private));
+	DP(d)->fd = fd;
 
 	return fd;
 }
@@ -116,9 +125,9 @@ serial_read_byte(struct s725_driver *d, unsigned char *byte)
 		timeout.tv_usec = 10000; /* wait for data 10ms at most */
 
 		FD_ZERO(&readbits);
-		FD_SET((int)d->data, &readbits);
+		FD_SET(DP(d)->fd, &readbits);
 
-		rc = select(((int)d->data)+1,&readbits,NULL,NULL,&timeout);
+		rc = select(DP(d)->fd + 1,&readbits,NULL,NULL,&timeout);
 
 		if( rc == 0 ) {
 			r = 0; /* select timeout, no data available */
@@ -126,10 +135,10 @@ serial_read_byte(struct s725_driver *d, unsigned char *byte)
 			r = 0; /* select returned an error */
 			fprintf(stderr,"select(): %s\n",strerror(rc));
 		} else {
-			r = read((int)d->data,byte,1); /* data available, read one byte */
+			r = read(DP(d)->fd,byte,1); /* data available, read one byte */
 		}
 #else
-		r = read((int)d->data,byte,1);
+		r = read(DP(d)->fd,byte,1);
 #endif
 	} while ( !r && i-- );
 
@@ -154,7 +163,7 @@ serial_write(struct s725_driver *d, BUF *buf)
 
 	for ( i = 0; i < buf_len(buf); i++ ) {
 		c = buf_getc(buf, i);
-		if (write((int)d->data, &gByteMap[c], 1) < 0)
+		if (write(DP(d)->fd, &gByteMap[c], 1) < 0)
 			ret = -1;
 	}
     
@@ -164,7 +173,7 @@ serial_write(struct s725_driver *d, BUF *buf)
 	 * seconds before the real data shows up.
 	 */
 	usleep(100000);
-	tcflush((int)d->data,TCIFLUSH);
+	tcflush(DP(d)->fd,TCIFLUSH);
 	return ret;
 }
 
@@ -189,7 +198,7 @@ ir_write(struct s725_driver *d, BUF *buf)
 
 	for ( i = 0; i < buf_len(buf); i++ ) {
 		c = buf_getc(buf, i);
-		if ((write((int)d->data, &c, 1)) < 0)
+		if ((write(DP(d)->fd, &c, 1)) < 0)
 			ret = -1;
 	}
     
@@ -199,7 +208,7 @@ ir_write(struct s725_driver *d, BUF *buf)
 	 * seconds before the real data shows up.
 	 */
 	usleep(100000);
-	tcflush((int)d->data,TCIFLUSH);
+	tcflush(DP(d)->fd,TCIFLUSH);
 	return ret;
 }
 

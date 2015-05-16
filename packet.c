@@ -36,151 +36,114 @@ static packet_t gPacket[] = {
 	/* note that checksum values are calculated at packet assembly time.  */
   
 	/* S725_GET_OVERVIEW */
-
 	{ "get overview",      S725_REQUEST, 0x15, 0, 0x3790, { 0 } },
 
 	/* S725_GET_USER */
-
 	{ "get user",          S725_REQUEST, 0x06, 0, 0x4b96, { 0 } },
 
 	/* S725_GET_WATCH */
-
 	{ "get watch",         S725_REQUEST, 0x02, 0, 0x9b95, { 0 } },
 
 	/* S725_GET_LOGO */
-
 	{ "get logo",          S725_REQUEST, 0x10, 0, 0x7390, { 0 } },
 
 	/* S725_GET_BIKE */
-
 	{ "get bike",          S725_REQUEST, 0x14, 0, 0xa393, { 0 } },
 
 	/* S725_GET_EXERCISE_1 */
-
 	{ "get exercise 1",    S725_REQUEST, 0x04, 1, 0x1d2f, { 0x11 } },
 
 	/* S725_GET_EXERCISE_2 */
-
 	{ "get exercise 2",    S725_REQUEST, 0x04, 1, 0x1d85, { 0x22 } },
 
 	/* S725_GET_EXERCISE_3 */
-
 	{ "get exercise 3",    S725_REQUEST, 0x04, 1, 0x1de3, { 0x33 } },
 
 	/* S725_GET_EXERCISE_4 */
-
 	{ "get exercise 4",    S725_REQUEST, 0x04, 1, 0x1cd1, { 0x44 } },
 
 	/* S725_GET_EXERCISE_5 */
-
 	{ "get exercise 5",    S725_REQUEST, 0x04, 1, 0x1cb7, { 0x55 } },
 
 	/* S725_GET_REMINDER_1 */
-
 	{ "get reminder 1",    S725_REQUEST, 0x0e, 1, 0x1e79, { 0x00 } },
 
 	/* S725_GET_REMINDER_2 */
-
 	{ "get reminder 2",    S725_REQUEST, 0x0e, 1, 0x9e7c, { 0x01 } },
 
 	/* S725_GET_REMINDER_3 */
-
 	{ "get reminder 3",    S725_REQUEST, 0x0e, 1, 0x9e76, { 0x02 } },
 
 	/* S725_GET_REMINDER_4 */
-
 	{ "get reminder 4",    S725_REQUEST, 0x0e, 1, 0x1e73, { 0x03 } },
 
 	/* S725_GET_REMINDER_5 */
-
 	{ "get reminder 5",    S725_REQUEST, 0x0e, 1, 0x9e62, { 0x04 } },
 
 	/* S725_GET_REMINDER_6 */
-
 	{ "get reminder 6",    S725_REQUEST, 0x0e, 1, 0x1e67, { 0x05 } },
 
 	/* S725_GET_REMINDER_7 */
-
 	{ "get reminder 7",    S725_REQUEST, 0x0e, 1, 0x1e6d, { 0x06 } },
 
 	/* S725_GET_FILES */
-
 	{ "get files",         S725_REQUEST, 0x0b, 0, 0x2f95, { 0 } },   
 
 	/* S725_CONTINUE_TRANSFER */
-
 	{ "continue transfer", S725_REQUEST, 0x16, 0, 0x0b90, { 0 } },
 
 	/* S725_CLOSE_CONNECTION */
-
 	{ "close connection",  S725_REQUEST, 0x0a, 0, 0xbb96, { 0 } },
 
 	/* S725_SET_USER */
-
 	{ "set user",          S725_REQUEST, 0x05, 21, 0, { 0 } },
 
 	/* S725_SET_WATCH */
-
 	{ "set watch",         S725_REQUEST, 0x01, 11, 0, { 0 } },
 
 	/* S725_SET_LOGO */
-
 	{ "set logo",          S725_REQUEST, 0x0f, 47, 0, { 0 } },
 
 	/* S725_SET_BIKE */
-
 	{ "set bike",          S725_REQUEST, 0x13, 25, 0, { 0 } },
 
 	/* S725_SET_EXERCISE_1 */
-
 	{ "set exercise 1",    S725_REQUEST, 0x03, 23, 0, { 0x11 } },
 
 	/* S725_SET_EXERCISE_2 */
-
 	{ "set exercise 2",    S725_REQUEST, 0x03, 23, 0, { 0x22 } },
 
 	/* S725_SET_EXERCISE_3 */
-
 	{ "set exercise 3",    S725_REQUEST, 0x03, 23, 0, { 0x33 } },
 
 	/* S725_SET_EXERCISE_4 */
-
 	{ "set exercise 4",    S725_REQUEST, 0x03, 23, 0, { 0x44 } },
 
 	/* S725_SET_EXERCISE_5 */
-
 	{ "set exercise 5",    S725_REQUEST, 0x03, 23, 0, { 0x55 } },
 
 	/* S725_SET_REMINDER_1 */
-
 	{ "set reminder 1",    S725_REQUEST, 0x0d, 14, 0, { 0x00 } },
 
 	/* S725_SET_REMINDER_2 */
-
 	{ "set reminder 2",    S725_REQUEST, 0x0d, 14, 0, { 0x01 } },
 
 	/* S725_SET_REMINDER_3 */
-
 	{ "set reminder 3",    S725_REQUEST, 0x0d, 14, 0, { 0x02 } },
 
 	/* S725_SET_REMINDER_4 */
-
 	{ "set reminder 4",    S725_REQUEST, 0x0d, 14, 0, { 0x03 } },
 
 	/* S725_SET_REMINDER_5 */
-
 	{ "set reminder 5",    S725_REQUEST, 0x0d, 14, 0, { 0x04 } },
 
 	/* S725_SET_REMINDER_6 */
-
 	{ "set reminder 6",    S725_REQUEST, 0x0d, 14, 0, { 0x05 } },
 
 	/* S725_SET_REMINDER_7 */
-
 	{ "set reminder 7",    S725_REQUEST, 0x0d, 14, 0, { 0x06 } },
 
 	/* S725_HARD_RESET */
-
 	{ "hard reset",        S725_REQUEST, 0x09, 0, 0x8796, { 0 } }
 };
 
@@ -200,9 +163,9 @@ packet_len(packet_t *p)
 
 /* return a packet pointer for a given packet index */
 packet_t *
-packet_get ( S725_Packet_Index idx )
+packet_get(S725_Packet_Index idx)
 {
-	return ( idx > S725_PACKET_INDEX_INVALID && idx < gNumPackets ) ? &gPacket[idx] : NULL;
+	return (idx > S725_PACKET_INDEX_INVALID && idx < gNumPackets) ? &gPacket[idx] : NULL;
 }
 
 /* get a single-packet response to a request */
@@ -291,14 +254,14 @@ packet_send(packet_t *p)
 packet_t *
 packet_recv()
 {
-	int             r;
-	int             i;
-	unsigned char   c = 0;
-	unsigned char   id;
-	unsigned short  len;
-	size_t          siz;
-	packet_t       *p = NULL;
-	unsigned short  crc = 0;
+	int r;
+	int i;
+	unsigned char c = 0;
+	unsigned char id;
+	unsigned short len;
+	size_t siz;
+	packet_t *p = NULL;
+	unsigned short crc = 0;
 
 	r = driver_read_byte(&c);
 	if (r <= 0)
@@ -378,7 +341,7 @@ packet_recv()
 static int
 packet_recv_short(unsigned short *s)
 {
-	int           r = 0;
+	int r = 0;
 	unsigned char u = 0;
 	unsigned char l = 0;
 
@@ -455,4 +418,3 @@ packet_crc_block(unsigned short *context, const unsigned char *blk, int len)
 	while (len -- > 0)
 		packet_crc_process(context, * blk ++);
 }
-

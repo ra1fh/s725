@@ -17,7 +17,7 @@ static struct s725_driver *driver;
 int
 driver_init(const int driver_type, const char *device)
 {
-	int  needpath;
+	int needpath;
 
 	if (driver)
 		return 0;
@@ -46,7 +46,7 @@ driver_init(const int driver_type, const char *device)
 		return 0;
 	}
 
-	if (! needpath)
+	if (!needpath)
 		return 1;
 
 	if (device == NULL)
@@ -113,7 +113,7 @@ driver_name_to_type(const char *driver_name)
 const char*
 driver_type_to_name(int driver_type)
 {
-	switch(driver_type) {
+	switch (driver_type) {
 	case DRIVER_IR:
 		return "ir";
 		break;

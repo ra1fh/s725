@@ -11,6 +11,3 @@
 #define BCD(x)       (UNIB(x)*10 + LNIB(x))
 
 #endif	/* UTILS_H */
-
-
-

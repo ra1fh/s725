@@ -23,19 +23,19 @@ workout_time_to_tenths(S725_Time *t)
 void
 workout_time_increment(S725_Time *t, unsigned int seconds)
 {
-	int   hours;
-	int   minutes;
-	int   secs;
+	int hours;
+	int minutes;
+	int secs;
 
 	hours   = seconds/3600;
 	minutes = (seconds/60)%60;
 	secs    = seconds % 60;
 
-	if ( secs + t->seconds >= 60 ) {
+	if (secs + t->seconds >= 60) {
 		minutes++;
 		secs -= 60;
 	}
-	if ( minutes + t->minutes >= 60 ) {
+	if (minutes + t->minutes >= 60) {
 		hours++;
 		minutes -= 60;
 	}
@@ -59,7 +59,7 @@ workout_time_diff(S725_Time *t1, S725_Time *t2, S725_Time *diff)
 	t_t2 = ((t2->hours * 60 + t2->minutes) * 60 + t2->seconds) * 10 + t2->tenths;
 
 	t_diff = t_t2 - t_t1;
-	if ( t_diff < 0 ) {
+	if (t_diff < 0) {
 		negative = 1;
 		t_diff = -t_diff;
 	}
@@ -79,7 +79,7 @@ workout_time_diff(S725_Time *t1, S725_Time *t2, S725_Time *diff)
 	diff->hours = t_diff;
 
 	/* if we got a negative time, switch the sign of everything. */
-	if ( negative ) {
+	if (negative) {
 		diff->hours   = -diff->hours;
 		diff->minutes = -diff->minutes;
 		diff->seconds = -diff->seconds;
@@ -105,26 +105,26 @@ workout_time_print(S725_Time *t, const char *format, FILE *fp)
 	const char *p;
 	int   r = 0;
 
-	for ( p = format; *p != 0; p++ ) {
-		switch ( *p ) {
+	for (p = format; *p != 0; p++) {
+		switch (*p) {
 		case 'h': case 'H':
-			if ( r ) fprintf(fp,":");
-			fprintf(fp,"%d",t->hours);
+			if (r) fprintf(fp, ":");
+			fprintf(fp, "%d", t->hours);
 			r = 1;
 			break;
 		case 'm': case 'M':
-			if ( r ) fprintf(fp,":");
-			fprintf(fp,"%02d",t->minutes);
+			if (r) fprintf(fp, ":");
+			fprintf(fp, "%02d", t->minutes);
 			r = 1;
 			break;
 		case 's': case 'S':
-			if ( r ) fprintf(fp,":");
-			fprintf(fp,"%02d",t->seconds);
+			if (r) fprintf(fp, ":");
+			fprintf(fp, "%02d", t->seconds);
 			r = 1;
 			break;
 		case 't': case 'T':
-			if ( r ) fprintf(fp,".");
-			fprintf(fp,"%d",t->tenths);
+			if (r) fprintf(fp, ".");
+			fprintf(fp, "%d", t->tenths);
 			r = 1;
 			break;
 		default:

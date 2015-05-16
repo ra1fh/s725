@@ -17,8 +17,8 @@
 
 #define HASH_MARKS   40
 
-static void   files_prep_hash_marks();
-static void   files_print_hash_marks(int pct, int bytes);
+static void files_prep_hash_marks();
+static void files_print_hash_marks(int pct, int bytes);
 
 /* 
  * This function reads the user's workout data from the watch and stores
@@ -29,11 +29,11 @@ static void   files_print_hash_marks(int pct, int bytes);
 int
 files_get(BUF *files)
 {
-	packet_t      *p;
-	int            p_remaining = 1;
-	int            p_first = 0;
+	packet_t *p;
+	int p_remaining = 1;
+	int p_first = 0;
 	unsigned short p_bytes = 0;
-	unsigned int   start;
+	unsigned int start;
 
 	buf_empty(files);
 
@@ -50,7 +50,7 @@ files_get(BUF *files)
 
 	while (p != NULL) {
 		/* Bit 8: first packet, Bit 7-1: packets remaining */
-		p_first     = packet_data(p)[0] & 0x80;
+		p_first		= packet_data(p)[0] & 0x80;
 		p_remaining = packet_data(p)[0] & 0x7f;
 		if (p_first) {
 			/* Byte 1 and 2 of first packet: total size in bytes */
@@ -84,8 +84,8 @@ files_get(BUF *files)
 int
 files_split(BUF *files, int *offset, BUF *out)
 {
-	int         size;
-	u_char     *bp;
+	int	size;
+	u_char *bp;
 
 	if (*offset < buf_len(files) - 2) {
 		size  = (buf_getc(files, *offset + 1) << 8) + buf_getc(files, *offset);
@@ -101,16 +101,16 @@ files_split(BUF *files, int *offset, BUF *out)
 int
 files_save(BUF *files, const char *dir)
 {
-	int         saved  = 0;
-	int         offset = 0;
-	int         size;
-	char        buf[BUFSIZ];
-	char        tmbuf[128];
-	time_t      ft;
-	int         ofd;
-	uid_t       owner = 0;
-	gid_t       group = 0;
-	u_char     *bp;
+	int saved  = 0;
+	int offset = 0;
+	int size;
+	char buf[BUFSIZ];
+	char tmbuf[128];
+	time_t ft;
+	int ofd;
+	uid_t owner = 0;
+	gid_t group = 0;
+	u_char *bp;
 
 	while (offset < buf_len(files) - 2) {
 		size  = (buf_getc(files, offset + 1) << 8) + buf_getc(files, offset);
@@ -143,7 +143,7 @@ time_t
 files_timestamp (BUF *f, size_t offset)
 {
 	struct tm t;
-	time_t    ft;
+	time_t ft;
 
 	t.tm_sec   = BCD(buf_getc(f, offset + 10));
 	t.tm_min   = BCD(buf_getc(f, offset + 11));
@@ -180,7 +180,7 @@ static void
 files_print_hash_marks(int pct, int bytes)
 {
 	float here;
-	int   i;
+	int i;
 
 	for (i = 0; i < HASH_MARKS+25; i++)
 		putchar('\b');

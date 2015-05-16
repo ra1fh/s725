@@ -194,7 +194,7 @@ struct workout_t {
 	S725_Speed              avg_speed;
 	S725_Speed              max_speed;
 	S725_Speed              median_speed;
-	S725_Speed		  highest_speed;
+	S725_Speed              highest_speed;
 	int                     energy;
 	int                     total_energy;
 	lap_data_t             *lap_data;

@@ -29,9 +29,9 @@ struct s725_driver_ops usb_driver_ops = {
 
 struct s725_usb_data {
 	struct usb_device *device;
-	usb_dev_handle    *handle;
-	int                endpoint;
-	int                interface;
+	usb_dev_handle *handle;
+	int endpoint;
+	int interface;
 };
 
 #define S725_USB_VENDOR_ID   0x0da4
@@ -43,12 +43,12 @@ static int
 usb_init_port(struct s725_driver *d)
 {
 	int ret = -1;
-	struct usb_bus                  *bi;
-	struct usb_device               *di;
-	int                              config = -1;
-	int                              interface = -1;
-	int                              altsetting = -1;
-	struct s725_usb_data                  *data;
+	struct usb_bus *bi;
+	struct usb_device *di;
+	int config = -1;
+	int interface = -1;
+	int altsetting = -1;
+	struct s725_usb_data *data;
 
 	if ((data = calloc(1,sizeof(struct s725_usb_data))) != NULL) {
 
@@ -64,7 +64,7 @@ usb_init_port(struct s725_driver *d)
 		for (bi = usb_busses; bi != NULL; bi = bi->next) {
 			for (di = bi->devices; di != NULL; di = di->next) {
 				if (di->descriptor.idVendor  == S725_USB_VENDOR_ID &&
-					 di->descriptor.idProduct == S725_USB_PRODUCT_ID) {
+					  di->descriptor.idProduct == S725_USB_PRODUCT_ID) {
 					data->device = di;
 					fprintf(stderr,
 							"Found Polar USB interface "
@@ -138,7 +138,7 @@ usb_read_byte(struct s725_driver *d, unsigned char *byte)
 	static char buf[BUFSIZ];
 	static int  bytes;
 	static int  idx;
-	int         i = 0;
+	int i = 0;
 	struct s725_usb_data *data = (struct s725_usb_data *)d->data;
 
 	if (idx == bytes) {
@@ -162,7 +162,7 @@ usb_read_byte(struct s725_driver *d, unsigned char *byte)
 		} while (!bytes && i++ < 100);
 	}
 	if (bytes > 0) {
-		/*      fprintf(stderr,"[%02x]\n",(unsigned char)buf[idx]); */
+		/* fprintf(stderr,"[%02x]\n",(unsigned char)buf[idx]); */
 		*byte = (unsigned char)buf[idx++];
 		r = 1;
 	}
@@ -176,7 +176,7 @@ usb_read_byte(struct s725_driver *d, unsigned char *byte)
 static int
 usb_send_packet(struct s725_driver *d, BUF *buf)
 {
-	int  ret = 0;
+	int ret = 0;
 	struct s725_usb_data *data = (struct s725_usb_data *)d->data;
 
 	/* packets are sent via USB control transfers. */
@@ -217,10 +217,8 @@ usb_shutdown_port(struct s725_driver *d)
 }
 
 static int
-find_first_altsetting(struct usb_device *dev,
-					  int               *config,
-					  int               *interface,
-					  int               *altsetting)
+find_first_altsetting(struct usb_device *dev, int *config,
+					  int *interface, int *altsetting)
 {
 	int i, i1, i2;
 
@@ -244,12 +242,8 @@ find_first_altsetting(struct usb_device *dev,
 
 
 static int
-find_endpoint(struct usb_device *dev,
-			  int                config,
-			  int                interface,
-			  int                altsetting,
-			  int                dir,
-			  int                type)
+find_endpoint(struct usb_device *dev, int config, int interface,
+			  int altsetting, int dir, int type)
 {
 	struct usb_interface_descriptor *intf;
 	int i;

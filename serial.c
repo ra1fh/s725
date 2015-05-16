@@ -60,7 +60,7 @@ serial_init(struct s725_driver *d)
 	compute_byte_map();
 
 	fd = open(d->path, O_RDWR | O_NOCTTY | O_NDELAY); 
-	if ( fd < 0 ) { 
+	if (fd < 0) { 
 		fprintf(stderr,"%s: %s\n",d->path,strerror(errno)); 
 		return -1; 
 	}
@@ -101,15 +101,15 @@ serial_debug(unsigned char *byte, int r)
 #if DEBUG
 	static struct timeval ti;
 	static struct timeval tf;
-	static int    n;
+	static int n;
 	float el;
 
 	gettimeofday(&tf,NULL);
-	el = (n++)? (float)tf.tv_sec-ti.tv_sec+(tf.tv_usec-ti.tv_usec)/1000000.0 : 0;
+	el = (n++) ? (float)tf.tv_sec-ti.tv_sec+(tf.tv_usec-ti.tv_usec)/1000000.0 : 0;
 	memcpy(&ti,&tf,sizeof(struct timeval));
 
 	fprintf(stderr,"%4d: %f",n,el);
-	if ( r != 0 ) {
+	if (r != 0) {
 		fprintf(stderr," [%02x]\n",*byte);
 	} else {
 		fprintf(stderr,"\n");
@@ -125,7 +125,7 @@ serial_read_byte(struct s725_driver *d, unsigned char *byte)
 
 	do {
 		r = read(DP(d)->fd,byte,1);
-	} while ( !r && i-- );
+	} while (!r && i--);
 
 	serial_debug(byte, r);
 
@@ -139,7 +139,7 @@ serial_write(struct s725_driver *d, BUF *buf)
 	unsigned char c;
 	int ret = 0;
 
-	for ( i = 0; i < buf_len(buf); i++ ) {
+	for (i = 0; i < buf_len(buf); i++) {
 		c = buf_getc(buf, i);
 		if (write(DP(d)->fd, &gByteMap[c], 1) < 0)
 			ret = -1;
@@ -174,7 +174,7 @@ ir_write(struct s725_driver *d, BUF *buf)
 	unsigned char c;
 	int ret = 0;
 
-	for ( i = 0; i < buf_len(buf); i++ ) {
+	for (i = 0; i < buf_len(buf); i++)  {
 		c = buf_getc(buf, i);
 		if ((write(DP(d)->fd, &c, 1)) < 0)
 			ret = -1;
@@ -195,9 +195,10 @@ compute_byte_map(void)
 {
 	int i, j, m;
 
-	for ( i = 0; i < 0x100; i++ ) {
+	for (i = 0; i < 0x100; i++) {
 		m = !(i & 1);
-		for (j=7;j>0;j--) m |= ((i+0x100-(1<<(j-1)))&0xff) & (1<<j);
+		for (j=7;j>0;j--)
+			m |= ((i+0x100-(1<<(j-1)))&0xff) & (1<<j);
 		gByteMap[m] = i;
 	}
 }

@@ -29,21 +29,21 @@ int
 main(int argc, char **argv)
 {
 	char			  path[PATH_MAX];
-	char              inipath[PATH_MAX];
+	char			  inipath[PATH_MAX];
 	const char		 *opt_filedir = NULL;
 	const char		 *opt_driver_name = NULL;
 	int				  opt_driver_type = DRIVER_IR;
 	const char		 *opt_device_name = NULL;
 	int				  opt_verbose = 0;
-	BUF              *files;
-	BUF              *buf;
-	workout_t        *w;
+	BUF				 *files;
+	BUF				 *buf;
+	workout_t		 *w;
 	int				  offset;
 	int				  opt_raw = 0;
 	int				  ch;
 	int				  ok;
 	time_t			  ft;
-	FILE*             f;
+	FILE*			  f;
 
 	snprintf(inipath, PATH_MAX, "%s/.s725rc", getenv("HOME"));
 	yyin = fopen(inipath, "r");
@@ -58,7 +58,7 @@ main(int argc, char **argv)
 			opt_device_name = conf_device_name;
 	}
 
-	while ( (ch = getopt(argc,argv,"d:D:f:hrv")) != -1 ) {
+	while ((ch = getopt(argc,argv,"d:D:f:hrv")) != -1) {
 		switch (ch) {
 		case 'd':
 			opt_driver_name = optarg;
@@ -138,8 +138,8 @@ main(int argc, char **argv)
 			buf = buf_alloc(0);
 			offset = 0;
 			while (files_split(files, &offset, buf)) {
-				char        tmbuf[128];
-				char        fnbuf[BUFSIZ];
+				char tmbuf[128];
+				char fnbuf[BUFSIZ];
 
 				w = workout_read_buf(buf);
 				ft = files_timestamp(buf, 0);

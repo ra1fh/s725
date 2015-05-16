@@ -12,5 +12,4 @@ int files_save(BUF *files, const char *dir);
 int files_split(BUF *files, int *offset, BUF *out);
 time_t files_timestamp(BUF *f, size_t offset);
 
-
 #endif	/* FILES_H */

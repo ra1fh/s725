@@ -15,10 +15,9 @@ extern struct s725_driver_ops usb_driver_ops;
 static struct s725_driver *driver;
 
 int
-driver_init (const char *driver_name, const char *device)
+driver_init(const int driver_type, const char *device)
 {
-	int  init = 0;
-	int  needpath = 1;
+	int  needpath;
 
 	if (driver)
 		return 0;
@@ -29,28 +28,32 @@ driver_init (const char *driver_name, const char *device)
 
 	bzero(driver, sizeof(struct s725_driver));
 
-	if (driver_name) {
-		if ( !strcmp(driver_name,"serial") ) {
-			driver->dops = &serial_driver_ops;
-		} else if ( !strcmp(driver_name,"ir") ) {
-			driver->dops = &ir_driver_ops;
-		} else if ( !strcmp(driver_name,"usb") ) {
-			driver->dops = &usb_driver_ops;
-			needpath = 0;
-			printf("needpath=0\n");
-		} else {
-			return 0;
-		}
+	switch (driver_type) {
+	case DRIVER_SERIAL:
+		driver->dops = &serial_driver_ops;
+		needpath = 1;
+		break;
+	case DRIVER_IR:
+		driver->dops = &ir_driver_ops;
+		needpath = 1;
+		break;
+	case DRIVER_USB:
+		driver->dops = &usb_driver_ops;
+		needpath = 0;
+		break;
+	default:
+		fprintf(stderr, "unknown driver type: %d\n", driver_type);
+		return 0;
 	}
 
-	if ( needpath != 0 && device != NULL ) {
-		strncpy(driver->path,device,sizeof(driver->path)-1);
-		init = 1;
-	} else if ( needpath == 0 && device == 0 ) {
-		init = 1;
-	}
+	if (! needpath)
+		return 1;
 
-	return init;
+	if (device == NULL)
+		return 0;
+	
+	strncpy(driver->path,device,sizeof(driver->path)-1);
+	return 1;
 }
 
 int
@@ -91,4 +94,36 @@ driver_close()
 		ret = driver->dops->close(driver);
 
 	return ret;
+}
+
+int
+driver_name_to_type(const char *driver_name)
+{
+	if (!strcmp(driver_name, "ir")) {
+		return DRIVER_IR;
+	} else if (!strcmp(driver_name, "serial")) {
+		return DRIVER_SERIAL;
+	} else if (!strcmp(driver_name, "usb")) {
+		return DRIVER_USB;
+	} else {
+		return DRIVER_UNKNOWN;
+	}
+}
+	   
+const char*
+driver_type_to_name(int driver_type)
+{
+	switch(driver_type) {
+	case DRIVER_IR:
+		return "ir";
+		break;
+	case DRIVER_SERIAL:
+		return "serial";
+		break;
+	case DRIVER_USB:
+		return "usb";
+		break;
+	default:
+		return "unknown";
+	}
 }

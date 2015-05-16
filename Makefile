@@ -1,6 +1,9 @@
 
 .PHONY: clean
 
+FLEX= flex
+YACC= yacc
+
 PROGS=   s725get srdcat srdhead
 
 PREFIX?= /usr/local
@@ -27,8 +30,6 @@ SRDHEAD_SRCS = workout_label.c workout_time.c \
 
 PROG_SRCS= $(patsubst %,%.c,$(PROGS))
 
-LIBS+= $(shell pkg-config --libs glib-2.0)	
-
 S725GET_OBJS= $(patsubst %.c,%.o,$(S725GET_SRCS))
 SRDCAT_OBJS= $(patsubst %.c,%.o,$(SRDCAT_SRCS))
 SRDHEAD_OBJS= $(patsubst %.c,%.o,$(SRDHEAD_SRCS))
@@ -39,9 +40,6 @@ ifeq ($(shell pkg-config --exists libusb && echo yes), yes)
 	CFLAGS += $(shell pkg-config --cflags libusb)
 	LIBS   += $(shell pkg-config --libs libusb)	
 endif
-
-CFLAGS += $(shell pkg-config --cflags glib-2.0)
-LIBS += $(shell pkg-config --libs glib-2.0)
 
 ifneq (, $(filter Linux GNU GNU/%, $(shell uname -s)))
 INCDIRS+= -Icompat
@@ -58,12 +56,29 @@ COMPAT_OBJS= $(patsubst %.c,%.o,$(COMPAT_SRCS))
 
 CFLAGS+= -Wall
 
-CLEANFILES= $(S725GET_OBJS) $(SRDCAT_OBJS) $(SRDHEAD_OBJS) $(PROGS) $(PROG_OBJS) $(COMPAT_OBJS) .depend
+CONF_OBJS= conf.tab.o lex.yy.o
+CONF_INT= conf.tab.c conf.tab.h lex.yy.c
+
+CLEANFILES=  $(S725GET_OBJS) $(SRDCAT_OBJS) $(SRDHEAD_OBJS)
+CLEANFILES+= $(PROGS) $(PROG_OBJS) $(COMPAT_OBJS) .depend
+CLEANFILES+= $(CONF_OBJ) $(CONF_INT)
 
 all: $(PROGS)
 
-s725get: s725get.o $(S725GET_OBJS) $(COMPAT_OBJS)
+s725get: s725get.o $(CONF_OBJS) $(S725GET_OBJS) $(COMPAT_OBJS)
 	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ 
+
+conf.tab.c conf.tab.h: conf.y
+	$(YACC) -b conf -d conf.y
+
+lex.yy.c: conf.l conf.tab.h
+	$(FLEX) conf.l
+
+conf.tab.o: conf.tab.c
+	$(CC) -c -o conf.tab.o conf.tab.c
+
+lex.yy.o: lex.yy.c
+	$(CC) -c -o lex.yy.o lex.yy.c
 
 srdcat: srdcat.o $(SRDCAT_OBJS) $(COMPAT_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $+ 

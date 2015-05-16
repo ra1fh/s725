@@ -9,22 +9,20 @@
 #include <time.h>
 #include <unistd.h>
 
-#include <glib.h>
-
+#include "conf.h"
 #include "driver.h"
 #include "files.h"
 #include "workout.h"
 
-static void     usage(void);
-
 static void
 usage(void) {
-	printf("usage: s725get [-h] [-d driver] [-f filedir] [device file]\n");
-	printf("       driver       may be either serial, ir, or usb. default: ir.\n");
-	printf("       filedir      is the directory where output files are written to.\n");
-	printf("                    alternative is S725_FILEDIR environment variable.\n");
-	printf("                    default: current working directory\n");
-	printf("       device file  is required for serial and ir drivers.\n");
+	printf("usage: s725get [-hrv] [-d driver] [-D device] [-f filedir]\n");
+	printf("        -d driver      driver type: serial, ir, or usb. (default: ir).\n");
+	printf("        -D device      device file. required for serial and ir driver.\n");
+	printf("        -f directory   directory where output files are written to.\n");
+	printf("                       default: current working directory\n");
+	printf("        -r             write raw srd format\n");
+	printf("        -v             verbose output\n");
 }
 
 int
@@ -33,40 +31,54 @@ main(int argc, char **argv)
 	char			  path[PATH_MAX];
 	char              inipath[PATH_MAX];
 	const char		 *opt_filedir = NULL;
-	const char		 *opt_driver_name = "ir";
-	const char		 *opt_device = NULL;
+	const char		 *opt_driver_name = NULL;
+	int				  opt_driver_type = DRIVER_IR;
+	const char		 *opt_device_name = NULL;
+	int				  opt_verbose = 0;
 	BUF              *files;
 	BUF              *buf;
 	workout_t        *w;
-	int               offset;
+	int				  offset;
 	int				  opt_raw = 0;
 	int				  ch;
 	int				  ok;
-	time_t  	     ft;
+	time_t			  ft;
 	FILE*             f;
-	GKeyFile         *keyfile;
 
-	keyfile = g_key_file_new();
-	snprintf(inipath, PATH_MAX, "%s/.s725getrc", getenv("HOME"));
-	if (g_key_file_load_from_file(keyfile, inipath, G_KEY_FILE_NONE, NULL)) {
-		opt_device = g_key_file_get_string(keyfile, "main", "device", NULL);
-		opt_driver_name = g_key_file_get_string(keyfile, "main", "driver", NULL);
-		if (!opt_driver_name)
-			opt_driver_name = "ir";
-	} else {
-		fprintf(stderr, "failed to parse %s\n", inipath);
+	snprintf(inipath, PATH_MAX, "%s/.s725rc", getenv("HOME"));
+	yyin = fopen(inipath, "r");
+	if (yyin != NULL) {
+		conf_filename = inipath;
+		int ret = yyparse();
+		if (ret != 0)
+			exit(1);
+		if (conf_driver_type != DRIVER_UNKNOWN)
+			opt_driver_type = conf_driver_type;
+		if (conf_device_name != NULL)
+			opt_device_name = conf_device_name;
 	}
 
-	while ( (ch = getopt(argc,argv,"d:f:hr")) != -1 ) {
+	while ( (ch = getopt(argc,argv,"d:D:f:hrv")) != -1 ) {
 		switch (ch) {
 		case 'd':
 			opt_driver_name = optarg;
+			opt_driver_type = driver_name_to_type(opt_driver_name);
+			if (opt_driver_type == DRIVER_UNKNOWN) {
+				fprintf(stderr, "unknown driver type: %s\n", opt_driver_name);
+				exit(1);
+			}
+			break;
+		case 'D':
+			opt_device_name = optarg;
 			break;
 		case 'f':
 			opt_filedir = optarg;
 			break;
 		case 'r':
 			opt_raw = 1;
+			break;
+		case 'v':
+			opt_verbose++;
 			break;
 		case 'h':
 			usage();
@@ -79,18 +91,25 @@ main(int argc, char **argv)
 	}
 	argc -= optind;
 	argv += optind;
-	if (argv[0]) 
-		opt_device = argv[0];
+
+	if (opt_driver_type == DRIVER_IR || opt_driver_type == DRIVER_SERIAL) {
+		if (!opt_device_name) {
+			fprintf(stderr, "error: device name required for %s driver\n",
+					driver_type_to_name(opt_driver_type));
+			exit(1);
+		}
+	}
 	
-	fprintf(stderr, "opt_device='%s'\n", opt_device);
-	fprintf(stderr, "opt_driver='%s'\n", opt_driver_name);
+	if (opt_verbose) {
+		fprintf(stderr, "driver name: %s\n", driver_type_to_name(opt_driver_type));
+		fprintf(stderr, "driver type: %d\n", opt_driver_type);
+		fprintf(stderr, "device name: %s\n", opt_device_name ? opt_device_name : "");
+	}
 
-	ok = driver_init (opt_driver_name , opt_device);
-
-	if ( ok != 1 ) {
-		printf("problem with driver_init\n");
-		usage();
-		return 1;
+	ok = driver_init (opt_driver_type , opt_device_name);
+	if (ok != 1) {
+		fprintf(stderr, "error: driver_init failed\n");
+		exit(1);
 	}
 
 	if (opt_filedir) {
@@ -101,13 +120,13 @@ main(int argc, char **argv)
 	}
 
 	if (!opt_filedir) {
-		printf("could not resolve path. check -f\n");
-		return 1;
+		fprintf(stderr, "error: could not resolve path. check -f\n");
+		exit(1);
 	}
 
 	if (driver_open() < 0) {
-		fprintf(stderr,"unable to open port: %s\n",strerror(errno));
-		return 1;
+		fprintf(stderr,"error: unable to open port: %s\n", strerror(errno));
+		exit(1);
 	}
 
 	files = buf_alloc(0);

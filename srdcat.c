@@ -12,7 +12,7 @@ static void usage(void);
 /* externs */
 
 extern char *optarg;
-extern int   optind;
+extern int optind;
 
 static void
 usage(void) {
@@ -20,16 +20,16 @@ usage(void) {
 }
 
 int
-main ( int argc, char **argv )
+main(int argc, char **argv)
 {
-	int              i;
-	workout_t       *w;
-	struct timeval   ti;
-	struct timeval   tf;
-	float            el;
-	int              ch;
+	int i;
+	workout_t *w;
+	struct timeval ti;
+	struct timeval tf;
+	float el;
+	int ch;
 
-	while ( (ch = getopt(argc,argv,"h")) != -1 ) {
+	while ((ch = getopt(argc, argv, "h")) != -1) {
 		switch (ch) {
 		case 'h':
 			usage();
@@ -40,18 +40,18 @@ main ( int argc, char **argv )
 	argc -= optind;
 	argv += optind;
 
-	for ( i = 0; i < argc; i++ ) {
+	for (i = 0; i < argc; i++) {
 		gettimeofday(&ti, NULL);
 		w = workout_read(argv[i]);
 		gettimeofday(&tf, NULL);
 		el = tf.tv_sec - ti.tv_sec + (tf.tv_usec-ti.tv_usec)/1000000.0;
-		if ( w != NULL ) {
+		if (w != NULL) {
 			printf("\nPrinting workout in %s [loaded in %f seconds]:\n\n",
-				   argv[i],el);
-			workout_print(w,stdout,S725_WORKOUT_FULL);
+				   argv[i], el);
+			workout_print(w, stdout, S725_WORKOUT_FULL);
 			workout_free(w);
 		} else {
-			printf("%s: invalid file\n",argv[i]);
+			printf("%s: invalid file\n", argv[i]);
 		}
 	}
 

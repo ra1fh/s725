@@ -57,11 +57,11 @@ COMPAT_OBJS= $(patsubst %.c,%.o,$(COMPAT_SRCS))
 CFLAGS+= -Wall
 
 CONF_OBJS= conf.tab.o lex.yy.o
-CONF_INT= conf.tab.c conf.tab.h lex.yy.c
+CONF_MISC= conf.tab.c conf.tab.h lex.yy.c parser parser.o
 
 CLEANFILES=  $(S725GET_OBJS) $(SRDCAT_OBJS) $(SRDHEAD_OBJS)
 CLEANFILES+= $(PROGS) $(PROG_OBJS) $(COMPAT_OBJS) .depend
-CLEANFILES+= $(CONF_OBJ) $(CONF_INT)
+CLEANFILES+= $(CONF_OBJ) $(CONF_MISC)
 
 all: $(PROGS)
 
@@ -79,6 +79,12 @@ conf.tab.o: conf.tab.c
 
 lex.yy.o: lex.yy.c
 	$(CC) -c -o lex.yy.o lex.yy.c
+
+parser.o: parser.c
+	$(CC) -c -o parser.o parser.c
+
+parser: $(CONF_OBJS) parser.o
+	$(CC) -o parser parser.o $(CONF_OBJS)
 
 srdcat: srdcat.o $(SRDCAT_OBJS) $(COMPAT_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $+ 

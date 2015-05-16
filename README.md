@@ -48,3 +48,7 @@ the following settings:
 
 	# device file name
 	device = "/dev/cua01"
+
+    # output directory
+    directory = "/home/user/polar/data/"
+

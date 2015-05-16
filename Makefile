@@ -61,7 +61,7 @@ CONF_MISC= conf.tab.c conf.tab.h lex.yy.c parser parser.o
 
 CLEANFILES=  $(S725GET_OBJS) $(SRDCAT_OBJS) $(SRDHEAD_OBJS)
 CLEANFILES+= $(PROGS) $(PROG_OBJS) $(COMPAT_OBJS) .depend
-CLEANFILES+= $(CONF_OBJ) $(CONF_MISC)
+CLEANFILES+= $(CONF_OBJS) $(CONF_MISC)
 
 all: $(PROGS)
 

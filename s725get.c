@@ -16,7 +16,7 @@
 
 static void
 usage(void) {
-	printf("usage: s725get [-hrv] [-d driver] [-D device] [-f filedir]\n");
+	printf("usage: s725get [-hrv] [-d driver] [-D device] [-f directory]\n");
 	printf("        -d driver      driver type: serial, ir, or usb. (default: ir).\n");
 	printf("        -D device      device file. required for serial and ir driver.\n");
 	printf("        -f directory   directory where output files are written to.\n");
@@ -30,7 +30,7 @@ main(int argc, char **argv)
 {
 	char			  path[PATH_MAX];
 	char			  inipath[PATH_MAX];
-	const char		 *opt_filedir = NULL;
+	const char		 *opt_directory_name = NULL;
 	const char		 *opt_driver_name = NULL;
 	int				  opt_driver_type = DRIVER_IR;
 	const char		 *opt_device_name = NULL;
@@ -56,6 +56,8 @@ main(int argc, char **argv)
 			opt_driver_type = conf_driver_type;
 		if (conf_device_name != NULL)
 			opt_device_name = conf_device_name;
+		if (conf_directory_name != NULL)
+			opt_directory_name = conf_directory_name;
 	}
 
 	while ((ch = getopt(argc, argv, "d:D:f:hrv")) != -1) {
@@ -72,7 +74,7 @@ main(int argc, char **argv)
 			opt_device_name = optarg;
 			break;
 		case 'f':
-			opt_filedir = optarg;
+			opt_directory_name = optarg;
 			break;
 		case 'r':
 			opt_raw = 1;
@@ -104,6 +106,7 @@ main(int argc, char **argv)
 		fprintf(stderr, "driver name: %s\n", driver_type_to_name(opt_driver_type));
 		fprintf(stderr, "driver type: %d\n", opt_driver_type);
 		fprintf(stderr, "device name: %s\n", opt_device_name ? opt_device_name : "");
+		fprintf(stderr, "directory name: %s\n", opt_directory_name ? opt_directory_name : "");
 	}
 
 	ok = driver_init (opt_driver_type , opt_device_name);
@@ -112,14 +115,14 @@ main(int argc, char **argv)
 		exit(1);
 	}
 
-	if (opt_filedir) {
-		opt_filedir = realpath(opt_filedir, path);
+	if (opt_directory_name) {
+		opt_directory_name = realpath(opt_directory_name, path);
 	} else {
 		getcwd(path, sizeof(path));
-		opt_filedir = path;
+		opt_directory_name = path;
 	}
 
-	if (!opt_filedir) {
+	if (!opt_directory_name) {
 		fprintf(stderr, "error: could not resolve path. check -f\n");
 		exit(1);
 	}
@@ -133,7 +136,7 @@ main(int argc, char **argv)
 
 	if (files_get(files)) {
 		if (opt_raw) {
-			files_save(files, opt_filedir);
+			files_save(files, opt_directory_name);
 		} else {
 			buf = buf_alloc(0);
 			offset = 0;
@@ -144,7 +147,7 @@ main(int argc, char **argv)
 				w = workout_read_buf(buf);
 				ft = files_timestamp(buf, 0);
 				strftime(tmbuf, sizeof(tmbuf), "%Y%m%dT%H%M%S", localtime(&ft));
-				snprintf(fnbuf, sizeof(fnbuf), "%s/%s.%05zd.txt",opt_filedir,tmbuf, buf_len(buf));
+				snprintf(fnbuf, sizeof(fnbuf), "%s/%s.%05zd.txt", opt_directory_name,tmbuf, buf_len(buf));
 
 				if (w) {
 					f = fopen(fnbuf, "w");

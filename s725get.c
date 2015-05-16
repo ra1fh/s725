@@ -58,7 +58,7 @@ main(int argc, char **argv)
 			opt_device_name = conf_device_name;
 	}
 
-	while ((ch = getopt(argc,argv,"d:D:f:hrv")) != -1) {
+	while ((ch = getopt(argc, argv, "d:D:f:hrv")) != -1) {
 		switch (ch) {
 		case 'd':
 			opt_driver_name = optarg;
@@ -143,7 +143,7 @@ main(int argc, char **argv)
 
 				w = workout_read_buf(buf);
 				ft = files_timestamp(buf, 0);
-				strftime(tmbuf,sizeof(tmbuf),"%Y%m%dT%H%M%S", localtime(&ft));
+				strftime(tmbuf, sizeof(tmbuf), "%Y%m%dT%H%M%S", localtime(&ft));
 				snprintf(fnbuf, sizeof(fnbuf), "%s/%s.%05zd.txt",opt_filedir,tmbuf, buf_len(buf));
 
 				if (w) {

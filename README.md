@@ -12,7 +12,7 @@ http://code.google.com/p/s710/.
 
 Building s725 requires libusb 0.1.8 or later:
 
-        cd src && make
+	cd src && make
 
 ### Usage
 
@@ -23,10 +23,10 @@ type to be used to communicate with the device.  Valid values are
 
 Examples:
 
-        s725get -d serial -D /dev/ttyS0
-        s725get -d ir -D /dev/ttyS0
-        s725get -d usb
-        s725get -D /dev/ttyS0
+	s725get -d serial -D /dev/ttyS0
+	s725get -d ir -D /dev/ttyS0
+	s725get -d usb
+	s725get -D /dev/ttyS0
 
 You must have write permissions to the device file to use s725get.
 
@@ -34,17 +34,17 @@ Downloaded workout files are stored in the current directory by
 default. To change this, you can pass the -f command line option to
 s725get:
 
-        s725get -f ~/workout/
+	s725get -f ~/workout/
 
-s725 reads the configuration file ~/.s725rc, which might contain the
-following settings:
+s725get reads the configuration file ~/.s725rc, which might contain
+the following settings:
 
-		#
-		# ~/.s725rc
-		#
+	#
+	# ~/.s725rc
+	#
 
-		# driver. possible values: ir, serial, usb
-		driver = ir
+	# driver. possible values: ir, serial, usb
+	driver = ir
 
-		# device file name
-		device = "/dev/cua01"
+	# device file name
+	device = "/dev/cua01"

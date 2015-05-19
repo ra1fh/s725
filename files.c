@@ -98,47 +98,6 @@ files_split(BUF *files, int *offset, BUF *out)
 	return 0;
 }
 
-int
-files_save(BUF *files, const char *dir)
-{
-	int saved  = 0;
-	int offset = 0;
-	int size;
-	char buf[BUFSIZ];
-	char tmbuf[128];
-	time_t ft;
-	int ofd;
-	uid_t owner = 0;
-	gid_t group = 0;
-	u_char *bp;
-
-	while (offset < buf_len(files) - 2) {
-		size  = (buf_getc(files, offset + 1) << 8) + buf_getc(files, offset);
-
-		ft    = files_timestamp(files, offset);
-		strftime(tmbuf,sizeof(tmbuf),"%Y%m%dT%H%M%S", localtime(&ft));
-		snprintf(buf, sizeof(buf), "%s/%s.%05d.srd",dir,tmbuf,size);
-
-		ofd = open(buf, O_CREAT|O_WRONLY, 0644);
-		if (ofd != -1) {
-			printf("File %02d: Saved as %s\n", saved+1,buf);
-			bp = buf_get(files);
-			write(ofd, &bp[offset], size);
-			fchown(ofd, owner, group);
-			close(ofd);
-		} else {
-			printf("File %02d: Unable to save %s: %s\n",
-				   saved+1,buf,strerror(errno));
-		}
-
-		offset += size;
-		saved++;
-	}
-	printf("Saved %d file%s\n",saved,(saved==1)?"":"s");
-
-	return saved;
-}
-
 time_t
 files_timestamp (BUF *f, size_t offset)
 {

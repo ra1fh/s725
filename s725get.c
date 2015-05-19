@@ -34,12 +34,14 @@ main(int argc, char **argv)
 	const char		 *opt_driver_name = NULL;
 	int				  opt_driver_type = DRIVER_IR;
 	const char		 *opt_device_name = NULL;
+	const char		 *suffix;
 	int				  opt_verbose = 0;
 	BUF				 *files;
 	BUF				 *buf;
 	workout_t		 *w;
 	int				  offset;
 	int				  opt_raw = 0;
+	int				  count = 0;
 	int				  ch;
 	int				  ok;
 	time_t			  ft;
@@ -134,33 +136,54 @@ main(int argc, char **argv)
 
 	files = buf_alloc(0);
 
+	if (opt_raw)
+		suffix = "srd";
+	else
+		suffix = "txt";
+	
 	if (files_get(files)) {
-		if (opt_raw) {
-			files_save(files, opt_directory_name);
-		} else {
-			buf = buf_alloc(0);
-			offset = 0;
-			while (files_split(files, &offset, buf)) {
-				char tmbuf[128];
-				char fnbuf[BUFSIZ];
+		buf = buf_alloc(0);
+		offset = 0;
+		count = 0;
+		while (files_split(files, &offset, buf)) {
+			char tmbuf[128];
+			char fnbuf[BUFSIZ];
 
+			count++;
+			ft = files_timestamp(buf, 0);
+			strftime(tmbuf, sizeof(tmbuf), "%Y%m%dT%H%M%S", localtime(&ft));
+			snprintf(fnbuf, sizeof(fnbuf), "%s/%s.%05zd.%s",
+					 opt_directory_name, tmbuf, buf_len(buf), suffix);
+
+			if (opt_raw) {
+				f = fopen(fnbuf, "w");
+				if (f) {
+					fprintf(stderr, "File %02d: Saved as %s\n", count, fnbuf);
+					fwrite(buf_get(buf), buf_len(buf), 1, f);
+					fclose(f);
+				} else {
+					printf("File %02d: Unable to save %s: %s\n",
+						   count,fnbuf,strerror(errno));
+				}
+			} else {
 				w = workout_read_buf(buf);
-				ft = files_timestamp(buf, 0);
-				strftime(tmbuf, sizeof(tmbuf), "%Y%m%dT%H%M%S", localtime(&ft));
-				snprintf(fnbuf, sizeof(fnbuf), "%s/%s.%05zd.txt", opt_directory_name,tmbuf, buf_len(buf));
-
 				if (w) {
 					f = fopen(fnbuf, "w");
-					fprintf(stderr, "opened %s for writing\n", fnbuf);
 					if (f) {
+						fprintf(stderr, "File %02d: Saved as %s\n", count, fnbuf);
 						workout_print(w, f, S725_WORKOUT_FULL);
+						fclose(f);
 					} else {
-						fprintf(stderr, "failed to open %s for writing\n", fnbuf);
+						printf("File %02d: Unable to save %s: %s\n",
+							   count,fnbuf,strerror(errno));
 					}
 					workout_free(w);
+				} else {
+					fprintf(stderr, "failed to parse workout for %s\n", fnbuf);
 				}
 			}
 		}
+		printf("Saved %d file%s\n", count, (count==1) ? "" : "s");
 	}
 
 	buf_free(files);

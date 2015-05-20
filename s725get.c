@@ -183,7 +183,7 @@ main(int argc, char **argv)
 						if (opt_hrm)
 							workout_print_hrm(w, f);
 						else
-							workout_print(w, f, S725_WORKOUT_FULL);
+							workout_print_txt(w, f, S725_WORKOUT_FULL);
 						fclose(f);
 					} else {
 						printf("File %02d: Unable to save %s: %s\n",

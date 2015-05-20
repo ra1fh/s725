@@ -49,7 +49,7 @@ main(int argc, char **argv)
 		if (w != NULL) {
 			printf("\nPrinting workout header in %s [loaded in %f seconds]:\n\n",
 				   argv[i], el);
-			workout_print(w, stdout, S725_WORKOUT_HEADER|S725_WORKOUT_LAPS);
+			workout_print_txt(w, stdout, S725_WORKOUT_HEADER|S725_WORKOUT_LAPS);
 			workout_free(w);
 		} else {
 			printf("%s: invalid file\n", argv[i]);

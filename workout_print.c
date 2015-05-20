@@ -6,6 +6,9 @@
 #include "workout_time.h"
 
 /*
+ * Print workout in non-standard plain text format for 
+ * easy processing with gnuplot
+ * 
  * "what" is the bitwise or of at least one of:
  * S725_WORKOUT_HEADER
  * S725_WORKOUT_LAPS
@@ -13,7 +16,7 @@
  * or it can just be S725_WORKOUT_FULL (everything)
  */
 void
-workout_print(workout_t *w, FILE *fp, int what)
+workout_print_txt(workout_t *w, FILE *fp, int what)
 {
 	const char* hrm_type = "Unknown";
 	int i;

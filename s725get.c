@@ -13,14 +13,16 @@
 #include "driver.h"
 #include "files.h"
 #include "workout.h"
+#include "workout_print.h"
 
 static void
 usage(void) {
-	printf("usage: s725get [-hrv] [-d driver] [-D device] [-f directory]\n");
+	printf("usage: s725get [-hHrv] [-d driver] [-D device] [-f directory]\n");
 	printf("        -d driver      driver type: serial, ir, or usb. (default: ir).\n");
 	printf("        -D device      device file. required for serial and ir driver.\n");
 	printf("        -f directory   directory where output files are written to.\n");
 	printf("                       default: current working directory\n");
+	printf("        -H             write HRM format\n");
 	printf("        -r             write raw srd format\n");
 	printf("        -v             verbose output\n");
 }
@@ -36,6 +38,7 @@ main(int argc, char **argv)
 	const char		 *opt_device_name = NULL;
 	const char		 *suffix;
 	int				  opt_verbose = 0;
+	int				  opt_hrm = 0;
 	BUF				 *files;
 	BUF				 *buf;
 	workout_t		 *w;
@@ -62,7 +65,7 @@ main(int argc, char **argv)
 			opt_directory_name = conf_directory_name;
 	}
 
-	while ((ch = getopt(argc, argv, "d:D:f:hrv")) != -1) {
+	while ((ch = getopt(argc, argv, "d:D:f:hHrv")) != -1) {
 		switch (ch) {
 		case 'd':
 			opt_driver_name = optarg;
@@ -77,6 +80,9 @@ main(int argc, char **argv)
 			break;
 		case 'f':
 			opt_directory_name = optarg;
+			break;
+		case 'H':
+			opt_hrm = 1;
 			break;
 		case 'r':
 			opt_raw = 1;
@@ -139,7 +145,10 @@ main(int argc, char **argv)
 	if (opt_raw)
 		suffix = "srd";
 	else
-		suffix = "txt";
+		if (opt_hrm)
+			suffix = "hrm";
+		else
+			suffix = "txt";
 	
 	if (files_get(files)) {
 		buf = buf_alloc(0);
@@ -171,7 +180,10 @@ main(int argc, char **argv)
 					f = fopen(fnbuf, "w");
 					if (f) {
 						fprintf(stderr, "File %02d: Saved as %s\n", count, fnbuf);
-						workout_print(w, f, S725_WORKOUT_FULL);
+						if (opt_hrm)
+							workout_print_hrm(w, f);
+						else
+							workout_print(w, f, S725_WORKOUT_FULL);
 						fclose(f);
 					} else {
 						printf("File %02d: Unable to save %s: %s\n",

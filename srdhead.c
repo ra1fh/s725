@@ -7,6 +7,7 @@
 #include <sys/time.h>
 
 #include "workout.h"
+#include "workout_print.h"
 
 static void usage(void);
 

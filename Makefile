@@ -19,13 +19,13 @@ INSTALLBIN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 555
 INSTALLMAN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 444
 
 S725GET_SRCS = driver.c files.c serial.c usb.c packet.c  \
-	workout.c workout_label.c workout_time.c \
+	workout.c workout_label.c workout_print.c workout_time.c \
 	xmalloc.c buf.c
 
-SRDCAT_SRCS = workout_label.c workout_time.c \
+SRDCAT_SRCS = workout_label.c workout_time.c workout_print.c \
 	workout.c xmalloc.c buf.c
 
-SRDHEAD_SRCS = workout_label.c workout_time.c \
+SRDHEAD_SRCS = workout_label.c workout_time.c workout_print.c \
 	workout.c xmalloc.c buf.c
 
 PROG_SRCS= $(patsubst %,%.c,$(PROGS))

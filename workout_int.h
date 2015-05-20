@@ -55,6 +55,9 @@
 #define S725_HEADER_SIZE_S725  109
 #define S725_HEADER_SIZE_S610   78
 
+#define S725_HRM_MAX_HR  200
+#define S725_HRM_REST_HR  60
+
 typedef struct S725_Time {
 	int    hours;
 	int    minutes;

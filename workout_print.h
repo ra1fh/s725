@@ -12,5 +12,6 @@
 
 void		workout_print_txt(workout_t * w, FILE *fp, int what);
 void		workout_print_hrm(workout_t *w, FILE *fp);
+void		workout_print_tcx(workout_t *w, FILE *fp);
 
 #endif	/* WORKOUT_PRINT_H */

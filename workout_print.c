@@ -290,7 +290,6 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
 	}
 }
 
-
 /* 
  * This function takes a workout_t *w and dumps it to FILE *fp in HRM
  * format.
@@ -303,7 +302,6 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
  * to terminate lines.  So that's why there are all those \r's floating
  * around in there, in case you were wondering.
  */
-
 void
 workout_print_hrm(workout_t *w, FILE *fp)
 {
@@ -325,12 +323,12 @@ workout_print_hrm(workout_t *w, FILE *fp)
 
 	/* sanity checks. */
 	if (w == NULL || fp == NULL) {
-		fprintf(stderr, "workout_print_hrm: improper usage(%p,%p)\n", w, fp);
+		fprintf(stderr, "workout_print_tcx: improper usage(%p,%p)\n", w, fp);
 		return;
 	}
 
 	if (w->type == S725_HRM_UNKNOWN) {
-		fprintf(stderr,"workout_print_hrm: unknown HRM model\n");
+		fprintf(stderr, "workout_print_tcx: unknown HRM model\n");
 		return;
 	}
 
@@ -629,3 +627,145 @@ workout_print_hrm(workout_t *w, FILE *fp)
 	fflush(fp);
 }
 
+/* 
+ * Print workout in TCX format
+ *
+ * For a specification, see:
+ * https://www8.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd
+ * 
+ */
+void
+workout_print_tcx(workout_t *w, FILE *fp)
+{
+	char buf[BUFSIZ];
+	int i, j, count;
+	unsigned long sum_altitude;
+	unsigned long sum_cadence;
+	unsigned long sum_speed;
+	unsigned long sum_power;
+	int mode;
+
+	/* sanity checks. */
+	if (w == NULL || fp == NULL) {
+		fprintf(stderr, "workout_print_hrm: improper usage(%p,%p)\n", w, fp);
+		return;
+	}
+
+	if (w->type == S725_HRM_UNKNOWN) {
+		fprintf(stderr,"workout_print_hrm: unknown HRM model\n");
+		return;
+	}
+
+	/* 
+	 * Sometimes users leave the watch in cycling mode when they don't
+	 * mean to.  Either they forget to change modes, or they just don't
+	 * feel like it.  The Polar software seems to "correct" for this by
+	 * detecting if the user actually recorded any meaningful speed, 
+	 * power and/or cadence data.  If they didn't, then the corresponding
+	 * flag is turned off, regardless of whether it was actually set in
+	 * the watch.  Seems like a reasonable idea, so let's do the same.
+	*/
+
+	sum_altitude = 0;
+	sum_cadence  = 0;
+	sum_speed    = 0;
+	sum_power    = 0;
+	mode         = w->mode;
+
+	if ( w->alt_data != NULL ) 
+		for ( i = 0; i < w->samples; i++ ) sum_altitude += w->alt_data[i];
+	if ( w->cad_data != NULL )
+		for ( i = 0; i < w->samples; i++ ) sum_cadence  += w->cad_data[i];
+	if ( w->speed_data != NULL )
+		for ( i = 0; i < w->samples; i++ ) sum_speed    += w->speed_data[i];
+	if ( w->power_data != NULL )
+		for ( i = 0; i < w->samples; i++ ) sum_power    += w->power_data[i].power;
+
+	if ( sum_altitude == 0 )  mode &= ~S725_MODE_ALTITUDE;
+	if ( sum_cadence  == 0 )  mode &= ~S725_MODE_CADENCE;
+	if ( sum_speed    == 0 )  mode &= ~S725_MODE_SPEED;
+	if ( sum_power    == 0 )  mode &= ~S725_MODE_POWER;
+
+	
+	fprintf(fp, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n");
+	fprintf(fp, "<TrainingCenterDatabase xmlns=\"http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd\">\n");
+
+	fprintf(fp, "<Activities>\n");
+	fprintf(fp, "  <Activity Sport=\"Running\">\n");
+
+	strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ",
+			 localtime(&w->unixtime));
+	fprintf(fp, "    <Id>%s</Id>\n", buf);
+
+	if (w->units.distance[0] == 'm') {
+		fprintf(stderr, "TODO: implement conversion from miles to metres\n");
+	}
+
+	count = 0;
+	for (i = 0; i < w->laps; i++) {
+		fprintf(fp, "    <Lap StartTime=\"%s\">\n", buf);
+		fprintf(fp, "      <TotalTimeSeconds>%.5lf</TotalTimeSeconds>\n",
+				w->lap_data[i].split.hours * 3600.0 + w->lap_data[i].split.minutes * 60.0 + w->lap_data[i].split.seconds);
+		fprintf(fp, "      <DistanceMeters>%.5lf</DistanceMeters>\n",
+				w->lap_data[i].distance * 100.0);
+		fprintf(fp, "      <MaximumSpeed>0.0</MaximumSpeed>\n");
+		fprintf(fp, "      <Calories>0</Calories>\n");
+		fprintf(fp, "      <AverageHeartRateBpm><Value>60</Value></AverageHeartRateBpm>\n");
+		fprintf(fp, "      <MaximumHeartRateBpm><Value>60</Value></MaximumHeartRateBpm>\n");
+		fprintf(fp, "      <Intensity>Active</Intensity>\n");
+		fprintf(fp, "      <TriggerMethod>Manual</TriggerMethod>\n");
+		fprintf(fp, "      <Track>\n");
+
+		int cumulative_seconds = w->lap_data[i].cumulative.hours * 3600
+			+ w->lap_data[i].cumulative.minutes * 60
+			+ w->lap_data[i].cumulative.seconds;
+		int cumulative_seconds_prev = 0;
+		
+		if (i > 0)
+			cumulative_seconds = w->lap_data[i-1].cumulative.hours * 3600
+			+ w->lap_data[i-1].cumulative.minutes * 60
+			+ w->lap_data[i-1].cumulative.seconds;
+		
+		for (j = 0; j < w->samples; j++) {
+			if (i < w->laps -1 && j * w->recording_interval >= cumulative_seconds) {
+				continue;
+			}
+			if (i > 0 && j * w->recording_interval > cumulative_seconds_prev) {
+				continue;
+			}
+
+			count++;
+			fprintf(fp, "        <Trackpoint>\n");
+			fprintf(fp, "        <!-- sample #%d -->\n", j);
+			time_t stamp = w->unixtime + j * w->recording_interval;
+			strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ",
+					 localtime(&stamp));
+			fprintf(fp, "          <Time>%s</Time>\n", buf);
+			
+			if ( w->alt_data != NULL ) 
+				fprintf(fp, "          <AltitudeMeters>%lf</AltitudeMeters>\n", w->alt_data[j] * 1.0);
+			
+			if ( w->dist_data != NULL ) 
+				fprintf(fp, "          <DistanceMeters>%lf</DistanceMeters>\n", w->dist_data[j] * 1.0);
+			
+			if ( w->hr_data != NULL ) 
+				fprintf(fp, "          <HeartRateBpm><Value>%hhu</Value></HeartRateBpm>\n", w->hr_data[j]);
+			
+			if ( w->cad_data != NULL ) 
+				fprintf(fp, "          <Cadence>%lf</Cadence>\n", w->cad_data[j] * 1.0);
+			
+			fprintf(fp, "        </Trackpoint>\n");
+		}
+		
+		fprintf(fp, "      </Track>\n");
+		fprintf(fp, "    </Lap>\n");
+	}
+	fprintf(fp, "  </Activity>\n");
+	fprintf(fp, "</Activities>\n");
+	fprintf(fp, "</TrainingCenterDatabase>\n");
+
+	if (count != w->samples)
+		fprintf(fp, "<!-- #samples does not match: %d != %d -->\n", count, w->samples);
+	
+	fflush(fp);
+}

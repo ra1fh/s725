@@ -4,7 +4,7 @@
 FLEX= flex
 YACC= yacc
 
-PROGS=   s725get srdcat srdhead
+PROGS=   s725get srdcat srdtcx srdhead
 
 PREFIX?= /usr/local
 
@@ -25,6 +25,9 @@ S725GET_SRCS = driver.c files.c serial.c usb.c packet.c  \
 SRDCAT_SRCS = workout_label.c workout_time.c workout_print.c \
 	workout.c xmalloc.c buf.c
 
+SRDTCX_SRCS = workout_label.c workout_time.c workout_print.c \
+	workout.c xmalloc.c buf.c
+
 SRDHEAD_SRCS = workout_label.c workout_time.c workout_print.c \
 	workout.c xmalloc.c buf.c
 
@@ -32,6 +35,7 @@ PROG_SRCS= $(patsubst %,%.c,$(PROGS))
 
 S725GET_OBJS= $(patsubst %.c,%.o,$(S725GET_SRCS))
 SRDCAT_OBJS= $(patsubst %.c,%.o,$(SRDCAT_SRCS))
+SRDTCX_OBJS= $(patsubst %.c,%.o,$(SRDTCX_SRCS))
 SRDHEAD_OBJS= $(patsubst %.c,%.o,$(SRDHEAD_SRCS))
 PROG_OBJS= $(patsubst %,%.o,$(PROGS))
 CPPFLAGS+= $(DEFS) -I. $(INCDIRS)
@@ -59,7 +63,7 @@ CFLAGS+= -Wall
 CONF_OBJS= conf.tab.o lex.yy.o
 CONF_MISC= conf.tab.c conf.tab.h lex.yy.c parser parser.o
 
-CLEANFILES=  $(S725GET_OBJS) $(SRDCAT_OBJS) $(SRDHEAD_OBJS)
+CLEANFILES=  $(S725GET_OBJS) $(SRDCAT_OBJS) $(SRDTCX_OBJS) $(SRDHEAD_OBJS)
 CLEANFILES+= $(PROGS) $(PROG_OBJS) $(COMPAT_OBJS) .depend
 CLEANFILES+= $(CONF_OBJS) $(CONF_MISC)
 
@@ -89,10 +93,13 @@ parser: $(CONF_OBJS) parser.o
 srdcat: srdcat.o $(SRDCAT_OBJS) $(COMPAT_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $+ 
 
+srdtcx: srdtcx.o $(SRDTCX_OBJS) $(COMPAT_OBJS)
+	$(CC) $(LDFLAGS) -o $@ $+ 
+
 srdhead: srdhead.o $(SRDHEAD_OBJS) $(COMPAT_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $+
 
-depend: $(S725GET_SRCS) $(SRDCAT_SRCS) $(SRDHEAD_SRCS)
+depend: $(S725GET_SRCS) $(SRDCAT_SRCS) $(SRDTCX_SRCS) $(SRDHEAD_SRCS)
 	$(CC) $(CPPFLAGS) -MM $+ > .depend
 
 clean:

@@ -689,7 +689,11 @@ workout_print_tcx(workout_t *w, FILE *fp)
 
 	
 	fprintf(fp, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n");
-	fprintf(fp, "<TrainingCenterDatabase xmlns=\"http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd\">\n");
+	fprintf(fp, "<TrainingCenterDatabase\n"
+			"    xmlns=\"http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2\"\n"
+			"    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+			"    xsi:schemaLocation=\"http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2\n"
+			"    http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd\">\n");
 
 	fprintf(fp, "<Activities>\n");
 	fprintf(fp, "  <Activity Sport=\"Running\">\n");

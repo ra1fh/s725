@@ -639,6 +639,7 @@ workout_print_tcx(workout_t *w, FILE *fp)
 {
 	char buf[BUFSIZ];
 	int i, j, count;
+	int count_after_end;
 	unsigned long sum_altitude;
 	unsigned long sum_cadence;
 	unsigned long sum_speed;
@@ -702,14 +703,15 @@ workout_print_tcx(workout_t *w, FILE *fp)
 	}
 
 	count = 0;
+	count_after_end = 0;
 	for (i = 0; i < w->laps; i++) {
 		fprintf(fp, "    <Lap StartTime=\"%s\">\n", buf);
 		fprintf(fp, "      <TotalTimeSeconds>%.5lf</TotalTimeSeconds>\n",
 				w->lap_data[i].split.hours * 3600.0 + w->lap_data[i].split.minutes * 60.0 + w->lap_data[i].split.seconds);
 		fprintf(fp, "      <DistanceMeters>%.5lf</DistanceMeters>\n",
 				w->lap_data[i].distance * 100.0);
-		fprintf(fp, "      <MaximumSpeed>0.0</MaximumSpeed>\n");
-		fprintf(fp, "      <Calories>0</Calories>\n");
+		fprintf(fp, "      <MaximumSpeed>%.5lf</MaximumSpeed>\n", w->max_speed * 1.0);
+		fprintf(fp, "      <Calories>%d</Calories>\n", w->total_energy);
 		fprintf(fp, "      <AverageHeartRateBpm><Value>60</Value></AverageHeartRateBpm>\n");
 		fprintf(fp, "      <MaximumHeartRateBpm><Value>60</Value></MaximumHeartRateBpm>\n");
 		fprintf(fp, "      <Intensity>Active</Intensity>\n");
@@ -722,17 +724,23 @@ workout_print_tcx(workout_t *w, FILE *fp)
 		int cumulative_seconds_prev = 0;
 		
 		if (i > 0)
-			cumulative_seconds = w->lap_data[i-1].cumulative.hours * 3600
+			cumulative_seconds_prev = w->lap_data[i-1].cumulative.hours * 3600
 			+ w->lap_data[i-1].cumulative.minutes * 60
 			+ w->lap_data[i-1].cumulative.seconds;
 		
 		for (j = 0; j < w->samples; j++) {
-			if (i < w->laps -1 && j * w->recording_interval >= cumulative_seconds) {
+			if (i == w->laps - 1)
+				if (j * w->recording_interval >= cumulative_seconds)
+					count_after_end++;
+
+			/* unless last lap, skip samples after end of lap */
+			if (i < w->laps -1)
+				if (j * w->recording_interval >= cumulative_seconds)
+					continue;
+			
+			/* except first lap, skip samples before end of last lap */
+			if (i > 0 && j * w->recording_interval < cumulative_seconds_prev)
 				continue;
-			}
-			if (i > 0 && j * w->recording_interval > cumulative_seconds_prev) {
-				continue;
-			}
 
 			count++;
 			fprintf(fp, "        <Trackpoint>\n");
@@ -763,9 +771,13 @@ workout_print_tcx(workout_t *w, FILE *fp)
 	fprintf(fp, "  </Activity>\n");
 	fprintf(fp, "</Activities>\n");
 	fprintf(fp, "</TrainingCenterDatabase>\n");
-
+	
 	if (count != w->samples)
 		fprintf(fp, "<!-- #samples does not match: %d != %d -->\n", count, w->samples);
+
+	fprintf(fp, "<!-- output count: %3d -->\n", count);
+	fprintf(fp, "<!-- data samples: %3d -->\n", w->samples);
+	fprintf(fp, "<!-- after end:    %3d -->\n", count_after_end);
 	
 	fflush(fp);
 }

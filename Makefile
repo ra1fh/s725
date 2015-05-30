@@ -46,7 +46,7 @@ ifeq ($(shell pkg-config --exists libusb && echo yes), yes)
 endif
 
 ifneq (, $(filter Linux GNU GNU/%, $(shell uname -s)))
-INCDIRS+= -Icompat
+CFLAGS+= -D_GNU_SOURCE -Icompat
 COMPAT_SRCS+= compat/strlcpy.c
 endif
 

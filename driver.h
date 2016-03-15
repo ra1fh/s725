@@ -11,7 +11,8 @@ enum {
 	DRIVER_UNKNOWN = 0,
 	DRIVER_SERIAL,
 	DRIVER_USB,
-	DRIVER_IR
+	DRIVER_IR,
+	DRIVER_STIR,
 };
 
 int			 driver_init(int driver_type, const char *device);

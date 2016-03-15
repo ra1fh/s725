@@ -18,6 +18,7 @@ directory { return TOKDIRECTORY; }
 serial    { return TOKSERIAL;    }
 usb       { return TOKUSB;       }
 ir        { return TOKIR;        }
+stir      { return TOKSTIR;      }
 .         { return *yytext;      }
 
 \"[^\"\n]+\" { yylval.sval = yytext; return STRING; }

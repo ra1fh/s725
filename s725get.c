@@ -19,7 +19,7 @@
 static void
 usage(void) {
 	printf("usage: s725get [-hHrv] [-d driver] [-D device] [-f directory]\n");
-	printf("        -d driver      driver type: serial, ir, or usb. (default: ir).\n");
+	printf("        -d driver      driver type: serial, ir, or stir. (default: ir).\n");
 	printf("        -D device      device file. required for serial and ir driver.\n");
 	printf("        -f directory   directory where output files are written to.\n");
 	printf("                       default: current working directory\n");
@@ -123,7 +123,7 @@ main(int argc, char **argv)
 		fprintf(stderr, "directory name: %s\n", opt_directory_name ? opt_directory_name : "");
 	}
 
-	ok = driver_init (opt_driver_type , opt_device_name);
+	ok = driver_init(opt_driver_type, opt_device_name);
 	if (ok != 1) {
 		fprintf(stderr, "error: driver_init failed\n");
 		exit(1);

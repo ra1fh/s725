@@ -40,9 +40,9 @@ SRDHEAD_OBJS= $(patsubst %.c,%.o,$(SRDHEAD_SRCS))
 PROG_OBJS= $(patsubst %,%.o,$(PROGS))
 CPPFLAGS+= $(DEFS) -I. $(INCDIRS)
 
-ifeq ($(shell pkg-config --exists libusb && echo yes), yes)
-	CFLAGS += $(shell pkg-config --cflags libusb)
-	LIBS   += $(shell pkg-config --libs libusb)	
+ifeq ($(shell pkg-config --exists libusb-1.0 && echo yes), yes)
+	CFLAGS += $(shell pkg-config --cflags libusb-1.0)
+	LIBS   += $(shell pkg-config --libs libusb-1.0)	
 endif
 
 ifneq (, $(filter Linux GNU GNU/%, $(shell uname -s)))

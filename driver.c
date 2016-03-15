@@ -10,7 +10,13 @@
 
 extern struct s725_driver_ops serial_driver_ops;
 extern struct s725_driver_ops ir_driver_ops;
-extern struct s725_driver_ops usb_driver_ops;
+extern struct s725_driver_ops stir_driver_ops;
+struct s725_driver_ops usb_driver_ops = {
+	.init = NULL,
+	.read = NULL,
+	.write = NULL,
+	.close = NULL,
+};
 
 static struct s725_driver *driver;
 
@@ -39,6 +45,10 @@ driver_init(const int driver_type, const char *device)
 		break;
 	case DRIVER_USB:
 		driver->dops = &usb_driver_ops;
+		needpath = 0;
+		break;
+	case DRIVER_STIR:
+		driver->dops = &stir_driver_ops;
 		needpath = 0;
 		break;
 	default:
@@ -105,6 +115,8 @@ driver_name_to_type(const char *driver_name)
 		return DRIVER_SERIAL;
 	} else if (!strcmp(driver_name, "usb")) {
 		return DRIVER_USB;
+	} else if (!strcmp(driver_name, "stir")) {
+		return DRIVER_STIR;
 	} else {
 		return DRIVER_UNKNOWN;
 	}
@@ -122,6 +134,9 @@ driver_type_to_name(int driver_type)
 		break;
 	case DRIVER_USB:
 		return "usb";
+		break;
+	case DRIVER_STIR:
+		return "stir";
 		break;
 	default:
 		return "unknown";

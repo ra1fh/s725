@@ -50,7 +50,7 @@ the following settings:
     # output directory
     directory = "/home/user/polar/data/"
 
-### Supported Drivers
+### Drivers
 
 #### ir
 
@@ -62,6 +62,6 @@ This driver is known to work with:
 
 #### serial
 
-The serial IR driver is inherited from from s710. I've yet to
-encounter a device this is useful for. For sending data it
-uses a mapping table that kind of reverses the bit order.
+The serial IR driver is inherited from from s710 project. I've yet to
+encounter a device this is useful for. For sending data it uses a
+mapping table that kind of reverses the bit order.

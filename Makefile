@@ -18,7 +18,7 @@ INSTALLDIR= install -d
 INSTALLBIN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 555
 INSTALLMAN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 444
 
-S725GET_SRCS = driver.c files.c serial.c usb.c packet.c  \
+S725GET_SRCS = driver.c files.c serial.c stir.c packet.c misc.c \
 	workout.c workout_label.c workout_print.c workout_time.c \
 	xmalloc.c buf.c
 

@@ -12,6 +12,7 @@
 #include "conf.h"
 #include "driver.h"
 #include "files.h"
+#include "misc.h"
 #include "workout.h"
 #include "workout_print.h"
 
@@ -22,6 +23,7 @@ usage(void) {
 	printf("        -D device      device file. required for serial and ir driver.\n");
 	printf("        -f directory   directory where output files are written to.\n");
 	printf("                       default: current working directory\n");
+	printf("        -t             get time\n");
 	printf("        -H             write HRM format\n");
 	printf("        -r             write raw srd format\n");
 	printf("        -v             verbose output\n");
@@ -44,6 +46,7 @@ main(int argc, char **argv)
 	workout_t		 *w;
 	int				  offset;
 	int				  opt_raw = 0;
+	int				  opt_time = 0;
 	int				  count = 0;
 	int				  ch;
 	int				  ok;
@@ -65,7 +68,7 @@ main(int argc, char **argv)
 			opt_directory_name = conf_directory_name;
 	}
 
-	while ((ch = getopt(argc, argv, "d:D:f:hHrv")) != -1) {
+	while ((ch = getopt(argc, argv, "d:D:f:hHrtv")) != -1) {
 		switch (ch) {
 		case 'd':
 			opt_driver_name = optarg;
@@ -86,6 +89,9 @@ main(int argc, char **argv)
 			break;
 		case 'r':
 			opt_raw = 1;
+			break;
+		case 't':
+			opt_time = 1;
 			break;
 		case 'v':
 			opt_verbose++;
@@ -138,6 +144,12 @@ main(int argc, char **argv)
 	if (driver_open() < 0) {
 		fprintf(stderr,"error: unable to open port: %s\n", strerror(errno));
 		exit(1);
+	}
+
+	if (opt_time) {
+		time_get();
+		driver_close();
+		exit(0);
 	}
 
 	files = buf_alloc(0);

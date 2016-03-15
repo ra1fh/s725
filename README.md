@@ -4,13 +4,12 @@ s725
 
 ### About
 
-Communicate with Polar S725X heart rate monitor via serial IR, native
-IR and USB interface. It is based on s710 from
-http://code.google.com/p/s710/.
+Communicate with Polar S725X heart rate monitor via IR interfaces.
+This project is based on s710 from http://code.google.com/p/s710/.
 
 ### Building
 
-Building s725 requires libusb 0.1.8 or later:
+Building s725 requires libusb 1.0 or later:
 
 	cd src && make
 
@@ -23,10 +22,9 @@ type to be used to communicate with the device.  Valid values are
 
 Examples:
 
-	s725get -d serial -D /dev/ttyS0
-	s725get -d ir -D /dev/ttyS0
-	s725get -d usb
-	s725get -D /dev/ttyS0
+	s725get -d serial -D /dev/cua00
+	s725get -d ir -D /dev/cua00
+	s725get -D /dev/cua00
 
 You must have write permissions to the device file to use s725get.
 
@@ -43,7 +41,7 @@ the following settings:
 	# ~/.s725rc
 	#
 
-	# driver. possible values: ir, serial, usb
+	# driver. possible values: ir, serial
 	driver = ir
 
 	# device file name
@@ -52,3 +50,18 @@ the following settings:
     # output directory
     directory = "/home/user/polar/data/"
 
+### Supported Drivers
+
+#### ir
+
+This driver is known to work with:
+  - Builtin Fujitsu Lifebook T4215 IR interface in IrDA mode (see BIOS
+	setup) that is accessed like a standard serial port
+  - Serial infrared adapter IRXON SMH-IR220.
+	http://www.irxon.com/english/products/ir220_e.htm
+
+#### serial
+
+The serial IR driver is inherited from from s710. I've yet to
+encounter a device this is useful for. For sending data it
+uses a mapping table that kind of reverses the bit order.

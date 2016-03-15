@@ -3,7 +3,6 @@
 %token TOKDIRECTORY
 %token TOKDRIVER
 %token TOKSERIAL
-%token TOKUSB
 %token TOKIR
 %token TOKSTIR
 %token EOL
@@ -66,7 +65,6 @@ driver:			TOKDRIVER '=' driver_type
 				;
 
 driver_type: 	TOKIR     { $$ = DRIVER_IR;     }
-		| 		TOKUSB    { $$ = DRIVER_USB;    }
 		| 		TOKSERIAL { $$ = DRIVER_SERIAL; }
 		| 		TOKSTIR   { $$ = DRIVER_STIR; }
 				;

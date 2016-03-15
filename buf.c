@@ -37,6 +37,7 @@
 
 #include "buf.h"
 #include "xmalloc.h"
+#include "hexdump.h"
 
 #define BUF_INCR	128
 
@@ -296,3 +297,19 @@ buf_grow(BUF *b, size_t len)
 	b->cb_buf = xrealloc(b->cb_buf, 1, b->cb_size + len);
 	b->cb_size += len;
 }
+
+/*
+ * hexdump buffer
+ */
+void
+buf_hexdump(BUF *bp)
+{
+	char *buf;
+	size_t len;
+
+	buf = buf_get(bp);
+	len = buf_len(bp);
+
+	hexdump(buf, len);
+}
+	

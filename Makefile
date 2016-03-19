@@ -70,7 +70,7 @@ CLEANFILES+= $(CONF_OBJS) $(CONF_MISC)
 all: $(PROGS)
 
 s725get: s725get.o $(CONF_OBJS) $(S725GET_OBJS) $(COMPAT_OBJS)
-	$(CC) $(LDFLAGS) $(LIBS) -o $@ $+ 
+	$(CC) $(LDFLAGS) -o $@ $+ $(LIBS) 
 
 conf.tab.c conf.tab.h: conf.y
 	$(YACC) -b conf -d conf.y

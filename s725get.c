@@ -105,8 +105,6 @@ main(int argc, char **argv)
 			return 1;
 		}
 	}
-	argc -= optind;
-	argv += optind;
 
 	if (opt_driver_type == DRIVER_IR || opt_driver_type == DRIVER_SERIAL) {
 		if (!opt_device_name) {

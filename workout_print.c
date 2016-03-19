@@ -644,7 +644,6 @@ workout_print_tcx(workout_t *w, FILE *fp)
 	unsigned long sum_cadence;
 	unsigned long sum_speed;
 	unsigned long sum_power;
-	int mode;
 
 	/* sanity checks. */
 	if (w == NULL || fp == NULL) {
@@ -671,7 +670,6 @@ workout_print_tcx(workout_t *w, FILE *fp)
 	sum_cadence  = 0;
 	sum_speed    = 0;
 	sum_power    = 0;
-	mode         = w->mode;
 
 	if ( w->alt_data != NULL ) 
 		for ( i = 0; i < w->samples; i++ ) sum_altitude += w->alt_data[i];
@@ -681,12 +679,6 @@ workout_print_tcx(workout_t *w, FILE *fp)
 		for ( i = 0; i < w->samples; i++ ) sum_speed    += w->speed_data[i];
 	if ( w->power_data != NULL )
 		for ( i = 0; i < w->samples; i++ ) sum_power    += w->power_data[i].power;
-
-	if ( sum_altitude == 0 )  mode &= ~S725_MODE_ALTITUDE;
-	if ( sum_cadence  == 0 )  mode &= ~S725_MODE_CADENCE;
-	if ( sum_speed    == 0 )  mode &= ~S725_MODE_SPEED;
-	if ( sum_power    == 0 )  mode &= ~S725_MODE_POWER;
-
 	
 	fprintf(fp, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n");
 	fprintf(fp, "<TrainingCenterDatabase\n"

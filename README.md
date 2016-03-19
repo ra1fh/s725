@@ -9,7 +9,8 @@ This project is based on s710 from http://code.google.com/p/s710/.
 
 ### Building
 
-Building s725 requires libusb 1.0 or later, GNU make, flex, yacc:
+Building s725 requires libusb 1.0 or later, GNU make, flex,
+yacc/byacc/bison:
 
 	make
 

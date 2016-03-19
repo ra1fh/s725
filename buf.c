@@ -304,7 +304,7 @@ buf_grow(BUF *b, size_t len)
 void
 buf_hexdump(BUF *bp)
 {
-	char *buf;
+	unsigned char *buf;
 	size_t len;
 
 	buf = buf_get(bp);

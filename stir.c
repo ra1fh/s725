@@ -190,7 +190,7 @@ stir_open_device(struct s725_stir_data *data)
 
 	intf = &config->interface[0].altsetting[0];
 	data->interface = intf->bInterfaceNumber;
-	fprintf(stderr, "interface: %d\n", data->interface);
+	fprintf(stderr, "stir_open_device: interface: %d\n", data->interface);
 
 	for (i = 0; i < intf->bNumEndpoints; i++) {
 		if ((intf->endpoint[i].bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_IN &&
@@ -202,8 +202,8 @@ stir_open_device(struct s725_stir_data *data)
 			data->endpoint_out = intf->endpoint[i].bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK;
 	}
 
-	fprintf(stderr, "ep_in: %d\n", data->endpoint_in);
-	fprintf(stderr, "ep_out: %d\n", data->endpoint_out);
+	fprintf(stderr, "stir_open_device: ep_in: %d\n", data->endpoint_in);
+	fprintf(stderr, "stir_open_device: ep_out: %d\n", data->endpoint_out);
 
 	if (data->endpoint_in == 0 || data->endpoint_out == 0) {
 		fprintf(stderr, "error: endpoints not found\n");
@@ -218,7 +218,7 @@ stir_open_device(struct s725_stir_data *data)
 		goto out;
 	}
 
-	fprintf(stderr, "claimed interface\n");
+	fprintf(stderr, "stir_open_device: claimed interface\n");
 	
 	err = 0;
 out:	
@@ -237,7 +237,7 @@ stir_init_port(struct s725_driver *d)
 		return -1;
 	}
 	
-	libusb_set_debug(NULL, 99);
+	libusb_set_debug(NULL, 1);
 
 	if ((data = calloc(1,sizeof(struct s725_stir_data))) == NULL) {
 		fprintf(stderr, "error: allocation failed\n");
@@ -249,17 +249,21 @@ stir_init_port(struct s725_driver *d)
 		return -1;
 	}
 
+	fprintf(stderr, "stir_init_port: *** clear halt out\n");
 	err = libusb_clear_halt(data->handle, 1/* data->endpoint_out */ );
 	if (err) {
 		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
 		return -1;
 	}
+
+	fprintf(stderr, "stir_init_port: *** clear halt in\n");
 	err = libusb_clear_halt(data->handle, 130/* data->endpoint_in */);
 	if (err) {
 		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
 		return -1;
 	}
 
+	fprintf(stderr, "stir_init_port: *** CTRL1\n");
 	err = stir_write_reg(data->handle, REG_CTRL1, CTRL1_SRESET);
 	if (err) {
 		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
@@ -267,18 +271,21 @@ stir_init_port(struct s725_driver *d)
 	}
 
 
+	fprintf(stderr, "stir_init_port: *** DPLL\n");
 	err = stir_write_reg(data->handle, REG_DPLL, 0x15);
 	if (err) {
 		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
 		return -1;
 	}
 
+	fprintf(stderr, "stir_init_port: *** PDCLK\n");
 	err = stir_write_reg(data->handle, REG_PDCLK, PDCLK_9600);
 	if (err) {
 		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
 		return -1;
 	}
 
+	fprintf(stderr, "stir_init_port: *** MODE\n");
 	err = stir_write_reg(data->handle, REG_MODE, MODE_NRESET | MODE_FASTRX | MODE_SIR);
 	if (err) {
 		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
@@ -286,6 +293,7 @@ stir_init_port(struct s725_driver *d)
 	}
 
 	/* SD/MODE=1 */
+	fprintf(stderr, "stir_init_port: *** CTRL1\n");
 	err = stir_write_reg(data->handle, REG_CTRL1, CTRL1_SDMODE);
 	if (err) {
 		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
@@ -293,6 +301,7 @@ stir_init_port(struct s725_driver *d)
 	}
 
 	/* SD/MODE=0 */
+	fprintf(stderr, "stir_init_port: *** CTRL1\n");
 	err = stir_write_reg(data->handle, REG_CTRL1, 0x00);
 	if (err) {
 		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
@@ -300,6 +309,7 @@ stir_init_port(struct s725_driver *d)
 	}
 
 	/* SPWIDTH=SIR */
+	fprintf(stderr, "stir_init_port: *** CTRL2\n");
 	err = stir_write_reg(data->handle, REG_CTRL2, 0x20);
 	if (err) {
 		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
@@ -333,7 +343,7 @@ static int stir_read_reg(libusb_device_handle *handle, uint16_t reg, uint8_t *da
 	else if (r != count)
 		fprintf(stderr, "stir_read_reg: incomplete read (expected %d, got %d bytes)\n", count, r);
 	else
-		fprintf(stderr, "stir_read_reg: reg=%hx\n", reg);
+		fprintf(stderr, "stir_read_reg: reg=%hx-%hx ok\n", reg, reg + count - 1);
 	return r;
 }
 
@@ -411,7 +421,7 @@ static int stir_fifo_txwait(libusb_device_handle *handle,  int space)
 		err = stir_read_reg(handle, REG_FIFOCTL, fifo_status, 
 				   FIFO_REGS_SIZE);
 		if (err != FIFO_REGS_SIZE) {
-			fprintf(stderr, "stir_read_reg: %s (%d)\n", libusb_strerror(err), err);
+			fprintf(stderr, "error: fifo regs %s (%d)\n", libusb_strerror(err), err);
 			return (err < 0 ? err : -1);
 		}
 
@@ -419,7 +429,7 @@ static int stir_fifo_txwait(libusb_device_handle *handle,  int space)
 		count = (unsigned)(fifo_status[2] & 0x1f) << 8 
 			| fifo_status[1];
 
-		fprintf(stderr, "fifo status 0x%lx count %lu\n", status, count);
+		fprintf(stderr, "stir_fifo_txwait: fifo status 0x%lx count %lu\n", status, count);
 		
 		/* is fifo receiving already, or empty */
 		if (!(status & FIFOCTL_DIR) ||

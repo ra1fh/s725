@@ -469,16 +469,12 @@ stir_send_packet(struct s725_driver *d, BUF *buf)
 	int bytes;
 
 	stir_fifo_txwait(data->handle, buf_len(txbuf));
-
+	
 	buf_putc(txbuf, 0x55);
 	buf_putc(txbuf, 0xAA);
 	buf_putc(txbuf, buf_len(buf) & 0xff);
 	buf_putc(txbuf, (buf_len(buf) >> 8) & 0xff);
 	buf_append(txbuf, buf_get(buf), buf_len(buf));
-#if 1
-	buf_putc(txbuf, 0xc1);
-#endif
-
 	
 	fprintf(stderr, "stir_send_packet: *** CLR set\n");
 	err = stir_write_reg(data->handle, REG_FIFOCTL, FIFOCTL_CLR);

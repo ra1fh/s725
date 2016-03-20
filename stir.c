@@ -382,14 +382,10 @@ stir_read_byte(struct s725_driver *d, unsigned char *byte)
 									   5000);
 			if (err != 0) {
 				err = libusb_reset_device(data->handle);
-				if (err == LIBUSB_ERROR_NOT_FOUND) {
+				if (err != 0) {
 					fprintf(stderr, "error: reset failed\n");
-					free(d->data);
-				} else {
-					fprintf(stderr, "doing reset\n");
-					stir_shutdown_port(d);
+					return 0;
 				}
-				stir_init_port(d);
 			}
 			usleep(10000);
 		} while (!bytes && i++ < 100);

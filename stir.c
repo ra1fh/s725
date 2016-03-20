@@ -316,44 +316,46 @@ stir_init_port(struct s725_driver *d)
 /* Send control message to read multiple registers */
 static int stir_read_reg(libusb_device_handle *handle, uint16_t reg, uint8_t *data, uint16_t count)
 {
-	int err;
+	int r;
 
 	fprintf(stderr, "stir_read_reg: reg=%hx-%hx\n", reg, reg + count - 1);
 
-	err = libusb_control_transfer(handle,
-								  LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_IN,
-								  REQ_READ_REG,
-								  0x00, /* wValue not used */
-								  reg,
-								  data,
-								  count,
-								  1000);
-	if (err)
-		fprintf(stderr, "stir_read_reg: %s (%d)\n", libusb_strerror(err), err);
+	r = libusb_control_transfer(handle,
+								LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_IN,
+								REQ_READ_REG,
+								0x00, /* wValue not used */
+								reg,
+								data,
+								count,
+								1000);
+	if (r < 0)
+		fprintf(stderr, "stir_read_reg: %s (%d)\n", libusb_strerror(r), r);
+	else if (r != count)
+		fprintf(stderr, "stir_read_reg: incomplete read (expected %d, got %d bytes)\n", count, r);
 	else
 		fprintf(stderr, "stir_read_reg: reg=%hx\n", reg);
-	return err;
+	return r;
 }
 
 static int stir_write_reg(libusb_device_handle *handle, uint16_t reg, uint8_t value)
 {
-	int err;
+	int r;
 	unsigned char buf[BUFSIZ];
 
 	fprintf(stderr, "stir_write_reg: reg=%hx, val=%hhx\n", reg, value);
-	err = libusb_control_transfer(handle,
-								  LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_OUT,
-								  REQ_WRITE_SINGLE, 
-								  value, 
-								  reg,
-								  buf,  /* not used */
-								  0x00, /* not used */
-								  1000);
-	if (err)
-		fprintf(stderr, "stir_write_reg: error %s\n", libusb_strerror(err));
+	r = libusb_control_transfer(handle,
+								LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_OUT,
+								REQ_WRITE_SINGLE, 
+								value, 
+								reg,
+								buf,  /* not used */
+								0x00, /* not used */
+								1000);
+	if (r < 0)
+		fprintf(stderr, "stir_write_reg: error %s\n", libusb_strerror(r));
 	else
 		fprintf(stderr, "stir_write_reg: reg=%hx, val=%hhx ok\n", reg, value);
-	return err;
+	return r;
 }
 
 
@@ -409,8 +411,8 @@ static int stir_fifo_txwait(libusb_device_handle *handle,  int space)
 		err = stir_read_reg(handle, REG_FIFOCTL, fifo_status, 
 				   FIFO_REGS_SIZE);
 		if (err != FIFO_REGS_SIZE) {
-			fprintf(stderr, "stir_read_reg: %s\n", libusb_strerror(err));
-			return err;
+			fprintf(stderr, "stir_read_reg: %s (%d)\n", libusb_strerror(err), err);
+			return (err < 0 ? err : -1);
 		}
 
 		status = fifo_status[0];
@@ -437,10 +439,10 @@ static int stir_fifo_txwait(libusb_device_handle *handle,  int space)
 	}
 			
 	err = stir_write_reg(handle, REG_FIFOCTL, FIFOCTL_CLR);
-	if (err) 
+	if (err < 0) 
 		return err;
 	err = stir_write_reg(handle, REG_FIFOCTL, 0);
-	if (err)
+	if (err < 0)
 		return err;
 
 	return 0;
@@ -457,8 +459,6 @@ stir_send_packet(struct s725_driver *d, BUF *buf)
 	int bytes;
 
 	stir_fifo_txwait(data->handle, buf_len(txbuf));
-	exit(1);
-
 
 	buf_putc(txbuf, 0x55);
 	buf_putc(txbuf, 0xAA);
@@ -469,10 +469,13 @@ stir_send_packet(struct s725_driver *d, BUF *buf)
 	buf_putc(txbuf, 0xc1);
 #endif
 
+	
+	fprintf(stderr, "stir_send_packet: *** CLR set\n");
 	err = stir_write_reg(data->handle, REG_FIFOCTL, FIFOCTL_CLR);
 	if (err)
 		fprintf(stderr, "stir_send_packet: %s\n", libusb_strerror(err));
 
+	fprintf(stderr, "stir_send_packet: *** CLR reset\n");
 	err = stir_write_reg(data->handle, REG_FIFOCTL, 0);
 	if (err)
 		fprintf(stderr, "stir_send_packet: %s\n", libusb_strerror(err));
@@ -480,6 +483,7 @@ stir_send_packet(struct s725_driver *d, BUF *buf)
 	
 	buf_hexdump(txbuf);
 	
+	fprintf(stderr, "stir_send_packet: *** start bulk transfer\n");
 	err = libusb_bulk_transfer(data->handle,
 							   data->endpoint_out,
 							   buf_get(txbuf),
@@ -487,7 +491,14 @@ stir_send_packet(struct s725_driver *d, BUF *buf)
 							   &bytes,
 							   1000);
 	fprintf(stderr, "stir_send_packet: len=%zu err=%d transferred=%d\n", buf_len(txbuf), err, bytes);
+
+	stir_fifo_txwait(data->handle, buf_len(txbuf));
+
+	usleep(1000000);
+
+	stir_fifo_txwait(data->handle, buf_len(txbuf));
 	
+	exit(1);
 	return err;
 }
 

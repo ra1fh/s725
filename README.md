@@ -18,8 +18,8 @@ yacc/byacc/bison:
 
 The s725get utility takes a -d argument which specifies the driver
 type to be used to communicate with the device.  Valid values are
-"serial", "ir".  A device filename is required for -d values of
-"serial" and "ir", but not for "usb". The default is -d ir.
+"serial", "ir", "stir".  A device filename is required for -d values of
+"serial" and "ir", but not for "stir". The default is -d ir.
 
 Examples:
 
@@ -42,7 +42,7 @@ the following settings:
 	# ~/.s725rc
 	#
 
-	# driver. possible values: ir, serial
+	# driver. possible values: ir, serial, stir
 	driver = ir
 
 	# device file name
@@ -63,6 +63,12 @@ This driver is known to work with:
 
 #### serial
 
-The serial IR driver is inherited from from s710 project. I've yet to
+The serial IR driver is inherited from s710 project. I've yet to
 encounter a device this is useful for. For sending data it uses a
 mapping table that kind of reverses the bit order.
+
+#### stir
+
+This stir driver is supposed to handle a SigmaTel STIr4200 based USB IrDA
+bridges. This is work in progress, not usable yet.
+

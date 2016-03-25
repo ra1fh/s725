@@ -26,6 +26,7 @@
 
 #include <libusb.h>
 
+#include "hexdump.h"
 #include "driver_int.h"
 
 static int stir_init_port(struct s725_driver *d);
@@ -393,6 +394,7 @@ stir_read_byte(struct s725_driver *d, unsigned char *byte)
 									   &bytes,
 									   5000);
 			if (err != 0) {
+				fprintf(stderr, "stir_read_byte: err=%d\n", err);
 				err = libusb_reset_device(data->handle);
 				if (err != 0) {
 					fprintf(stderr, "error: reset failed\n");
@@ -402,6 +404,8 @@ stir_read_byte(struct s725_driver *d, unsigned char *byte)
 			usleep(10000);
 		} while (!bytes && i++ < 100);
 	}
+	hexdump(buf, bytes);
+	
 	if (bytes > 0) {
 		*byte = (unsigned char)buf[idx++];
 		r = 1;
@@ -504,7 +508,6 @@ stir_send_packet(struct s725_driver *d, BUF *buf)
 
 	stir_fifo_txwait(data->handle, buf_len(txbuf));
 	
-	exit(1);
 	return err;
 }
 

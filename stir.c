@@ -195,11 +195,11 @@ stir_open_device(struct s725_stir_data *data)
 	for (i = 0; i < intf->bNumEndpoints; i++) {
 		if ((intf->endpoint[i].bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_IN &&
 			(intf->endpoint[i].bmAttributes & LIBUSB_TRANSFER_TYPE_MASK) == LIBUSB_TRANSFER_TYPE_BULK)
-			data->endpoint_in = intf->endpoint[i].bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK;
+			data->endpoint_in = intf->endpoint[i].bEndpointAddress;
 
 		if ((intf->endpoint[i].bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_OUT &&
 			(intf->endpoint[i].bmAttributes & LIBUSB_TRANSFER_TYPE_MASK) == LIBUSB_TRANSFER_TYPE_BULK)
-			data->endpoint_out = intf->endpoint[i].bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK;
+			data->endpoint_out = intf->endpoint[i].bEndpointAddress;
 	}
 
 	fprintf(stderr, "stir_open_device: ep_in: %d\n", data->endpoint_in);

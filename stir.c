@@ -202,8 +202,8 @@ stir_open_device(struct s725_stir_data *data)
 			data->endpoint_out = intf->endpoint[i].bEndpointAddress;
 	}
 
-	fprintf(stderr, "stir_open_device: ep_in: %d\n", data->endpoint_in);
-	fprintf(stderr, "stir_open_device: ep_out: %d\n", data->endpoint_out);
+	fprintf(stderr, "stir_open_device: ep_in: %x\n", data->endpoint_in);
+	fprintf(stderr, "stir_open_device: ep_out: %x\n", data->endpoint_out);
 
 	if (data->endpoint_in == 0 || data->endpoint_out == 0) {
 		fprintf(stderr, "error: endpoints not found\n");
@@ -385,7 +385,7 @@ stir_read_byte(struct s725_driver *d, unsigned char *byte)
 	if (idx == bytes) {
 		idx = 0;
 		do {
-			fprintf(stderr, "stir_read_byte: bulk in\n");
+			fprintf(stderr, "stir_read_byte: bulk in endpoint_in=%x\n", data->endpoint_in);
 			err = libusb_bulk_transfer(data->handle,
 									   data->endpoint_in,
 									   buf,

@@ -381,12 +381,9 @@ stir_read_byte(struct s725_driver *d, unsigned char *byte)
 	int err;
 	struct s725_stir_data *data = (struct s725_stir_data *)d->data;
 
-	fprintf(stderr, "stir_read_byte\n");
-
 	if (idx == bytes) {
 		idx = 0;
 		do {
-			fprintf(stderr, "stir_read_byte: bulk in endpoint_in=%x\n", data->endpoint_in);
 			err = libusb_bulk_transfer(data->handle,
 									   data->endpoint_in,
 									   buf,

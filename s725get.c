@@ -23,6 +23,7 @@ usage(void) {
 	printf("        -D device      device file. required for serial and ir driver.\n");
 	printf("        -f directory   directory where output files are written to.\n");
 	printf("                       default: current working directory\n");
+	printf("        -l             listen for incoming data\n");
 	printf("        -t             get time\n");
 	printf("        -H             write HRM format\n");
 	printf("        -r             write raw srd format\n");
@@ -47,6 +48,7 @@ main(int argc, char **argv)
 	int				  offset;
 	int				  opt_raw = 0;
 	int				  opt_time = 0;
+	int				  opt_listen = 0;
 	int				  count = 0;
 	int				  ch;
 	int				  ok;
@@ -68,7 +70,7 @@ main(int argc, char **argv)
 			opt_directory_name = conf_directory_name;
 	}
 
-	while ((ch = getopt(argc, argv, "d:D:f:hHrtv")) != -1) {
+	while ((ch = getopt(argc, argv, "d:D:f:hHlrtv")) != -1) {
 		switch (ch) {
 		case 'd':
 			opt_driver_name = optarg;
@@ -86,6 +88,9 @@ main(int argc, char **argv)
 			break;
 		case 'H':
 			opt_hrm = 1;
+			break;
+		case 'l':
+			opt_listen = 1;
 			break;
 		case 'r':
 			opt_raw = 1;
@@ -159,6 +164,57 @@ main(int argc, char **argv)
 			suffix = "hrm";
 		else
 			suffix = "txt";
+
+	if (opt_listen) {
+		if (files_listen(files)) {
+			buf = buf_alloc(0);
+			offset = 0;
+			count = 0;
+			while (files_split(files, &offset, buf)) {
+				char tmbuf[128];
+				char fnbuf[BUFSIZ];
+
+				count++;
+				ft = files_timestamp(buf, 0);
+				strftime(tmbuf, sizeof(tmbuf), "%Y%m%dT%H%M%S", localtime(&ft));
+				snprintf(fnbuf, sizeof(fnbuf), "%s/%s.%05zd.%s",
+						 opt_directory_name, tmbuf, buf_len(buf), suffix);
+
+				if (opt_raw) {
+					f = fopen(fnbuf, "w");
+					if (f) {
+						fprintf(stderr, "File %02d: Saved as %s\n", count, fnbuf);
+						fwrite(buf_get(buf), buf_len(buf), 1, f);
+						fclose(f);
+					} else {
+						printf("File %02d: Unable to save %s: %s\n",
+							   count,fnbuf,strerror(errno));
+					}
+				} else {
+					w = workout_read_buf(buf);
+					if (w) {
+						f = fopen(fnbuf, "w");
+						if (f) {
+							fprintf(stderr, "File %02d: Saved as %s\n", count, fnbuf);
+							if (opt_hrm)
+								workout_print_hrm(w, f);
+							else
+								workout_print_txt(w, f, S725_WORKOUT_FULL);
+							fclose(f);
+						} else {
+							printf("File %02d: Unable to save %s: %s\n",
+								   count,fnbuf,strerror(errno));
+						}
+						workout_free(w);
+					} else {
+						fprintf(stderr, "failed to parse workout for %s\n", fnbuf);
+					}
+				}
+			}
+			printf("Saved %d file%s\n", count, (count==1) ? "" : "s");
+		}
+		exit(0);
+	}
 	
 	if (files_get(files)) {
 		buf = buf_alloc(0);

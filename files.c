@@ -82,6 +82,61 @@ files_get(BUF *files)
 	return 1;
 }
 
+/* 
+ * Listen for incoming training data. The send operation
+ * has to be initiated from the watch
+ */
+int
+files_listen(BUF *files)
+{
+	packet_t *p;
+	int p_remaining = 1;
+	int p_first = 0;
+	unsigned short p_bytes = 0;
+	unsigned int start;
+
+	buf_empty(files);
+
+	printf("\nListening ");
+
+	p = packet_listen();
+	
+	if (p == NULL) {
+		printf("[error]");
+		return 0;
+	}
+
+	while (p != NULL) {
+		/* Bit 8: first packet, Bit 7-1: packets remaining */
+		p_first		= packet_data(p)[0] & 0x80;
+		p_remaining = packet_data(p)[0] & 0x7f;
+		if (p_first) {
+			/* Byte 1 and 2 of first packet: total size in bytes */
+			p_bytes = (packet_data(p)[1] << 8) + packet_data(p)[2];
+			/* Byte 3 and 4 of first packet: magic bytes */
+			start = 5;
+		} else {
+			start = 1;
+		}
+
+		unsigned char *pd = packet_data(p);
+		int len = packet_len(p);
+		buf_append(files, &pd[start], len - start);
+
+		/* free this packet and get the next one */
+		free(p);
+		p = packet_listen();
+	}
+
+	printf("\n\n");
+
+	if (p_remaining != 0)
+		return 0;
+
+	return 1;
+}
+
+
 int
 files_split(BUF *files, int *offset, BUF *out)
 {

@@ -194,6 +194,22 @@ packet_get_response(S725_Packet_Index request)
 	return recv;
 }
 
+/* listen for incoming data */
+packet_t *
+packet_listen()
+{
+	packet_t *recv = NULL;
+
+	while (1) {
+		recv = packet_recv();
+		if (recv)
+			return(recv);
+	}
+			
+
+	return NULL;
+}
+
 void
 packet_print(packet_t *p, FILE *fp)
 {
@@ -392,6 +408,7 @@ packet_serialize(packet_t *p, BUF *buf)
 /* 
  * Thanks to Stefan Kleditzsch for decoding the checksum algorithm!
  */
+
 
 /*
  * crc16 checksum function with polynom=0x8005

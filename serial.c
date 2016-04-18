@@ -153,7 +153,7 @@ serial_read_byte(struct s725_driver *d, unsigned char *byte)
 	struct pollfd pfd[1];
 	int nready;
 
-	pfd[0].fd = STDIN_FILENO;
+	pfd[0].fd = DP(d)->fd;
 	pfd[0].events = POLLIN;
 
 	int r = 0;

@@ -62,13 +62,13 @@ serial_print_termios(struct termios *tio, char *label)
 		fprintf(stderr, "termios state: %s\n", label);
 	}
 	
-	fprintf(stderr, "c_iflag: 0x%08x ",  tio->c_iflag);
+	fprintf(stderr, "c_iflag: 0x%08x ", tio->c_iflag);
 	serial_print_bits(tio->c_iflag);
-	fprintf(stderr, "\nc_oflag: 0x%08x ",  tio->c_oflag);
+	fprintf(stderr, "\nc_oflag: 0x%08x ", tio->c_oflag);
 	serial_print_bits(tio->c_oflag);
-	fprintf(stderr, "\nc_cflag: 0x%08x ",  tio->c_cflag);
+	fprintf(stderr, "\nc_cflag: 0x%08x ", tio->c_cflag);
 	serial_print_bits(tio->c_cflag);
-	fprintf(stderr, "\nc_lflag: 0x%08x ",  tio->c_lflag);
+	fprintf(stderr, "\nc_lflag: 0x%08x ", tio->c_lflag);
 	serial_print_bits(tio->c_lflag);
 	fprintf(stderr, "\nc_ispeed: %d\n", tio->c_ispeed);
 	fprintf(stderr, "c_ospeed: %d\n", tio->c_ospeed);
@@ -146,28 +146,6 @@ serial_close(struct s725_driver *d)
 	close(DP(d)->debugfd);
 	return 0;
 }
-
-static void
-serial_debug(unsigned char *byte, int r)
-{
-#if DEBUG
-	static struct timeval ti;
-	static struct timeval tf;
-	static int n;
-	float el;
-
-	gettimeofday(&tf,NULL);
-	el = (n++) ? (float)tf.tv_sec-ti.tv_sec+(tf.tv_usec-ti.tv_usec)/1000000.0 : 0;
-	memcpy(&ti,&tf,sizeof(struct timeval));
-
-	fprintf(stderr,"%4d: %f",n,el);
-	if (r != 0) {
-		fprintf(stderr," [%02x]\n",*byte);
-	} else {
-		fprintf(stderr,"\n");
-	}
-#endif
-}
 	
 static int
 serial_read_byte(struct s725_driver *d, unsigned char *byte)
@@ -198,13 +176,11 @@ serial_read_byte(struct s725_driver *d, unsigned char *byte)
 		if ((pfd[0].revents & (POLLIN|POLLHUP))) {
 			r = read(DP(d)->fd,byte,1);
 			if (r == -1) {
-				fprintf(stderr, "read: %s\n", strerror(errno));
+				fprintf(stderr, "read: error %s\n", strerror(errno));
 				r = 0;
 			}
 		}
 	} while (!r && ntries--);
-
-	serial_debug(byte, r);
 
 	return r;
 }

@@ -173,11 +173,17 @@ ir_write(struct s725_driver *d, BUF *buf)
 	unsigned int i;
 	unsigned char c;
 	int ret = 0;
+	int write_single_chunk = 1;
 
-	for (i = 0; i < buf_len(buf); i++)  {
-		c = buf_getc(buf, i);
-		if ((write(DP(d)->fd, &c, 1)) < 0)
+	if (write_single_chunk) {
+		if ((write(DP(d)->fd, buf_get(buf), buf_len(buf)) < 0))
 			ret = -1;
+	} else {
+		for (i = 0; i < buf_len(buf); i++)  {
+			c = buf_getc(buf, i);
+			if ((write(DP(d)->fd, &c, 1)) < 0)
+				ret = -1;
+		}
 	}
     
 	/*

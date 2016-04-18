@@ -9,7 +9,6 @@
 #include "driver_int.h"
 
 extern struct s725_driver_ops serial_driver_ops;
-extern struct s725_driver_ops ir_driver_ops;
 extern struct s725_driver_ops stir_driver_ops;
 
 static struct s725_driver *driver;
@@ -31,10 +30,6 @@ driver_init(const int driver_type, const char *device)
 	switch (driver_type) {
 	case DRIVER_SERIAL:
 		driver->dops = &serial_driver_ops;
-		needpath = 1;
-		break;
-	case DRIVER_IR:
-		driver->dops = &ir_driver_ops;
 		needpath = 1;
 		break;
 	case DRIVER_STIR:

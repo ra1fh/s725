@@ -19,30 +19,16 @@
 
 #define SERIAL_READ_TRIES 10
 
-static int ir_init(struct s725_driver *d);
-static int ir_read_byte(struct s725_driver *d, unsigned char *byte);
-static int ir_write(struct s725_driver *d, BUF *buf);
-static int ir_close(struct s725_driver *d);
-
 static int serial_init(struct s725_driver *d);
 static int serial_write(struct s725_driver *d, BUF *buf);
 static int serial_read_byte(struct s725_driver *d, unsigned char *byte);
 static int serial_close(struct s725_driver *d);
-
-static void compute_byte_map(void);
 
 struct s725_driver_ops serial_driver_ops = {
 	.init = serial_init,
 	.read = serial_read_byte,
 	.write = serial_write,
 	.close = serial_close,
-};
-
-struct s725_driver_ops ir_driver_ops = {
-	.init = ir_init,
-	.read = ir_read_byte,
-	.write = ir_write,
-	.close = ir_close,
 };
 
 struct driver_private {
@@ -113,7 +99,6 @@ serial_init(struct s725_driver *d)
 {
 	struct termios t;
 	int fd;
-	compute_byte_map();
 
 	fd = open(d->path, O_RDWR | O_NOCTTY | O_NDELAY); 
 	if (fd < 0) { 
@@ -187,12 +172,37 @@ serial_debug(unsigned char *byte, int r)
 static int
 serial_read_byte(struct s725_driver *d, unsigned char *byte)
 {
+	struct pollfd pfd[1];
+	int nready;
+
+	pfd[0].fd = STDIN_FILENO;
+	pfd[0].events = POLLIN;
+
 	int r = 0;
-	int i = SERIAL_READ_TRIES;
+	int ntries = SERIAL_READ_TRIES;
 
 	do {
-		r = read(DP(d)->fd,byte,1);
-	} while (!r && i--);
+		nready = poll(pfd, 1, 100);
+		if (nready == -1) {
+			r = 0;
+			fprintf(stderr, "poll: %s\n", strerror(errno));
+		}
+		if (nready == 0) {
+			r = 0;
+			fprintf(stderr, "poll: timeout\n");
+		}
+		if ((pfd[0].revents & (POLLERR|POLLNVAL))) {
+			r = 0;
+			fprintf(stderr, "poll: bad fd %d\n", pfd[0].fd);
+		}
+		if ((pfd[0].revents & (POLLIN|POLLHUP))) {
+			r = read(DP(d)->fd,byte,1);
+			if (r == -1) {
+				fprintf(stderr, "read: %s\n", strerror(errno));
+				r = 0;
+			}
+		}
+	} while (!r && ntries--);
 
 	serial_debug(byte, r);
 
@@ -201,47 +211,6 @@ serial_read_byte(struct s725_driver *d, unsigned char *byte)
 
 static int
 serial_write(struct s725_driver *d, BUF *buf)
-{
-	unsigned int i;
-	unsigned char c;
-	int ret = 0;
-
-	for (i = 0; i < buf_len(buf); i++) {
-		c = buf_getc(buf, i);
-		if (write(DP(d)->fd, &gByteMap[c], 1) < 0)
-			ret = -1;
-	}
-    
-	/*
-	 * the data that gets echoed back is not RS-232 data.  it is garbage 
-	 * data that we have to flush.  there is a pause of at least 0.1 
-	 * seconds before the real data shows up.
-	 */
-	usleep(100000);
-	tcflush(DP(d)->fd,TCIFLUSH);
-	return ret;
-}
-
-static int
-ir_init(struct s725_driver *d)
-{
-	return serial_init(d);
-}
-
-static int
-ir_close(struct s725_driver *d)
-{
-	return serial_close(d);
-}
-
-static int
-ir_read_byte(struct s725_driver *d, unsigned char *byte)
-{
-	return serial_read_byte(d, byte);
-}
-
-static int
-ir_write(struct s725_driver *d, BUF *buf)
 {
 	unsigned int i;
 	unsigned char c;
@@ -264,21 +233,8 @@ ir_write(struct s725_driver *d, BUF *buf)
 	 * data that we have to flush.  there is a pause of at least 0.1 
 	 * seconds before the real data shows up.
 	 */
-	usleep(100000);
-	tcflush(DP(d)->fd,TCIFLUSH);
+	usleep(100);
+	// tcflush(DP(d)->fd,TCIFLUSH);
 	return ret;
-}
-
-static void
-compute_byte_map(void)
-{
-	int i, j, m;
-
-	for (i = 0; i < 0x100; i++) {
-		m = !(i & 1);
-		for (j=7;j>0;j--)
-			m |= ((i+0x100-(1<<(j-1)))&0xff) & (1<<j);
-		gByteMap[m] = i;
-	}
 }
 

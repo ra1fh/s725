@@ -213,7 +213,10 @@ serial_read_byte(struct s725_driver *d, unsigned char *byte)
 			if (r == -1) {
 				fprintf(stderr, "read: error %s\n", strerror(errno));
 				r = 0;
+			} else {
+				fprintf(stderr, "read: 0x%02hhx\n", *byte);
 			}
+		   
 		}
 	} while (!r && ntries--);
 

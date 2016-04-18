@@ -20,10 +20,12 @@
 static int ir_init(struct s725_driver *d);
 static int ir_read_byte(struct s725_driver *d, unsigned char *byte);
 static int ir_write(struct s725_driver *d, BUF *buf);
+static int ir_close(struct s725_driver *d);
 
 static int serial_init(struct s725_driver *d);
 static int serial_write(struct s725_driver *d, BUF *buf);
 static int serial_read_byte(struct s725_driver *d, unsigned char *byte);
+static int serial_close(struct s725_driver *d);
 
 static void compute_byte_map(void);
 
@@ -31,18 +33,20 @@ struct s725_driver_ops serial_driver_ops = {
 	.init = serial_init,
 	.read = serial_read_byte,
 	.write = serial_write,
-	.close = NULL,
+	.close = serial_close,
 };
 
 struct s725_driver_ops ir_driver_ops = {
 	.init = ir_init,
 	.read = ir_read_byte,
 	.write = ir_write,
-	.close = NULL,
+	.close = ir_close,
 };
 
 struct driver_private {
 	int fd;
+	int debugfd;
+	struct termios tio;
 };
 
 #define DP(x) ((struct driver_private *)x->data)
@@ -93,6 +97,17 @@ serial_init(struct s725_driver *d)
 	DP(d)->fd = fd;
 
 	return fd;
+}
+
+static int
+serial_close(struct s725_driver *d)
+{
+	fprintf(stderr, "serial_close\n");
+
+	serial_print_termios(&DP(d)->tio, "restored state");
+	close(DP(d)->fd);
+	close(DP(d)->debugfd);
+	return 0;
 }
 
 static void
@@ -159,6 +174,12 @@ static int
 ir_init(struct s725_driver *d)
 {
 	return serial_init(d);
+}
+
+static int
+ir_close(struct s725_driver *d)
+{
+	return serial_close(d);
 }
 
 static int

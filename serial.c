@@ -2,10 +2,12 @@
  * serial/ir driver
  */
 
+#include <sys/ioctl.h>
 #include <sys/types.h>
 
 #include <errno.h>
 #include <fcntl.h>
+#include <poll.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -52,6 +54,56 @@ struct driver_private {
 #define DP(x) ((struct driver_private *)x->data)
 
 unsigned char gByteMap[256];
+
+static void
+serial_print_bits(unsigned int out)
+{
+	unsigned int mask = 0x8000;
+	for (; mask; mask >>=1) {
+		if ((mask & 0x08888888))
+			fprintf(stderr, " ");
+		fprintf(stderr, "%hhu", out & mask ? 1:0);
+	}
+}
+
+static void
+serial_print_termios(struct termios *tio, char *label)
+{
+	int i;
+	int cc = 0;
+
+	if (label) {
+		fprintf(stderr, "termios state: %s\n", label);
+	}
+	
+	fprintf(stderr, "c_iflag: 0x%08x ",  tio->c_iflag);
+	serial_print_bits(tio->c_iflag);
+	fprintf(stderr, "\nc_oflag: 0x%08x ",  tio->c_oflag);
+	serial_print_bits(tio->c_oflag);
+	fprintf(stderr, "\nc_cflag: 0x%08x ",  tio->c_cflag);
+	serial_print_bits(tio->c_cflag);
+	fprintf(stderr, "\nc_lflag: 0x%08x ",  tio->c_lflag);
+	serial_print_bits(tio->c_lflag);
+	fprintf(stderr, "\nc_ispeed: %d\n", tio->c_ispeed);
+	fprintf(stderr, "c_ospeed: %d\n", tio->c_ospeed);
+
+	if (cc) {
+		for (i = 0; i < NCCS; ++i) {
+			fprintf(stderr, "c_cc[%02d] = %3hhu ", i, tio->c_cc[i]);
+			switch(i) {
+			case 16:
+				fprintf(stderr, "(VTIME)\n");
+				break;
+			case 17:
+				fprintf(stderr, "(VMIN)\n");
+				break;
+			default:
+				fprintf(stderr, "\n");
+			}
+		}
+		fprintf(stderr, "\n");
+	}
+}
 
 /* 
  * initialize the serial port

@@ -106,33 +106,68 @@ serial_init(struct s725_driver *d)
 		return -1; 
 	}
 
-	fcntl(fd,F_SETFL,O_RDONLY);
-	memset(&t,0,sizeof(t));
+	if (tcgetattr(fd, &t) == -1) {
+		fprintf(stderr,"%s: %s\n", d->path, strerror(errno)); 
+		return -1; 
+	}
 
-	/* 9600 bps, 8 data bits, 1 or 2 stop bits (??), no parity */
-
-	t.c_cflag = B9600 | CS8 | CLOCAL | CREAD;
-
-	/* I don't know why an extra stop bit makes it work for bidirectional
-	   communication.  Also, it doesn't work for everyone - in fact, it
-	   may only work for me. */
-
-	t.c_cflag |= CSTOPB;
-	t.c_iflag = IGNPAR;
-	t.c_oflag = 0;
-	t.c_lflag = 0;
-
-	t.c_cc[VTIME]    = 1; /* inter-character timer of 0.1 second used */
-	t.c_cc[VMIN]     = 0;  /* blocking read until 1 char / timer expires */
-
-	/* set up for input */
-
-	tcflush(fd, TCIFLUSH);
-	tcsetattr(fd,TCSANOW,&t);
-
+	serial_print_termios(&t, "inital state");
+	
 	d->data = xmalloc(sizeof(struct driver_private));
 	DP(d)->fd = fd;
+	DP(d)->tio = t;
 
+	cfmakeraw(&t);
+
+	serial_print_termios(&t, "after cmakeraw");
+
+	t.c_cflag |= CLOCAL;
+
+	/* 8 bits */
+	t.c_cflag &= ~CSIZE;
+	t.c_cflag |= CS8;
+
+	/* no parity */
+	t.c_iflag &= ~(PARMRK | INPCK);
+	t.c_iflag |= IGNPAR;
+	t.c_cflag &= ~PARENB;
+
+	/* 2 stop bits */
+	// t.c_cflag |= CSTOPB;
+	t.c_cflag &= ~CSTOPB;
+
+	/* no flow control */
+	t.c_cflag &= ~CRTSCTS;
+	t.c_iflag &= ~(IXON | IXOFF | IXANY);;
+
+	if (cfsetispeed(&t, B9600) < 0) {
+		fprintf(stderr,"%s: %s\n", d->path, strerror(errno)); 
+		return -1;
+	}
+		
+	if ((cfsetospeed(&t, B9600)) < 0) {
+		fprintf(stderr,"%s: %s\n", d->path, strerror(errno)); 
+		return -1;
+	}
+		
+	t.c_cc[VMIN] = 0;
+	t.c_cc[VTIME] = 1;
+	
+	serial_print_termios(&t, "modified state");
+	
+	if (tcsetattr(fd, TCSANOW, &t) == -1) {
+		fprintf(stderr,"%s: %s\n", d->path, strerror(errno)); 
+		return -1; 
+	}
+
+	/*
+	 * IRXON IR220 based serial-IR converters use DTR/RTS as power
+	 * supply. It takes some time for the device to initialize.
+	 * DTR and RTS are pulled to +12V when the device node is opened,
+	 * so wait some millisecond, 50ms seems a good value.
+	 */
+ 	usleep(50000);
+	
 	return fd;
 }
 

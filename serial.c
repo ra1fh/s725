@@ -231,6 +231,8 @@ serial_write(struct s725_driver *d, BUF *buf)
 	int ret = 0;
 	int write_single_chunk = 1;
 
+	tcflush(DP(d)->fd, TCIFLUSH);
+
 	if (write_single_chunk) {
 		if ((write(DP(d)->fd, buf_get(buf), buf_len(buf)) < 0))
 			ret = -1;
@@ -241,14 +243,8 @@ serial_write(struct s725_driver *d, BUF *buf)
 				ret = -1;
 		}
 	}
-    
-	/*
-	 * the data that gets echoed back is not RS-232 data.  it is garbage 
-	 * data that we have to flush.  there is a pause of at least 0.1 
-	 * seconds before the real data shows up.
-	 */
-	usleep(100);
-	// tcflush(DP(d)->fd,TCIFLUSH);
+
+	tcdrain(DP(d)->fd);
 	return ret;
 }
 

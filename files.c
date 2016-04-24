@@ -97,7 +97,7 @@ files_listen(BUF *files)
 
 	buf_empty(files);
 
-	printf("\nListening ");
+	fprintf(stderr, "Listening ");
 
 	p = packet_listen();
 	

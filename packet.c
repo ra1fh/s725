@@ -273,6 +273,7 @@ packet_send(packet_t *p)
 packet_t *
 packet_recv()
 {
+	BUF *buf;
 	int r;
 	int i;
 	unsigned char c = 0;
@@ -282,10 +283,15 @@ packet_recv()
 	packet_t *p = NULL;
 	unsigned short crc = 0;
 
+	buf = buf_alloc(0);
+	if (buf == NULL)
+		return NULL;
+
 	r = driver_read_byte(&c);
 	if (r <= 0)
 		return NULL;
 	packet_crc_process(&crc, c);
+	buf_putc(buf, c);
 	fprintf(stderr, "packet_recv: type=%02hhx\n", c);
 
 	if (c == S725_RESPONSE) {
@@ -298,6 +304,7 @@ packet_recv()
 		if (r <= 0)
 			return NULL;
 		packet_crc_process(&crc, c);
+		buf_putc(buf, c);
 		fprintf(stderr, "packet_recv: first=%02x remaining=%02x\n",
 				c & 0x80,
 				c & 0x7f);
@@ -307,6 +314,8 @@ packet_recv()
 		fprintf(stderr, "packet_recv: len=%04hx (%hu)\n", len, len);
 		packet_crc_process(&crc, len >> 8);
 		packet_crc_process(&crc, len & 0xff);
+		buf_putc(buf, len >> 8);
+		buf_putc(buf, len & 0xff);
 		if (r > 0) {
 			len -= 5;
 			siz = (len <= 1) ? 0 : len - 1;
@@ -322,6 +331,7 @@ packet_recv()
 				for (i = 0; i < len; i++) {
 					r = driver_read_byte(&p->data[i]);
 					packet_crc_process(&crc, p->data[i]);
+					buf_putc(buf, p->data[i]);
 					if (r <= 0) {
 						fprintf(stderr, "driver_read_byte failed\n");
 						free(p);
@@ -338,6 +348,12 @@ packet_recv()
 						return NULL;
 					}
 
+					buf_putc(buf, p->checksum >> 8);
+					buf_putc(buf, p->checksum & 0xff);
+
+					fprintf(stderr, "packet_recv: len=%zu\n", buf_len(buf));
+					buf_hexdump(buf);
+					
 					if (crc != p->checksum) {
 	    
 						/* 
@@ -362,6 +378,8 @@ packet_recv()
 							fprintf(stderr, "got byte: %hhx\n", c);
 						}
 					}
+
+					fprintf(stderr, "packet_recv: crc correct\n");
 				}
 			}
 		}

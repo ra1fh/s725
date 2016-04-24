@@ -231,6 +231,9 @@ serial_write(struct s725_driver *d, BUF *buf)
 
 	tcflush(DP(d)->fd, TCIFLUSH);
 
+	fprintf(stderr, "serial_write: len=%zu\n", buf_len(buf));
+	buf_hexdump(buf);
+	
 	if (write_single_chunk) {
 		if ((write(DP(d)->fd, buf_get(buf), buf_len(buf)) < 0))
 			ret = -1;

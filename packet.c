@@ -8,6 +8,7 @@
 #include <errno.h>
 
 #include "driver.h"
+#include "hexdump.h"
 #include "packet.h"
 
 /* defines the packet types */
@@ -34,7 +35,9 @@ static packet_t gPacket[] = {
 
 	/* packet name, subtype, payload length, checksum value, payload data */
 	/* note that checksum values are calculated at packet assembly time.  */
-  
+
+	/* name                type          id    len checksum data          */
+	
 	/* S725_GET_OVERVIEW */
 	{ "get overview",      S725_REQUEST, 0x15, 0, 0x3790, { 0 } },
 
@@ -283,17 +286,23 @@ packet_recv()
 	if (r <= 0)
 		return NULL;
 	packet_crc_process(&crc, c);
+	fprintf(stderr, "packet_recv: type=%02hhx\n", c);
 
 	if (c == S725_RESPONSE) {
 		r = driver_read_byte(&id);
 		if (r <= 0)
 			return NULL;
+		fprintf(stderr, "packet_recv: subtype=%02hhx\n", id);
 		packet_crc_process(&crc, id);
 		r = driver_read_byte(&c);
 		if (r <= 0)
 			return NULL;
 		packet_crc_process(&crc, c);
+		fprintf(stderr, "packet_recv: first=%02hhx remaining=%02hhx\n",
+				c & 0x80,
+				c & 0x7f);
 		r = packet_recv_short (&len);
+		fprintf(stderr, "packet_recv: len=%04hx (%hu)\n", len, len);
 		if (r <= 0)
 			return NULL;
 		packet_crc_process(&crc, len >> 8);
@@ -343,6 +352,15 @@ packet_recv()
 								 p->id, p->length );
 						free(p);
 						p = NULL;
+						fprintf(stderr, "reading remaining bytes\n");
+						while (1) {
+							r = driver_read_byte(&c);
+							if (r <= 0) {
+								fprintf(stderr, "driver_read_byte failed (recv_short)\n");
+								return NULL;
+							}
+							fprintf(stderr, "got byte: %hhx\n", c);
+						}
 					}
 				}
 			}

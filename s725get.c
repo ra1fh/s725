@@ -18,8 +18,10 @@
 
 static void
 usage(void) {
-	printf("usage: s725get [-hHrv] [-d driver] [-D device] [-f directory]\n");
-	printf("        -d driver      driver type: serial, ir, or stir. (default: ir).\n");
+	printf("usage: s725get [-hHrv] [-b byte] [-d driver] [-D device] [-f directory]\n");
+	printf("        -b byte        send test byte (for debugging)\n");
+	printf("        -n count       send n test bytes (for debugging)\n");
+	printf("        -d driver      driver type: serial or stir. (default: serial).\n");
 	printf("        -D device      device file. required for serial and ir driver.\n");
 	printf("        -f directory   directory where output files are written to.\n");
 	printf("                       default: current working directory\n");
@@ -49,6 +51,8 @@ main(int argc, char **argv)
 	int				  opt_raw = 0;
 	int				  opt_time = 0;
 	int				  opt_listen = 0;
+	const char		 *opt_byte = NULL;
+	int				  opt_count = 1;
 	int				  count = 0;
 	int				  ch;
 	int				  ok;
@@ -70,8 +74,11 @@ main(int argc, char **argv)
 			opt_directory_name = conf_directory_name;
 	}
 
-	while ((ch = getopt(argc, argv, "d:D:f:hHlrtv")) != -1) {
+	while ((ch = getopt(argc, argv, "b:d:D:f:hHln:rtv")) != -1) {
 		switch (ch) {
+		case 'b':
+			opt_byte = optarg;;
+			break;
 		case 'd':
 			opt_driver_name = optarg;
 			opt_driver_type = driver_name_to_type(opt_driver_name);
@@ -91,6 +98,11 @@ main(int argc, char **argv)
 			break;
 		case 'l':
 			opt_listen = 1;
+			break;
+		case 'n':
+			opt_count = strtonum(optarg, 1, 100, NULL);
+			if (opt_count == 0)
+				opt_count = 1;
 			break;
 		case 'r':
 			opt_raw = 1;
@@ -149,6 +161,28 @@ main(int argc, char **argv)
 		exit(1);
 	}
 
+	if (opt_byte) {
+		unsigned char mask = 128;
+		unsigned char out;
+		int c;
+		int i;
+		sscanf(opt_byte, "%u", &c);
+		out = (unsigned char) c;
+		buf = buf_alloc(0);
+		for (i = 0; i < opt_count; ++i)
+			buf_putc(buf, out);
+		fprintf(stderr, "byte: %hhu\n", out);
+		fprintf(stderr, "bits: ");
+		for (; mask; mask >>=1) {
+			fprintf(stderr, "%hhu", out & mask ? 1:0);
+		}
+		fprintf(stderr, "\n");
+		driver_write(buf);
+		usleep(2000000);
+		driver_close();
+		exit(0);
+	}
+	
 	if (opt_time) {
 		time_get();
 		driver_close();

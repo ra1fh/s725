@@ -298,13 +298,13 @@ packet_recv()
 		if (r <= 0)
 			return NULL;
 		packet_crc_process(&crc, c);
-		fprintf(stderr, "packet_recv: first=%02hhx remaining=%02hhx\n",
+		fprintf(stderr, "packet_recv: first=%02x remaining=%02x\n",
 				c & 0x80,
 				c & 0x7f);
-		r = packet_recv_short (&len);
-		fprintf(stderr, "packet_recv: len=%04hx (%hu)\n", len, len);
+		r = packet_recv_short(&len);
 		if (r <= 0)
 			return NULL;
+		fprintf(stderr, "packet_recv: len=%04hx (%hu)\n", len, len);
 		packet_crc_process(&crc, len >> 8);
 		packet_crc_process(&crc, len & 0xff);
 		if (r > 0) {

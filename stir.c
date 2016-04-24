@@ -329,7 +329,7 @@ static int stir_read_reg(libusb_device_handle *handle, uint16_t reg, uint8_t *da
 {
 	int r;
 
-	fprintf(stderr, "stir_read_reg: reg=%hx-%hx\n", reg, reg + count - 1);
+	fprintf(stderr, "stir_read_reg: reg=%x-%x\n", reg, reg + count - 1);
 
 	r = libusb_control_transfer(handle,
 								LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_IN,
@@ -344,7 +344,7 @@ static int stir_read_reg(libusb_device_handle *handle, uint16_t reg, uint8_t *da
 	else if (r != count)
 		fprintf(stderr, "stir_read_reg: incomplete read (expected %d, got %d bytes)\n", count, r);
 	else
-		fprintf(stderr, "stir_read_reg: reg=%hx-%hx ok\n", reg, reg + count - 1);
+		fprintf(stderr, "stir_read_reg: reg=%x-%x ok\n", reg, reg + count - 1);
 	return r;
 }
 

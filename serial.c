@@ -39,8 +39,6 @@ struct driver_private {
 
 #define DP(x) ((struct driver_private *)x->data)
 
-unsigned char gByteMap[256];
-
 static void
 serial_print_bits(unsigned int out)
 {
@@ -48,7 +46,7 @@ serial_print_bits(unsigned int out)
 	for (; mask; mask >>=1) {
 		if ((mask & 0x08888888))
 			fprintf(stderr, " ");
-		fprintf(stderr, "%hhu", out & mask ? 1:0);
+		fprintf(stderr, "%u", out & mask ? 1 : 0);
 	}
 }
 

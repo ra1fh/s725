@@ -174,7 +174,7 @@ main(int argc, char **argv)
 		fprintf(stderr, "byte: %hhu\n", out);
 		fprintf(stderr, "bits: ");
 		for (; mask; mask >>=1) {
-			fprintf(stderr, "%hhu", out & mask ? 1:0);
+			fprintf(stderr, "%u", out & mask ? 1 : 0);
 		}
 		fprintf(stderr, "\n");
 		driver_write(buf);

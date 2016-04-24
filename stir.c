@@ -220,7 +220,7 @@ stir_open_device(struct s725_stir_data *data)
 	}
 
 	fprintf(stderr, "stir_open_device: claimed interface\n");
-	
+
 	err = 0;
 out:	
 	libusb_free_device_list(list, 1);
@@ -369,7 +369,6 @@ static int stir_write_reg(libusb_device_handle *handle, uint16_t reg, uint8_t va
 	return r;
 }
 
-
 static int
 stir_read_byte(struct s725_driver *d, unsigned char *byte)
 {
@@ -398,10 +397,15 @@ stir_read_byte(struct s725_driver *d, unsigned char *byte)
 					return 0;
 				}
 			}
+			if (bytes > 0) {
+				hexdump(buf, bytes);
+			}
 			usleep(10000);
 		} while (!bytes && i++ < 100);
+		if (i >= 100) {
+			fprintf(stderr, "stir_read_byte: ntries==100\n");
+		}
 	}
-	hexdump(buf, bytes);
 	
 	if (bytes > 0) {
 		*byte = (unsigned char)buf[idx++];

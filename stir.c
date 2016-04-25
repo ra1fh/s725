@@ -26,8 +26,8 @@
 
 #include <libusb.h>
 
-#include "hexdump.h"
 #include "driver_int.h"
+#include "log.h"
 
 static int stir_init_port(struct s725_driver *d);
 static int stir_read_byte(struct s725_driver *d, unsigned char *byte);
@@ -398,7 +398,7 @@ stir_read_byte(struct s725_driver *d, unsigned char *byte)
 				}
 			}
 			if (bytes > 0) {
-				hexdump(buf, bytes);
+				log_hexdump(buf, bytes);
 			}
 			usleep(10000);
 		} while (!bytes && i++ < 100);
@@ -492,7 +492,7 @@ stir_send_packet(struct s725_driver *d, BUF *buf)
 		fprintf(stderr, "stir_send_packet: %s\n", libusb_strerror(err));
 
 	
-	buf_hexdump(txbuf);
+	log_hexdump(buf_get(txbuf), buf_len(txbuf));
 	
 	fprintf(stderr, "stir_send_packet: *** start bulk transfer\n");
 	err = libusb_bulk_transfer(data->handle,

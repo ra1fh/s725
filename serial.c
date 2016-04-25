@@ -15,6 +15,7 @@
 #include <unistd.h>
 
 #include "driver_int.h"
+#include "log.h"
 #include "xmalloc.h"
 
 #define SERIAL_READ_TRIES 10
@@ -211,10 +212,7 @@ serial_read_byte(struct s725_driver *d, unsigned char *byte)
 			if (r == -1) {
 				fprintf(stderr, "read: error %s\n", strerror(errno));
 				r = 0;
-			} else {
-				fprintf(stderr, "read: 0x%02hhx\n", *byte);
 			}
-		   
 		}
 	} while (!r && ntries--);
 
@@ -232,7 +230,7 @@ serial_write(struct s725_driver *d, BUF *buf)
 	tcflush(DP(d)->fd, TCIFLUSH);
 
 	fprintf(stderr, "serial_write: len=%zu\n", buf_len(buf));
-	buf_hexdump(buf);
+	log_hexdump(buf_get(buf), buf_len(buf));
 	
 	if (write_single_chunk) {
 		if ((write(DP(d)->fd, buf_get(buf), buf_len(buf)) < 0))

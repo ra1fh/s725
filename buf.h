@@ -53,5 +53,4 @@ size_t		 buf_len(BUF *);
 int			 buf_write_fd(BUF *, int);
 int			 buf_write(BUF *, const char *, mode_t);
 u_char		*buf_get(BUF *b);
-void		 buf_hexdump(BUF *bp);
 #endif	/* BUF_H */

@@ -317,7 +317,7 @@ packet_recv()
 				if (p != NULL) {
 					r = packet_recv_short(&p->checksum);
 					if (r <= 0) {
-						log_error("driver_read_byte failed (recv_short)");
+						log_error("packet_recv: recv_short failed");
 						free(p);
 						p = NULL;
 						return NULL;
@@ -340,18 +340,18 @@ packet_recv()
 						   cancel the download and have the user attempt it again.
 						*/
 	    
-						log_error("\nCRC failed [id %d, length %d]", 
+						log_error("packet_recv: CRC failed [id %d, length %d]", 
 								  p->id, p->length );
 						free(p);
 						p = NULL;
-						log_info("reading remaining bytes");
+						log_info("packet_recv: reading remaining bytes");
 						while (1) {
 							r = driver_read_byte(&c);
 							if (r <= 0) {
-								log_error("driver_read_byte failed (recv_short)");
+								log_error("packet_recv: driver_read_byte failed (recv_short)");
 								return NULL;
 							}
-							log_info("got byte: %hhx", c);
+							log_info("packet_recv: got byte: %hhx", c);
 						}
 					}
 

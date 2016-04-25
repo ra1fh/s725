@@ -326,8 +326,10 @@ packet_recv()
 					buf_putc(buf, p->checksum >> 8);
 					buf_putc(buf, p->checksum & 0xff);
 
-					log_info("packet_recv: len=%zu", buf_len(buf));
-					log_hexdump(buf_get(buf), buf_len(buf));
+					if (log_get_level() >= 2) {
+						log_info("packet_recv: hexdump len=%zu", buf_len(buf));
+						log_hexdump(buf_get(buf), buf_len(buf));
+					}
 					
 					if (crc != p->checksum) {
 	    

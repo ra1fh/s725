@@ -18,6 +18,7 @@
 #include <stdlib.h>
 
 #include "files.h"
+#include "log.h"
 #include "packet.h"
 #include "utils.h"
 
@@ -26,15 +27,15 @@ int time_get() {
 
 	p = packet_get_response(S725_GET_WATCH);
 	if (p == NULL) {
-		printf("[error]\n");
+		log_write("[error]\n");
 		return 0;
 	}
 
 	u_char *data;
 	if ((data = packet_data(p)) && packet_len(p) > 5) {
-		fprintf(stderr,"20%02x-%02x-%02xT%02x:%02x:%02x\n",
-				data[4], data[5]&0x0F, data[3],
-				data[2], data[1], data[0]);
+		log_write("20%02x-%02x-%02xT%02x:%02x:%02x\n",
+				  data[4], data[5]&0x0F, data[3],
+				  data[2], data[1], data[0]);
 	}
 	free(p);
 

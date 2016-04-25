@@ -44,10 +44,14 @@ static void
 serial_print_bits(unsigned int out)
 {
 	unsigned int mask = 0x8000;
+
+	if (log_get_level() < 1)
+		return;
+	
 	for (; mask; mask >>=1) {
 		if ((mask & 0x08888888))
-			fprintf(stderr, " ");
-		fprintf(stderr, "%u", out & mask ? 1 : 0);
+			log_write(" ");
+		log_write("%u", out & mask ? 1 : 0);
 	}
 }
 
@@ -57,36 +61,39 @@ serial_print_termios(struct termios *tio, char *label)
 	int i;
 	int cc = 0;
 
+	if (log_get_level() < 1)
+		return;
+	
 	if (label) {
-		fprintf(stderr, "termios state: %s\n", label);
+		log_write("termios state: %s\n", label);
 	}
 	
-	fprintf(stderr, "c_iflag: 0x%08x ", tio->c_iflag);
+	log_write("c_iflag: 0x%08x ", tio->c_iflag);
 	serial_print_bits(tio->c_iflag);
-	fprintf(stderr, "\nc_oflag: 0x%08x ", tio->c_oflag);
+	log_write("\nc_oflag: 0x%08x ", tio->c_oflag);
 	serial_print_bits(tio->c_oflag);
-	fprintf(stderr, "\nc_cflag: 0x%08x ", tio->c_cflag);
+	log_write("\nc_cflag: 0x%08x ", tio->c_cflag);
 	serial_print_bits(tio->c_cflag);
-	fprintf(stderr, "\nc_lflag: 0x%08x ", tio->c_lflag);
+	log_write("\nc_lflag: 0x%08x ", tio->c_lflag);
 	serial_print_bits(tio->c_lflag);
-	fprintf(stderr, "\nc_ispeed: %d\n", tio->c_ispeed);
-	fprintf(stderr, "c_ospeed: %d\n", tio->c_ospeed);
+	log_write("\nc_ispeed: %d\n", tio->c_ispeed);
+	log_write("c_ospeed: %d\n", tio->c_ospeed);
 
 	if (cc) {
 		for (i = 0; i < NCCS; ++i) {
-			fprintf(stderr, "c_cc[%02d] = %3hhu ", i, tio->c_cc[i]);
+			log_write("c_cc[%02d] = %3hhu ", i, tio->c_cc[i]);
 			switch(i) {
 			case 16:
-				fprintf(stderr, "(VTIME)\n");
+				log_write("(VTIME)\n");
 				break;
 			case 17:
-				fprintf(stderr, "(VMIN)\n");
+				log_write("(VMIN)\n");
 				break;
 			default:
-				fprintf(stderr, "\n");
+				log_write("\n");
 			}
 		}
-		fprintf(stderr, "\n");
+		log_write("\n");
 	}
 }
 
@@ -101,12 +108,12 @@ serial_init(struct s725_driver *d)
 
 	fd = open(d->path, O_RDWR | O_NOCTTY | O_NDELAY); 
 	if (fd < 0) { 
-		fprintf(stderr,"%s: %s\n",d->path,strerror(errno)); 
+		log_error("%s: %s", d->path, strerror(errno)); 
 		return -1; 
 	}
 
 	if (tcgetattr(fd, &t) == -1) {
-		fprintf(stderr,"%s: %s\n", d->path, strerror(errno)); 
+		log_error("%s: %s", d->path, strerror(errno)); 
 		return -1; 
 	}
 
@@ -140,12 +147,12 @@ serial_init(struct s725_driver *d)
 	t.c_iflag &= ~(IXON | IXOFF | IXANY);;
 
 	if (cfsetispeed(&t, B9600) < 0) {
-		fprintf(stderr,"%s: %s\n", d->path, strerror(errno)); 
+		log_error("%s: %s", d->path, strerror(errno)); 
 		return -1;
 	}
 		
 	if ((cfsetospeed(&t, B9600)) < 0) {
-		fprintf(stderr,"%s: %s\n", d->path, strerror(errno)); 
+		log_error("%s: %s", d->path, strerror(errno)); 
 		return -1;
 	}
 		
@@ -155,7 +162,7 @@ serial_init(struct s725_driver *d)
 	serial_print_termios(&t, "modified state");
 	
 	if (tcsetattr(fd, TCSANOW, &t) == -1) {
-		fprintf(stderr,"%s: %s\n", d->path, strerror(errno)); 
+		log_error("%s: %s", d->path, strerror(errno)); 
 		return -1; 
 	}
 
@@ -173,7 +180,7 @@ serial_init(struct s725_driver *d)
 static int
 serial_close(struct s725_driver *d)
 {
-	fprintf(stderr, "serial_close\n");
+	log_info("serial_close");
 
 	serial_print_termios(&DP(d)->tio, "restored state");
 	close(DP(d)->fd);
@@ -197,20 +204,20 @@ serial_read_byte(struct s725_driver *d, unsigned char *byte)
 		nready = poll(pfd, 1, 100);
 		if (nready == -1) {
 			r = 0;
-			fprintf(stderr, "poll: %s\n", strerror(errno));
+			log_info("serial_read_byte: poll returned %s", strerror(errno));
 		}
 		if (nready == 0) {
 			r = 0;
-			fprintf(stderr, "poll: timeout\n");
+			log_info("serial_read_byte: poll timeout");
 		}
 		if ((pfd[0].revents & (POLLERR|POLLNVAL))) {
 			r = 0;
-			fprintf(stderr, "poll: bad fd %d\n", pfd[0].fd);
+			log_error("serial_read_byte: poll bad fd %d", pfd[0].fd);
 		}
 		if ((pfd[0].revents & (POLLIN|POLLHUP))) {
 			r = read(DP(d)->fd,byte,1);
 			if (r == -1) {
-				fprintf(stderr, "read: error %s\n", strerror(errno));
+				log_error("serial_read_byte: error %s", strerror(errno));
 				r = 0;
 			}
 		}
@@ -229,8 +236,9 @@ serial_write(struct s725_driver *d, BUF *buf)
 
 	tcflush(DP(d)->fd, TCIFLUSH);
 
-	fprintf(stderr, "serial_write: len=%zu\n", buf_len(buf));
-	log_hexdump(buf_get(buf), buf_len(buf));
+	log_info("serial_write: len=%zu", buf_len(buf));
+	if (log_get_level() >= 2)
+		log_hexdump(buf_get(buf), buf_len(buf));
 	
 	if (write_single_chunk) {
 		if ((write(DP(d)->fd, buf_get(buf), buf_len(buf)) < 0))

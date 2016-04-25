@@ -8,7 +8,7 @@
 #include <errno.h>
 
 #include "driver.h"
-#include "hexdump.h"
+#include "log.h"
 #include "packet.h"
 
 /* defines the packet types */
@@ -186,11 +186,11 @@ packet_get_response(S725_Packet_Index request)
 		if (send != NULL) {
 			if (request != S725_CONTINUE_TRANSFER &&
 				 request != S725_CLOSE_CONNECTION) {
-				fprintf(stderr, "\n%s: %s\n\n",send->name,
-						(errno) ? strerror(errno) : "No response");
+				log_write("\n%s: %s\n\n", send->name,
+						  (errno) ? strerror(errno) : "No response");
 			}
 		} else {
-			fprintf(stderr, "\n%d: bad packet index\n\n", request);
+			log_write("\n%d: bad packet index\n\n", request);
 		}
 	}
 
@@ -211,31 +211,6 @@ packet_listen()
 			
 
 	return NULL;
-}
-
-void
-packet_print(packet_t *p, FILE *fp)
-{
-	int i;
-
-	if (!p) {
-		fprintf(fp, "\nNULL packet received in print_packet!\n");
-		return;
-	}
-
-	fprintf(fp, "\nPacket ID:       0x%02x\n", p->id);
-	fprintf(fp, "Packet size:     %d bytes\n", p->length);
-	if (p->length) {
-		fprintf(fp, "Packet data:\n\n");
-		for (i = 0; i < p->length; i++) {
-			fprintf(fp, "%02x ", p->data[i]);
-			if (i % 16 == 15) fprintf(fp, "\n");
-		}
-		fprintf(fp,"\n\n");
-	}
-
-	fprintf(fp, "Packet checksum: 0x%04x\n", p->checksum);
-	fprintf(fp, "\n");
 }
 
 /* This file needs to be rewritten.  */
@@ -292,26 +267,26 @@ packet_recv()
 		return NULL;
 	packet_crc_process(&crc, c);
 	buf_putc(buf, c);
-	fprintf(stderr, "packet_recv: type=%02hhx\n", c);
+	log_info("packet_recv: type=%02hhx", c);
 
 	if (c == S725_RESPONSE) {
 		r = driver_read_byte(&id);
 		if (r <= 0)
 			return NULL;
-		fprintf(stderr, "packet_recv: subtype=%02hhx\n", id);
+		log_info("packet_recv: subtype=%02hhx", id);
 		packet_crc_process(&crc, id);
 		r = driver_read_byte(&c);
 		if (r <= 0)
 			return NULL;
 		packet_crc_process(&crc, c);
 		buf_putc(buf, c);
-		fprintf(stderr, "packet_recv: first=%02x remaining=%02x\n",
-				c & 0x80,
-				c & 0x7f);
+		log_info("packet_recv: first=%02x remaining=%02x",
+				  c & 0x80,
+				  c & 0x7f);
 		r = packet_recv_short(&len);
 		if (r <= 0)
 			return NULL;
-		fprintf(stderr, "packet_recv: len=%04hx (%hu)\n", len, len);
+		log_info("packet_recv: len=%04hx (%hu)", len, len);
 		packet_crc_process(&crc, len >> 8);
 		packet_crc_process(&crc, len & 0xff);
 		buf_putc(buf, len >> 8);
@@ -322,8 +297,8 @@ packet_recv()
 			p = calloc(1,sizeof(packet_t) + siz);
 
 			if (!p) {
-				fprintf(stderr, "calloc(1,%ld): %s\n",
-						(long)(sizeof(packet_t) + siz), strerror(errno));
+				log_info("calloc(1,%ld): %s",
+						 (long)(sizeof(packet_t) + siz), strerror(errno));
 			} else {
 				p->type   = S725_RESPONSE;
 				p->id     = id;
@@ -333,7 +308,7 @@ packet_recv()
 					packet_crc_process(&crc, p->data[i]);
 					buf_putc(buf, p->data[i]);
 					if (r <= 0) {
-						fprintf(stderr, "driver_read_byte failed\n");
+						log_error("driver_read_byte failed");
 						free(p);
 						p = NULL;
 						break;
@@ -342,7 +317,7 @@ packet_recv()
 				if (p != NULL) {
 					r = packet_recv_short(&p->checksum);
 					if (r <= 0) {
-						fprintf(stderr, "driver_read_byte failed (recv_short)\n");
+						log_error("driver_read_byte failed (recv_short)");
 						free(p);
 						p = NULL;
 						return NULL;
@@ -351,8 +326,8 @@ packet_recv()
 					buf_putc(buf, p->checksum >> 8);
 					buf_putc(buf, p->checksum & 0xff);
 
-					fprintf(stderr, "packet_recv: len=%zu\n", buf_len(buf));
-					buf_hexdump(buf);
+					log_info("packet_recv: len=%zu", buf_len(buf));
+					log_hexdump(buf_get(buf), buf_len(buf));
 					
 					if (crc != p->checksum) {
 	    
@@ -363,23 +338,22 @@ packet_recv()
 						   cancel the download and have the user attempt it again.
 						*/
 	    
-						fprintf(stderr, 
-								 "\nCRC failed [id %d, length %d]\n", 
-								 p->id, p->length );
+						log_error("\nCRC failed [id %d, length %d]", 
+								  p->id, p->length );
 						free(p);
 						p = NULL;
-						fprintf(stderr, "reading remaining bytes\n");
+						log_info("reading remaining bytes");
 						while (1) {
 							r = driver_read_byte(&c);
 							if (r <= 0) {
-								fprintf(stderr, "driver_read_byte failed (recv_short)\n");
+								log_error("driver_read_byte failed (recv_short)");
 								return NULL;
 							}
-							fprintf(stderr, "got byte: %hhx\n", c);
+							log_info("got byte: %hhx", c);
 						}
 					}
 
-					fprintf(stderr, "packet_recv: crc correct\n");
+					log_info("packet_recv: crc correct");
 				}
 			}
 		}

@@ -58,7 +58,6 @@ packet_t *packet_recv();
 packet_t *packet_get(S725_Packet_Index idx);
 packet_t *packet_get_response(S725_Packet_Index request);
 packet_t *packet_listen();
-void      packet_print(packet_t *pkt, FILE *fp);
 u_char   *packet_data(packet_t *p);
 u_short   packet_len(packet_t *p);
 

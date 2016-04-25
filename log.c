@@ -33,8 +33,9 @@
 static FILE *log_file;
 static int log_level;
 
+#define HASH_MARKS   40
+
 static void log_vwrite(int, const char *, va_list);
-static void log_write(const char *msg, ...);
 
 /* Increment log level. */
 void
@@ -81,7 +82,7 @@ log_vwrite(int newline, const char *msg, va_list ap)
 
 	if (vasprintf(&fmt, msg, ap) == -1)
 		exit(1);
-	if (stravis(&out, fmt, VIS_OCTAL|VIS_CSTYLE|VIS_TAB|VIS_NL) == -1)
+	if (stravis(&out, fmt, VIS_OCTAL|VIS_CSTYLE|VIS_SAFE) == -1)
 		exit(1);
 
 	if (log_file != NULL) {
@@ -95,17 +96,6 @@ log_vwrite(int newline, const char *msg, va_list ap)
 
 	free(out);
 	free(fmt);
-}
-
-/* Write log message without newline */
-static void
-log_write(const char *msg, ...)
-{
-	va_list ap;
-
-	va_start(ap, msg);
-	log_vwrite(0, msg, ap);
-	va_end(ap);
 }
 
 /* Write hexdump of a buffer */
@@ -137,11 +127,34 @@ log_hexdump(void *buf, size_t len)
 			else
 				log_write(".");
 		}
-		log_write("|\n");
+		log_writeln("|");
 	}
 }
 
-/* Log a error message. */
+/* Write log message without newline */
+void
+log_write(const char *msg, ...)
+{
+	va_list ap;
+
+	va_start(ap, msg);
+	log_vwrite(0, msg, ap);
+	va_end(ap);
+}
+
+
+/* Write log message with newline */
+void
+log_writeln(const char *msg, ...)
+{
+	va_list ap;
+
+	va_start(ap, msg);
+	log_vwrite(1, msg, ap);
+	va_end(ap);
+}
+
+/* Write error message */
 void
 log_error(const char *msg, ...)
 {
@@ -207,3 +220,40 @@ fatalx(const char *msg, ...)
 	log_vwrite(1, fmt, ap);
 	exit(1);
 }
+
+void
+log_prep_hash_marks()
+{
+	int i;
+
+	if (log_level != 0 || log_file != NULL)
+		return;
+	
+	log_write("[%5d bytes] [",0);
+	for (i = 0; i < HASH_MARKS; i++)
+		log_write(" ");
+	log_write("] [%5d%%]", 0);
+}
+
+void
+log_print_hash_marks(int pct, int bytes)
+{
+	float here;
+	int i;
+
+	if (log_level != 0 || log_file != NULL)
+		return;
+	
+	for (i = 0; i < HASH_MARKS+25; i++)
+		log_write("\b");
+	log_write("[%5d bytes] [", bytes);
+	for (i = 0; i < HASH_MARKS; i++) {
+		here = i * 100 / HASH_MARKS;
+		if (here < pct)
+			log_write("#");
+		else
+			log_write(" ");
+	}
+	log_write("] [%5d%%]", pct);
+}
+

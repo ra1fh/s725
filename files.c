@@ -13,13 +13,9 @@
 
 #include "buf.h"
 #include "files.h"
+#include "log.h"
 #include "packet.h"
 #include "utils.h"
-
-#define HASH_MARKS   40
-
-static void files_prep_hash_marks();
-static void files_print_hash_marks(int pct, int bytes);
 
 /* 
  * This function reads the user's workout data from the watch and stores
@@ -38,14 +34,15 @@ files_get(BUF *files)
 
 	buf_empty(files);
 
-	printf("\nReading ");
-	files_prep_hash_marks();
-	files_print_hash_marks(0, 0);
+	log_writeln("");
+	log_write("Reading ");
+	log_prep_hash_marks();
+	log_print_hash_marks(0, 0);
 
 	p = packet_get_response(S725_GET_FILES);
 	
 	if (p == NULL) {
-		printf("[error]");
+		log_write("[error]");
 		return 0;
 	}
 
@@ -67,14 +64,14 @@ files_get(BUF *files)
 		buf_append(files, &pd[start], len - start);
 
 		if (p_bytes > 0) 
-			files_print_hash_marks(buf_len(files) * 100 / p_bytes, p_bytes);
+			log_print_hash_marks(buf_len(files) * 100 / p_bytes, p_bytes);
 
 		/* free this packet and get the next one */
 		free(p);
 		p = packet_get_response(S725_CONTINUE_TRANSFER);
 	}
 
-	printf("\n\n");
+	log_write("\n\n");
 
 	if (p_remaining != 0)
 		return 0;
@@ -97,12 +94,12 @@ files_listen(BUF *files)
 
 	buf_empty(files);
 
-	fprintf(stderr, "Listening ");
+	log_write("Listening ");
 
 	p = packet_listen();
 	
 	if (p == NULL) {
-		printf("[error]");
+		log_write("[error]");
 		return 0;
 	}
 
@@ -128,14 +125,13 @@ files_listen(BUF *files)
 		p = packet_listen();
 	}
 
-	printf("\n\n");
+	log_write("\n\n");
 
 	if (p_remaining != 0)
 		return 0;
 
 	return 1;
 }
-
 
 int
 files_split(BUF *files, int *offset, BUF *out)
@@ -177,36 +173,4 @@ files_timestamp (BUF *f, size_t offset)
 	ft         = mktime(&t);
   
 	return ft;
-}
-
-static void
-files_prep_hash_marks()
-{
-	int i;
-
-	printf("[%5d bytes] [",0);
-	for (i = 0; i < HASH_MARKS; i++)
-		putchar(' ');
-	printf("] [%5d%%]", 0);
-	fflush(stdout);
-}
-
-static void
-files_print_hash_marks(int pct, int bytes)
-{
-	float here;
-	int i;
-
-	for (i = 0; i < HASH_MARKS+25; i++)
-		putchar('\b');
-	printf("[%5d bytes] [", bytes);
-	for (i = 0; i < HASH_MARKS; i++) {
-		here = i * 100 / HASH_MARKS;
-		if (here < pct)
-			putchar('#');
-		else
-			putchar(' ');
-	}
-	printf("] [%5d%%]", pct);
-	fflush(stdout);
 }

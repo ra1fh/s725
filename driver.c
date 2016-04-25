@@ -37,7 +37,6 @@ driver_init(const int driver_type, const char *device)
 		needpath = 0;
 		break;
 	default:
-		fprintf(stderr, "unknown driver type: %d\n", driver_type);
 		return 0;
 	}
 

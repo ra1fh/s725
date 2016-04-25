@@ -86,14 +86,14 @@ log_vwrite(int newline, const char *msg, va_list ap)
 		exit(1);
 
 	if (log_file != NULL) {
-		if (fprintf(log_file, newline ? "%s\n" : "%s", out) == -1)
+		if (fprintf(log_file, "%s%s", out, newline ? "\n" : "") == -1)
 			exit(1);
 		fflush(log_file);
 	} else {
-		if (fprintf(stderr, newline ? "%s\n" : "%s", out) == -1)
+		if (fprintf(stderr, "%s%s", out, newline ? "\n" : "") == -1)
 			exit(1);
 	}
-
+	
 	free(out);
 	free(fmt);
 }
@@ -228,7 +228,7 @@ log_prep_hash_marks()
 
 	if (log_level != 0 || log_file != NULL)
 		return;
-	
+
 	log_write("[%5d bytes] [",0);
 	for (i = 0; i < HASH_MARKS; i++)
 		log_write(" ");
@@ -256,4 +256,3 @@ log_print_hash_marks(int pct, int bytes)
 	}
 	log_write("] [%5d%%]", pct);
 }
-

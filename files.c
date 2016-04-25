@@ -34,7 +34,6 @@ files_get(BUF *files)
 
 	buf_empty(files);
 
-	log_writeln("");
 	log_write("Reading ");
 	log_prep_hash_marks();
 	log_print_hash_marks(0, 0);
@@ -71,7 +70,7 @@ files_get(BUF *files)
 		p = packet_get_response(S725_CONTINUE_TRANSFER);
 	}
 
-	log_write("\n\n");
+	log_write("\n");
 
 	if (p_remaining != 0)
 		return 0;

@@ -134,7 +134,7 @@ stir_open_device(struct s725_stir_data *data)
 	
 	ssize_t cnt = libusb_get_device_list(NULL, &list);
 	if (cnt < 0) {
-		fprintf(stderr, "error: %s\n", libusb_strerror(cnt));
+		log_error("stir_open_device: error: %s", libusb_strerror(cnt));
 		return -1;
 	}
 
@@ -149,49 +149,47 @@ stir_open_device(struct s725_stir_data *data)
 	}
 
 	if (!found) {
-		fprintf(stderr, "error: device not found\n");
+		log_error("stir_open_device: error: device not found");
 		err = -1;
 		goto out;
 	}
 
 	err = libusb_open(found, &data->handle);
 	if (err) {
-		fprintf(stderr, "error: %s\n", libusb_strerror(err));
+		log_error("stir_open_device: error: %s", libusb_strerror(err));
 		err = -1;
 		goto out;
 	}
 
-#if 1
 	err = libusb_set_configuration(data->handle, 1);
 	if (err) {
-		fprintf(stderr, "error: %s\n", libusb_strerror(err));
+		log_error("stir_open_device: error: %s", libusb_strerror(err));
 		err = -1;
 		goto out;
 	}
-#endif
 	
 	err = libusb_get_active_config_descriptor(found, &config);
 	if (err) {
-		fprintf(stderr, "error: %s\n", libusb_strerror(err));
+		log_error("stir_open_device: error: %s", libusb_strerror(err));
 		err = -1;
 		goto out;
 	}
 
 	if (config->bNumInterfaces != 1) {
-		fprintf(stderr, "error: bNumInterfaces != 1\n");
+		log_error("stir_open_device: error: bNumInterfaces != 1");
 		err = -1;
 		goto out;
 	}
 
 	if (config->interface[0].num_altsetting != 1) {
-		fprintf(stderr, "error: num_altsetting != 1 (%d)\n", config->interface[0].num_altsetting);
+		log_error("stir_open_device: error: num_altsetting != 1 (%d)", config->interface[0].num_altsetting);
 		err = -1;
 		goto out;
 	}
 
 	intf = &config->interface[0].altsetting[0];
 	data->interface = intf->bInterfaceNumber;
-	fprintf(stderr, "stir_open_device: interface: %d\n", data->interface);
+	log_info("stir_open_device: interface: %d", data->interface);
 
 	for (i = 0; i < intf->bNumEndpoints; i++) {
 		if ((intf->endpoint[i].bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_IN &&
@@ -203,23 +201,23 @@ stir_open_device(struct s725_stir_data *data)
 			data->endpoint_out = intf->endpoint[i].bEndpointAddress;
 	}
 
-	fprintf(stderr, "stir_open_device: ep_in: %x\n", data->endpoint_in);
-	fprintf(stderr, "stir_open_device: ep_out: %x\n", data->endpoint_out);
+	log_info("stir_open_device: ep_in: %x", data->endpoint_in);
+	log_info("stir_open_device: ep_out: %x", data->endpoint_out);
 
 	if (data->endpoint_in == 0 || data->endpoint_out == 0) {
-		fprintf(stderr, "error: endpoints not found\n");
+		log_error("stir_open_device: error: endpoints not found");
 		err = -1;
 		goto out;
 	}
 	
 	err = libusb_claim_interface(data->handle, data->interface);
 	if (err) {
-		fprintf(stderr, "error: %s\n", libusb_strerror(err));
+		log_error("stir_open_device: error: %s", libusb_strerror(err));
 		err = -1;
 		goto out;
 	}
 
-	fprintf(stderr, "stir_open_device: claimed interface\n");
+	log_info("stir_open_device: claimed interface");
 
 	err = 0;
 out:	
@@ -234,14 +232,14 @@ stir_init_port(struct s725_driver *d)
 	int err;
 
 	if ((err = libusb_init(NULL)) != 0) {
-		fprintf(stderr, "error: %s\n", libusb_strerror(err));
+		log_error("stir_init_port: error: %s", libusb_strerror(err));
 		return -1;
 	}
 	
 	libusb_set_debug(NULL, 1);
 
 	if ((data = calloc(1,sizeof(struct s725_stir_data))) == NULL) {
-		fprintf(stderr, "error: allocation failed\n");
+		log_error("stir_init_port: allocation failed");
 		return -1;
 	}
 	
@@ -250,76 +248,76 @@ stir_init_port(struct s725_driver *d)
 		return -1;
 	}
 
-	fprintf(stderr, "stir_init_port: *** clear halt out\n");
+	log_info("stir_init_port: *** clear halt out");
 	err = libusb_clear_halt(data->handle, 1/* data->endpoint_out */ );
 	if (err) {
-		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
+		log_error("stir_init_port: %s", libusb_strerror(err));
 		return -1;
 	}
 
-	fprintf(stderr, "stir_init_port: *** clear halt in\n");
+	log_info("stir_init_port: *** clear halt in");
 	err = libusb_clear_halt(data->handle, 130/* data->endpoint_in */);
 	if (err) {
-		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
+		log_error("stir_init_port: %s", libusb_strerror(err));
 		return -1;
 	}
 
-	fprintf(stderr, "stir_init_port: *** CTRL1\n");
+	log_info("stir_init_port: *** CTRL1");
 	err = stir_write_reg(data->handle, REG_CTRL1, CTRL1_SRESET);
 	if (err) {
-		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
+		log_error("stir_init_port: %s", libusb_strerror(err));
 		return -1;
 	}
 
 
-	fprintf(stderr, "stir_init_port: *** DPLL\n");
+	log_info("stir_init_port: *** DPLL");
 	err = stir_write_reg(data->handle, REG_DPLL, 0x15);
 	if (err) {
-		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
+		log_error("stir_init_port: %s", libusb_strerror(err));
 		return -1;
 	}
 
-	fprintf(stderr, "stir_init_port: *** PDCLK\n");
+	log_info("stir_init_port: *** PDCLK");
 	err = stir_write_reg(data->handle, REG_PDCLK, PDCLK_9600);
 	if (err) {
-		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
+		log_error("stir_init_port: %s", libusb_strerror(err));
 		return -1;
 	}
 
-	fprintf(stderr, "stir_init_port: *** MODE\n");
+	log_info("stir_init_port: *** MODE");
 	err = stir_write_reg(data->handle, REG_MODE, MODE_NRESET | MODE_FASTRX | MODE_SIR);
 	if (err) {
-		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
+		log_error("stir_init_port: %s", libusb_strerror(err));
 		return -1;
 	}
 
 	/* SD/MODE=1 */
-	fprintf(stderr, "stir_init_port: *** CTRL1\n");
+	log_info("stir_init_port: *** CTRL1");
 	err = stir_write_reg(data->handle, REG_CTRL1, CTRL1_SDMODE);
 	if (err) {
-		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
+		log_error("stir_init_port: %s", libusb_strerror(err));
 		return -1;
 	}
 
 	/* SD/MODE=0 */
-	fprintf(stderr, "stir_init_port: *** CTRL1\n");
+	log_info("stir_init_port: *** CTRL1");
 	err = stir_write_reg(data->handle, REG_CTRL1, 0x00);
 	if (err) {
-		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
+		log_error("stir_init_port: %s", libusb_strerror(err));
 		return -1;
 	}
 
 	/* SPWIDTH=SIR */
-	fprintf(stderr, "stir_init_port: *** CTRL2\n");
+	log_info("stir_init_port: *** CTRL2");
 	err = stir_write_reg(data->handle, REG_CTRL2, 0x20);
 	if (err) {
-		fprintf(stderr, "stir_init_port: %s\n", libusb_strerror(err));
+		log_error("stir_init_port: %s", libusb_strerror(err));
 		return -1;
 	}
 
 	usleep(1000);
 	
-	fprintf(stderr,"stir_init_port: success\n");
+	log_info("stir_init_port: success");
 	d->data = (void *)data;
 	return 0;
 }
@@ -329,7 +327,7 @@ static int stir_read_reg(libusb_device_handle *handle, uint16_t reg, uint8_t *da
 {
 	int r;
 
-	fprintf(stderr, "stir_read_reg: reg=%x-%x\n", reg, reg + count - 1);
+	log_info("stir_read_reg: reg=%x-%x", reg, reg + count - 1);
 
 	r = libusb_control_transfer(handle,
 								LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_IN,
@@ -340,11 +338,11 @@ static int stir_read_reg(libusb_device_handle *handle, uint16_t reg, uint8_t *da
 								count,
 								1000);
 	if (r < 0)
-		fprintf(stderr, "stir_read_reg: %s (%d)\n", libusb_strerror(r), r);
+		log_error("stir_read_reg: %s (%d)", libusb_strerror(r), r);
 	else if (r != count)
-		fprintf(stderr, "stir_read_reg: incomplete read (expected %d, got %d bytes)\n", count, r);
+		log_error("stir_read_reg: incomplete read (expected %d, got %d bytes)", count, r);
 	else
-		fprintf(stderr, "stir_read_reg: reg=%x-%x ok\n", reg, reg + count - 1);
+		log_info("stir_read_reg: reg=%x-%x ok", reg, reg + count - 1);
 	return r;
 }
 
@@ -353,7 +351,7 @@ static int stir_write_reg(libusb_device_handle *handle, uint16_t reg, uint8_t va
 	int r;
 	unsigned char buf[BUFSIZ];
 
-	fprintf(stderr, "stir_write_reg: reg=%hx, val=%hhx\n", reg, value);
+	log_info("stir_write_reg: reg=%hx, val=%hhx", reg, value);
 	r = libusb_control_transfer(handle,
 								LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_OUT,
 								REQ_WRITE_SINGLE, 
@@ -363,9 +361,9 @@ static int stir_write_reg(libusb_device_handle *handle, uint16_t reg, uint8_t va
 								0x00, /* not used */
 								1000);
 	if (r < 0)
-		fprintf(stderr, "stir_write_reg: error %s\n", libusb_strerror(r));
+		log_error("stir_write_reg: error %s", libusb_strerror(r));
 	else
-		fprintf(stderr, "stir_write_reg: reg=%hx, val=%hhx ok\n", reg, value);
+		log_info("stir_write_reg: reg=%hx, val=%hhx ok", reg, value);
 	return r;
 }
 
@@ -390,20 +388,20 @@ stir_read_byte(struct s725_driver *d, unsigned char *byte)
 									   &bytes,
 									   5000);
 			if (err != 0) {
-				fprintf(stderr, "stir_read_byte: err=%d\n", err);
+				log_error("stir_read_byte: err=%d", err);
 				err = libusb_reset_device(data->handle);
 				if (err != 0) {
-					fprintf(stderr, "error: reset failed\n");
+					log_error("stir_read_byte: error: reset failed");
 					return 0;
 				}
 			}
-			if (bytes > 0) {
+			if (bytes > 0 && log_get_level() >= 2) {
 				log_hexdump(buf, bytes);
 			}
 			usleep(10000);
 		} while (!bytes && i++ < 100);
 		if (i >= 100) {
-			fprintf(stderr, "stir_read_byte: ntries==100\n");
+			log_info("stir_read_byte: ntries==100");
 		}
 	}
 	
@@ -426,7 +424,7 @@ static int stir_fifo_txwait(libusb_device_handle *handle,  int space)
 		err = stir_read_reg(handle, REG_FIFOCTL, fifo_status, 
 				   FIFO_REGS_SIZE);
 		if (err != FIFO_REGS_SIZE) {
-			fprintf(stderr, "error: fifo regs %s (%d)\n", libusb_strerror(err), err);
+			log_error("stir_fifo_txwait: error: fifo regs %s (%d)", libusb_strerror(err), err);
 			return (err < 0 ? err : -1);
 		}
 
@@ -434,7 +432,7 @@ static int stir_fifo_txwait(libusb_device_handle *handle,  int space)
 		count = (unsigned)(fifo_status[2] & 0x1f) << 8 
 			| fifo_status[1];
 
-		fprintf(stderr, "stir_fifo_txwait: fifo status 0x%lx count %lu\n", status, count);
+		log_info("stir_fifo_txwait: fifo status 0x%lx count %lu", status, count);
 		
 		/* is fifo receiving already, or empty */
 		if (!(status & FIFOCTL_DIR) ||
@@ -481,27 +479,29 @@ stir_send_packet(struct s725_driver *d, BUF *buf)
 	buf_putc(txbuf, (buf_len(buf) >> 8) & 0xff);
 	buf_append(txbuf, buf_get(buf), buf_len(buf));
 	
-	fprintf(stderr, "stir_send_packet: *** CLR set\n");
+	log_info("stir_send_packet: *** CLR set");
 	err = stir_write_reg(data->handle, REG_FIFOCTL, FIFOCTL_CLR);
 	if (err)
-		fprintf(stderr, "stir_send_packet: %s\n", libusb_strerror(err));
+		log_error("stir_send_packet: %s", libusb_strerror(err));
 
-	fprintf(stderr, "stir_send_packet: *** CLR reset\n");
+	log_info("stir_send_packet: *** CLR reset");
 	err = stir_write_reg(data->handle, REG_FIFOCTL, 0);
 	if (err)
-		fprintf(stderr, "stir_send_packet: %s\n", libusb_strerror(err));
+		log_error("stir_send_packet: %s", libusb_strerror(err));
 
+	if (log_get_level() >= 2) {
+		log_write("stir_send_packet: len=%zu\n", buf_len(txbuf));
+		log_hexdump(buf_get(txbuf), buf_len(txbuf));
+	}
 	
-	log_hexdump(buf_get(txbuf), buf_len(txbuf));
-	
-	fprintf(stderr, "stir_send_packet: *** start bulk transfer\n");
+	log_info("stir_send_packet: *** start bulk transfer");
 	err = libusb_bulk_transfer(data->handle,
 							   data->endpoint_out,
 							   buf_get(txbuf),
 							   buf_len(txbuf),
 							   &bytes,
 							   1000);
-	fprintf(stderr, "stir_send_packet: len=%zu err=%d transferred=%d\n", buf_len(txbuf), err, bytes);
+	log_info("stir_send_packet: len=%zu err=%d transferred=%d", buf_len(txbuf), err, bytes);
 
 	stir_fifo_txwait(data->handle, buf_len(txbuf));
 
@@ -517,10 +517,10 @@ stir_shutdown_port(struct s725_driver *d)
 {
 	struct s725_stir_data *data = (struct s725_stir_data *)d->data;
 
-	fprintf(stderr,"stir_shutdown_port: releasing interface\n");
+	log_info("stir_shutdown_port: releasing interface");
 	libusb_release_interface(data->handle, data->interface);
 
-	fprintf(stderr,"stir_shutdown_port: closing\n");
+	log_info("stir_shutdown_port: closing");
 	libusb_close(data->handle);
 
 	free(data);

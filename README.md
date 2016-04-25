@@ -24,9 +24,9 @@ type to be used to communicate with the device.  Valid values are
 Examples:
 
 	s725get -d serial -D /dev/cua00
-	s725get -D /dev/cua00
+	s725get -D /dev/ttyUSB0
 
-You must have write permissions to the device file to use s725get.
+You must have write permissions for the device file to use s725get.
 
 Downloaded workout files are stored in the current directory by
 default. To change this, you can pass the -f command line option to
@@ -45,7 +45,7 @@ the following settings:
 	driver = serial
 
 	# device file name
-	device = "/dev/cua01"
+	device = "/dev/cuaU0"
 
     # output directory
     directory = "/home/user/polar/data/"
@@ -57,11 +57,14 @@ the following settings:
 This driver is known to work with:
   - Builtin Fujitsu Lifebook T4215 IR interface in IrDA mode (see BIOS
 	setup) that is accessed like a standard serial port
-  - Serial infrared adapter IRXON SMH-IR220.
+  - Serial infrared adapter IRXON SMH-IR220 attached via USB serial adapter
 	http://www.irxon.com/english/products/ir220_e.htm
 
 #### stir
 
-This stir driver is supposed to handle a SigmaTel STIr4200 based USB IrDA
-bridges. This is work in progress, not usable yet.
+This stir driver handles SigmaTel STIr4200 based USB IrDA bridges via
+libusb. This means it doesn't use the Linux IrDA stack.
 
+Current status: Basic sending and receiving works, but there are
+always several bit errors and resulting crc failures. It's quite
+possible that this device can't handle Polar communication correctly.

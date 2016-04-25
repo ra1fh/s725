@@ -12,6 +12,7 @@
 #include "conf.h"
 #include "driver.h"
 #include "files.h"
+#include "log.h"
 #include "misc.h"
 #include "workout.h"
 #include "workout_print.h"
@@ -42,7 +43,6 @@ main(int argc, char **argv)
 	int				  opt_driver_type = DRIVER_IR;
 	const char		 *opt_device_name = NULL;
 	const char		 *suffix;
-	int				  opt_verbose = 0;
 	int				  opt_hrm = 0;
 	BUF				 *files;
 	BUF				 *buf;
@@ -82,10 +82,8 @@ main(int argc, char **argv)
 		case 'd':
 			opt_driver_name = optarg;
 			opt_driver_type = driver_name_to_type(opt_driver_name);
-			if (opt_driver_type == DRIVER_UNKNOWN) {
-				fprintf(stderr, "unknown driver type: %s\n", opt_driver_name);
-				exit(1);
-			}
+			if (opt_driver_type == DRIVER_UNKNOWN)
+				fatalx("unknown driver type: %s\n", opt_driver_name);
 			break;
 		case 'D':
 			opt_device_name = optarg;
@@ -111,7 +109,7 @@ main(int argc, char **argv)
 			opt_time = 1;
 			break;
 		case 'v':
-			opt_verbose++;
+			log_add_level();
 			break;
 		case 'h':
 			usage();
@@ -124,25 +122,19 @@ main(int argc, char **argv)
 	}
 
 	if (opt_driver_type == DRIVER_IR || opt_driver_type == DRIVER_SERIAL) {
-		if (!opt_device_name) {
-			fprintf(stderr, "error: device name required for %s driver\n",
-					driver_type_to_name(opt_driver_type));
-			exit(1);
-		}
+		if (!opt_device_name)
+			fatalx("error: device name required for %s driver\n",
+				   driver_type_to_name(opt_driver_type));
 	}
 	
-	if (opt_verbose) {
-		fprintf(stderr, "driver name: %s\n", driver_type_to_name(opt_driver_type));
-		fprintf(stderr, "driver type: %d\n", opt_driver_type);
-		fprintf(stderr, "device name: %s\n", opt_device_name ? opt_device_name : "");
-		fprintf(stderr, "directory name: %s\n", opt_directory_name ? opt_directory_name : "");
-	}
+	log_info("driver name: %s", driver_type_to_name(opt_driver_type));
+	log_info("driver type: %d", opt_driver_type);
+	log_info("device name: %s", opt_device_name ? opt_device_name : "");
+	log_info("directory name: %s", opt_directory_name ? opt_directory_name : "");
 
 	ok = driver_init(opt_driver_type, opt_device_name);
-	if (ok != 1) {
-		fprintf(stderr, "error: driver_init failed\n");
-		exit(1);
-	}
+	if (ok != 1)
+		fatalx("error: driver_init failed\n");
 
 	if (opt_directory_name) {
 		opt_directory_name = realpath(opt_directory_name, path);
@@ -151,15 +143,11 @@ main(int argc, char **argv)
 		opt_directory_name = path;
 	}
 
-	if (!opt_directory_name) {
-		fprintf(stderr, "error: could not resolve path. check -f\n");
-		exit(1);
-	}
+	if (!opt_directory_name)
+		fatalx("error: could not resolve path. check -f\n");
 
-	if (driver_open() < 0) {
-		fprintf(stderr,"error: unable to open port: %s\n", strerror(errno));
-		exit(1);
-	}
+	if (driver_open() < 0)
+		fatalx("error: unable to open port: %s\n", strerror(errno));
 
 	if (opt_byte) {
 		unsigned char mask = 128;
@@ -171,12 +159,14 @@ main(int argc, char **argv)
 		buf = buf_alloc(0);
 		for (i = 0; i < opt_count; ++i)
 			buf_putc(buf, out);
-		fprintf(stderr, "byte: %hhu\n", out);
-		fprintf(stderr, "bits: ");
-		for (; mask; mask >>=1) {
-			fprintf(stderr, "%u", out & mask ? 1 : 0);
+		if (log_get_level() > 0) {
+			log_writeln("byte: %hhu", out);
+			log_write("bits: ");
+			for (; mask; mask >>=1) {
+				log_write("%u", out & mask ? 1 : 0);
+			}
+			log_writeln("");
 		}
-		fprintf(stderr, "\n");
 		driver_write(buf);
 		usleep(2000000);
 		driver_close();
@@ -217,35 +207,36 @@ main(int argc, char **argv)
 				if (opt_raw) {
 					f = fopen(fnbuf, "w");
 					if (f) {
-						fprintf(stderr, "File %02d: Saved as %s\n", count, fnbuf);
+						log_writeln("File %02d: Saved as %s",
+									count, fnbuf);
 						fwrite(buf_get(buf), buf_len(buf), 1, f);
 						fclose(f);
 					} else {
-						printf("File %02d: Unable to save %s: %s\n",
-							   count,fnbuf,strerror(errno));
+						log_writeln("File %02d: Unable to save %s: %s",
+									count, fnbuf, strerror(errno));
 					}
 				} else {
 					w = workout_read_buf(buf);
 					if (w) {
 						f = fopen(fnbuf, "w");
 						if (f) {
-							fprintf(stderr, "File %02d: Saved as %s\n", count, fnbuf);
+							log_writeln("File %02d: Saved as %s", count, fnbuf);
 							if (opt_hrm)
 								workout_print_hrm(w, f);
 							else
 								workout_print_txt(w, f, S725_WORKOUT_FULL);
 							fclose(f);
 						} else {
-							printf("File %02d: Unable to save %s: %s\n",
-								   count,fnbuf,strerror(errno));
+							log_writeln("File %02d: Unable to save %s: %s",
+										count, fnbuf, strerror(errno));
 						}
 						workout_free(w);
 					} else {
-						fprintf(stderr, "failed to parse workout for %s\n", fnbuf);
+						log_writeln("Failed to parse workout for %s", fnbuf);
 					}
 				}
 			}
-			printf("Saved %d file%s\n", count, (count==1) ? "" : "s");
+			log_writeln("Saved %d file%s", count, (count==1) ? "" : "s");
 		}
 		exit(0);
 	}
@@ -267,35 +258,35 @@ main(int argc, char **argv)
 			if (opt_raw) {
 				f = fopen(fnbuf, "w");
 				if (f) {
-					fprintf(stderr, "File %02d: Saved as %s\n", count, fnbuf);
+					log_writeln("File %02d: Saved as %s", count, fnbuf);
 					fwrite(buf_get(buf), buf_len(buf), 1, f);
 					fclose(f);
 				} else {
-					printf("File %02d: Unable to save %s: %s\n",
-						   count,fnbuf,strerror(errno));
+					log_writeln("File %02d: Unable to save %s: %s",
+								count, fnbuf, strerror(errno));
 				}
 			} else {
 				w = workout_read_buf(buf);
 				if (w) {
 					f = fopen(fnbuf, "w");
 					if (f) {
-						fprintf(stderr, "File %02d: Saved as %s\n", count, fnbuf);
+						log_writeln("File %02d: Saved as %s", count, fnbuf);
 						if (opt_hrm)
 							workout_print_hrm(w, f);
 						else
 							workout_print_txt(w, f, S725_WORKOUT_FULL);
 						fclose(f);
 					} else {
-						printf("File %02d: Unable to save %s: %s\n",
-							   count,fnbuf,strerror(errno));
+						log_writeln("File %02d: Unable to save %s: %s",
+									count, fnbuf, strerror(errno));
 					}
 					workout_free(w);
 				} else {
-					fprintf(stderr, "failed to parse workout for %s\n", fnbuf);
+					log_writeln("Failed to parse workout for %s", fnbuf);
 				}
 			}
 		}
-		printf("Saved %d file%s\n", count, (count==1) ? "" : "s");
+		log_writeln("Saved %d file%s", count, (count==1) ? "" : "s");
 	}
 
 	buf_free(files);

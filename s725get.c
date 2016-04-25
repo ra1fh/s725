@@ -83,7 +83,7 @@ main(int argc, char **argv)
 			opt_driver_name = optarg;
 			opt_driver_type = driver_name_to_type(opt_driver_name);
 			if (opt_driver_type == DRIVER_UNKNOWN)
-				fatalx("unknown driver type: %s\n", opt_driver_name);
+				fatalx("unknown driver type: %s", opt_driver_name);
 			break;
 		case 'D':
 			opt_device_name = optarg;
@@ -123,7 +123,7 @@ main(int argc, char **argv)
 
 	if (opt_driver_type == DRIVER_IR || opt_driver_type == DRIVER_SERIAL) {
 		if (!opt_device_name)
-			fatalx("error: device name required for %s driver\n",
+			fatalx("device name required for %s driver",
 				   driver_type_to_name(opt_driver_type));
 	}
 	
@@ -134,7 +134,7 @@ main(int argc, char **argv)
 
 	ok = driver_init(opt_driver_type, opt_device_name);
 	if (ok != 1)
-		fatalx("error: driver_init failed\n");
+		fatalx("driver_init failed");
 
 	if (opt_directory_name) {
 		opt_directory_name = realpath(opt_directory_name, path);
@@ -144,10 +144,10 @@ main(int argc, char **argv)
 	}
 
 	if (!opt_directory_name)
-		fatalx("error: could not resolve path. check -f\n");
+		fatalx("could not resolve path. check -f");
 
 	if (driver_open() < 0)
-		fatalx("error: unable to open port: %s\n", strerror(errno));
+		fatalx("unable to open port: %s", strerror(errno));
 
 	if (opt_byte) {
 		unsigned char mask = 128;

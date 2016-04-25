@@ -20,7 +20,7 @@ INSTALLMAN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 444
 
 S725GET_SRCS = driver.c files.c serial.c stir.c packet.c misc.c \
 	workout.c workout_label.c workout_print.c workout_time.c \
-	xmalloc.c buf.c hexdump.c
+	xmalloc.c buf.c hexdump.c log.c
 
 SRDCAT_SRCS = workout_label.c workout_time.c workout_print.c \
 	workout.c xmalloc.c buf.c hexdump.c

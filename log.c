@@ -89,7 +89,7 @@ log_vwrite(int newline, const char *msg, va_list ap)
 			exit(1);
 		fflush(log_file);
 	} else {
-		if (fprintf(log_file, newline ? "%s\n" : "%s", out) == -1)
+		if (fprintf(stderr, newline ? "%s\n" : "%s", out) == -1)
 			exit(1);
 	}
 

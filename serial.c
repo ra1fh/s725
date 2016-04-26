@@ -180,6 +180,11 @@ static int
 serial_close(struct s725_driver *d)
 {
 	log_info("serial_close");
+	/*
+	 * Need to wait here as well to give serial IR converters enough
+	 * time to transmit, even though we do tcdrain after write.
+	 */
+ 	usleep(50000);
 	close(DP(d)->fd);
 	return 0;
 }

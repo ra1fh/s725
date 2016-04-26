@@ -273,6 +273,7 @@ packet_recv()
 		r = driver_read_byte(&id);
 		if (r <= 0)
 			return NULL;
+		buf_putc(buf, id);
 		log_info("packet_recv: subtype=%02hhx", id);
 		packet_crc_process(&crc, id);
 		r = driver_read_byte(&c);

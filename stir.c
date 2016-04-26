@@ -396,12 +396,13 @@ stir_read_byte(struct s725_driver *d, unsigned char *byte)
 				}
 			}
 			if (bytes > 0 && log_get_level() >= 2) {
+				log_debug("stir_read_byte: len=%d", bytes);
 				log_hexdump(buf, bytes);
 			}
 			usleep(10000);
 		} while (!bytes && i++ < 100);
 		if (i >= 100) {
-			log_info("stir_read_byte: ntries==100");
+			log_debug("stir_read_byte: ntries==100");
 		}
 	}
 	

@@ -27,9 +27,11 @@ usage(void) {
 	printf("        -f directory   directory where output files are written to.\n");
 	printf("                       default: current working directory\n");
 	printf("        -l             listen for incoming data\n");
+	printf("        -L             listen for incoming bytes\n");
 	printf("        -t             get time\n");
 	printf("        -H             write HRM format\n");
 	printf("        -r             write raw srd format\n");
+	printf("        -u             get user data\n");
 	printf("        -v             verbose output\n");
 }
 
@@ -50,7 +52,9 @@ main(int argc, char **argv)
 	int				  offset;
 	int				  opt_raw = 0;
 	int				  opt_time = 0;
+	int				  opt_user = 0;
 	int				  opt_listen = 0;
+	int				  opt_listen_bytes = 0;
 	const char		 *opt_byte = NULL;
 	int				  opt_count = 1;
 	int				  count = 0;
@@ -74,7 +78,7 @@ main(int argc, char **argv)
 			opt_directory_name = conf_directory_name;
 	}
 
-	while ((ch = getopt(argc, argv, "b:d:D:f:hHln:rtv")) != -1) {
+	while ((ch = getopt(argc, argv, "b:d:D:f:hHlLn:rtuv")) != -1) {
 		switch (ch) {
 		case 'b':
 			opt_byte = optarg;;
@@ -97,6 +101,9 @@ main(int argc, char **argv)
 		case 'l':
 			opt_listen = 1;
 			break;
+		case 'L':
+			opt_listen_bytes = 1;
+			break;
 		case 'n':
 			opt_count = strtonum(optarg, 1, 100, NULL);
 			if (opt_count == 0)
@@ -107,6 +114,9 @@ main(int argc, char **argv)
 			break;
 		case 't':
 			opt_time = 1;
+			break;
+		case 'u':
+			opt_user = 1;
 			break;
 		case 'v':
 			log_add_level();
@@ -171,9 +181,24 @@ main(int argc, char **argv)
 		driver_close();
 		exit(0);
 	}
+
+	if (opt_listen_bytes) {
+		unsigned char byte;
+		while (1) {
+			if (driver_read_byte(&byte)) {
+				log_write("0x%02hhx %c\n", byte, byte);
+			}
+		}
+	}
 	
 	if (opt_time) {
 		time_get();
+		driver_close();
+		exit(0);
+	}
+
+	if (opt_user) {
+		user_get();
 		driver_close();
 		exit(0);
 	}

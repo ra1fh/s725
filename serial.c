@@ -208,7 +208,7 @@ serial_read_byte(struct s725_driver *d, unsigned char *byte)
 		}
 		if (nready == 0) {
 			r = 0;
-			log_info("serial_read_byte: poll timeout");
+			log_debug("serial_read_byte: poll timeout");
 		}
 		if ((pfd[0].revents & (POLLERR|POLLNVAL))) {
 			r = 0;

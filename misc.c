@@ -41,3 +41,17 @@ int time_get() {
 
 	return 0;
 }
+
+int user_get() {
+	packet_t *p = NULL;
+
+	p = packet_get_response(S725_GET_USER);
+	if (p == NULL) {
+		log_write("[error]\n");
+		return 0;
+	}
+
+	free(p);
+
+	return 0;
+}

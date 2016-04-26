@@ -18,5 +18,6 @@
 #define MISC_H
 
 int time_get();
+int user_get();
 
 #endif	/* MISC_H */

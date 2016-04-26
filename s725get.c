@@ -168,7 +168,6 @@ main(int argc, char **argv)
 			log_writeln("");
 		}
 		driver_write(buf);
-		usleep(2000000);
 		driver_close();
 		exit(0);
 	}

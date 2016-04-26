@@ -34,7 +34,6 @@ struct s725_driver_ops serial_driver_ops = {
 
 struct driver_private {
 	int fd;
-	int debugfd;
 	struct termios tio;
 };
 
@@ -181,10 +180,7 @@ static int
 serial_close(struct s725_driver *d)
 {
 	log_info("serial_close");
-
-	serial_print_termios(&DP(d)->tio, "restored state");
 	close(DP(d)->fd);
-	close(DP(d)->debugfd);
 	return 0;
 }
 	

@@ -88,7 +88,6 @@ files_listen(BUF *files)
 	packet_t *p;
 	int p_remaining = 1;
 	int p_first = 0;
-	unsigned short p_bytes = 0;
 	unsigned int start;
 
 	buf_empty(files);
@@ -108,7 +107,6 @@ files_listen(BUF *files)
 		p_remaining = packet_data(p)[0] & 0x7f;
 		if (p_first) {
 			/* Byte 1 and 2 of first packet: total size in bytes */
-			p_bytes = (packet_data(p)[1] << 8) + packet_data(p)[2];
 			/* Byte 3 and 4 of first packet: magic bytes */
 			start = 5;
 		} else {

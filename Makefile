@@ -23,13 +23,13 @@ S725GET_SRCS = driver.c files.c serial.c stir.c packet.c misc.c \
 	xmalloc.c buf.c log.c
 
 SRDCAT_SRCS = workout_label.c workout_time.c workout_print.c \
-	workout.c xmalloc.c buf.c
+	workout.c xmalloc.c buf.c log.c
 
 SRDTCX_SRCS = workout_label.c workout_time.c workout_print.c \
-	workout.c xmalloc.c buf.c
+	workout.c xmalloc.c buf.c log.c
 
 SRDHEAD_SRCS = workout_label.c workout_time.c workout_print.c \
-	workout.c xmalloc.c buf.c
+	workout.c xmalloc.c buf.c log.c
 
 PROG_SRCS= $(patsubst %,%.c,$(PROGS))
 

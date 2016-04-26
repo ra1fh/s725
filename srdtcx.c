@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/time.h>
 
+#include "log.h"
 #include "workout.h"
 #include "workout_print.h"
 
@@ -44,7 +45,7 @@ main(int argc, char **argv)
 			workout_print_tcx(w, stdout);
 			workout_free(w);
 		} else {
-			fprintf(stderr, "%s: invalid file\n", argv[i]);
+			fatalx("%s: invalid file\n", argv[i]);
 		}
 	}
 

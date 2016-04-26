@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <unistd.h>
 
+#include "log.h"
 #include "utils.h"
 #include "workout.h"
 #include "workout_int.h"
@@ -358,11 +359,6 @@ workout_read_laps(workout_t *w, unsigned char *buf)
 			 * byte- lets try that.
 			*/
       		l->speed = buf[offset+2] + ((buf[offset+3] & 0xf0) << 4);
-
-			/* fprintf(stderr, "distance/speed: %02x %02x %02x %02x\n",
-			   buf[offset], buf[offset+1], buf[offset+2], buf[offset+3]); */
-			/* fprintf(stderr, "SPEED: %X\n", l->speed); */
-      
 		}
 	}
 }
@@ -476,8 +472,8 @@ workout_extract(unsigned char *buf, S725_HRM_Type type)
 	int ok = 1;
 
 	if ((w = calloc(1,sizeof(workout_t))) == NULL) {
-		fprintf(stderr,"extract_workout: calloc(%ld): %s\n",
-				(long)sizeof(workout_t),strerror(errno));
+		log_error("extract_workout: calloc(%ld): %s",
+				  (long)sizeof(workout_t),strerror(errno));
 		return NULL;
 	}
 
@@ -595,21 +591,21 @@ workout_read_buf(BUF *buf)
 	off_t size;
 
 	if (buf_len(buf) < 2) {
-		fprintf(stderr, "workout_read_buf: buffer size too small\n");
+		log_error("workout_read_buf: buffer size too small");
 		return NULL;
 	}
 
 	size = buf_get(buf)[0] + (buf_get(buf)[1]<<8);
 	
 	if (size != buf_len(buf)) {
-		fprintf(stderr, "workout_read_buf: len does not match buffer len\n");
+		log_error("workout_read_buf: len does not match buffer len");
 		return NULL;
 	}
 
 	type = workout_detect_hrm_type(buf_get(buf), buf_len(buf));
 
 	if (type == S725_HRM_UNKNOWN) {
-		fprintf(stderr, "workout_read_buf: unable to auto-detect HRM type\n");
+		log_error("workout_read_buf: unable to auto-detect HRM type");
 		return NULL;
 	}
 
@@ -705,8 +701,8 @@ workout_allocate_sample_space (workout_t *w)
 
 #define  MAKEBUF(a, b)											\
 	if ((w->a = calloc(w->samples, sizeof(b))) == NULL) {		\
-		fprintf(stderr, "%s: calloc(%d,%ld): %s\n",				\
-				#a,w->samples,(long)sizeof(b),strerror(errno));	\
+		log_error("%s: calloc(%d,%ld): %s",					    \
+				 #a,w->samples,(long)sizeof(b),strerror(errno));\
 		ok = 0;													\
 	}
 

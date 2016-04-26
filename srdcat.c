@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/time.h>
 
+#include "log.h"
 #include "workout.h"
 #include "workout_print.h"
 
@@ -47,12 +48,12 @@ main(int argc, char **argv)
 		gettimeofday(&tf, NULL);
 		el = tf.tv_sec - ti.tv_sec + (tf.tv_usec-ti.tv_usec)/1000000.0;
 		if (w != NULL) {
-			fprintf(stderr, "\nPrinting workout in %s [loaded in %f seconds]:\n\n",
-				   argv[i], el);
+			log_write("\nPrinting workout in %s [loaded in %f seconds]:\n\n",
+					  argv[i], el);
 			workout_print_txt(w, stdout, S725_WORKOUT_FULL);
 			workout_free(w);
 		} else {
-			printf("%s: invalid file\n", argv[i]);
+			fatalx("%s: invalid file\n", argv[i]);
 		}
 	}
 

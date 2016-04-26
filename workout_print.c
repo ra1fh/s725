@@ -1,6 +1,7 @@
 
 #include <string.h>
 
+#include "log.h"
 #include "workout_print.h"
 #include "workout_int.h"
 #include "workout_time.h"
@@ -323,12 +324,12 @@ workout_print_hrm(workout_t *w, FILE *fp)
 
 	/* sanity checks. */
 	if (w == NULL || fp == NULL) {
-		fprintf(stderr, "workout_print_tcx: improper usage(%p,%p)\n", w, fp);
+		log_error("workout_print_tcx: improper usage(%p,%p)", w, fp);
 		return;
 	}
 
 	if (w->type == S725_HRM_UNKNOWN) {
-		fprintf(stderr, "workout_print_tcx: unknown HRM model\n");
+		log_error("workout_print_tcx: unknown HRM model");
 		return;
 	}
 
@@ -647,12 +648,12 @@ workout_print_tcx(workout_t *w, FILE *fp)
 
 	/* sanity checks. */
 	if (w == NULL || fp == NULL) {
-		fprintf(stderr, "workout_print_hrm: improper usage(%p,%p)\n", w, fp);
+		log_error("workout_print_hrm: improper usage(%p,%p)", w, fp);
 		return;
 	}
 
 	if (w->type == S725_HRM_UNKNOWN) {
-		fprintf(stderr,"workout_print_hrm: unknown HRM model\n");
+		log_error("workout_print_hrm: unknown HRM model");
 		return;
 	}
 
@@ -695,7 +696,7 @@ workout_print_tcx(workout_t *w, FILE *fp)
 	fprintf(fp, "    <Id>%s</Id>\n", buf);
 
 	if (w->units.distance[0] == 'm') {
-		fprintf(stderr, "TODO: implement conversion from miles to metres\n");
+		log_error("TODO: implement conversion from miles to metres");
 	}
 
 	count = 0;

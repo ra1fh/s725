@@ -16,8 +16,6 @@ static struct s725_driver *driver;
 int
 driver_init(const int driver_type, const char *device)
 {
-	int needpath;
-
 	if (driver)
 		return 0;
 	
@@ -29,25 +27,20 @@ driver_init(const int driver_type, const char *device)
 
 	switch (driver_type) {
 	case DRIVER_SERIAL:
-		driver->dops = &serial_driver_ops;
-		needpath = 1;
+		if (device != NULL) {
+			driver->dops = &serial_driver_ops;
+			strncpy(driver->path, device, sizeof(driver->path)-1);
+			return 1;
+		}
 		break;
 	case DRIVER_STIR:
 		driver->dops = &stir_driver_ops;
-		needpath = 0;
-		break;
-	default:
-		return 0;
-	}
-
-	if (!needpath)
 		return 1;
-
-	if (device == NULL)
-		return 0;
+		break;
+	}
 	
-	strncpy(driver->path,device,sizeof(driver->path)-1);
-	return 1;
+	free(driver);
+	return 0;
 }
 
 int

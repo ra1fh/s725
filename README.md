@@ -12,7 +12,13 @@ This project is based on s710 from http://code.google.com/p/s710/.
 Building s725 requires libusb 1.0 or later, GNU make, flex,
 yacc/byacc/bison:
 
+	# Debian/Ubuntu
+	apt-get install gcc make flex bison pkg-config libusb-1.0-0-dev
 	make
+
+    # OpenBSD
+	pkg_add libusb1 gmake
+	gmake
 
 ### Usage
 
@@ -24,7 +30,7 @@ type to be used to communicate with the device.  Valid values are
 Examples:
 
 	s725get -d serial -D /dev/cua00
-	s725get -D /dev/ttyUSB0
+	s725get -d serial -D /dev/ttyUSB0
 
 You must have write permissions for the device file to use s725get.
 
@@ -55,16 +61,16 @@ the following settings:
 #### serial
 
 This driver is known to work with:
-  - Builtin Fujitsu Lifebook T4215 IR interface in IrDA mode (see BIOS
-	setup) that is accessed like a standard serial port
   - Serial infrared adapter IRXON SMH-IR220 attached via USB serial adapter
 	http://www.irxon.com/english/products/ir220_e.htm
+  - Builtin Fujitsu Lifebook T4215 IR interface in IrDA mode (see BIOS
+	setup) that is accessed like a standard serial port
 
 #### stir
 
 This stir driver handles SigmaTel STIr4200 based USB IrDA bridges via
 libusb. This means it doesn't use the Linux IrDA stack.
 
-Current status: Basic sending and receiving works, but there are
-always several bit errors and resulting crc failures. It's quite
-possible that this device can't handle Polar communication correctly.
+Current status: Sending works. Receiving always returns bit errors and
+CRC errors. It looks like this device can't handle Polar communication
+correctly.

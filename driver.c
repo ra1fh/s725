@@ -40,6 +40,7 @@ driver_init(const int driver_type, const char *device)
 	}
 	
 	free(driver);
+	driver = NULL;
 	return 0;
 }
 
@@ -80,6 +81,8 @@ driver_close()
 	if (driver->dops->close)
 		ret = driver->dops->close(driver);
 
+	free(driver);
+	driver = NULL;
 	return ret;
 }
 

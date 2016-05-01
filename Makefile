@@ -43,6 +43,8 @@ CPPFLAGS+= $(DEFS) -I. $(INCDIRS)
 ifeq ($(shell pkg-config --exists libusb-1.0 && echo yes), yes)
 	CFLAGS += $(shell pkg-config --cflags libusb-1.0)
 	LIBS   += $(shell pkg-config --libs libusb-1.0)	
+else
+	ERROR  := $(error libusb not found)
 endif
 
 ifneq (, $(filter Linux GNU GNU/%, $(shell uname -s)))

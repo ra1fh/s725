@@ -256,104 +256,106 @@ packet_recv()
 
 	r = driver_read_byte(&c);
 	if (r <= 0)
-		return NULL;
+		goto error;
 	packet_crc_process(&crc, c);
 	buf_putc(buf, c);
 	log_info("packet_recv: type=%02hhx", c);
 
-	if (c == S725_RESPONSE) {
-		r = driver_read_byte(&id);
-		if (r <= 0)
-			return NULL;
-		buf_putc(buf, id);
-		log_info("packet_recv: subtype=%02hhx", id);
-		packet_crc_process(&crc, id);
-		r = driver_read_byte(&c);
-		if (r <= 0)
-			return NULL;
-		packet_crc_process(&crc, c);
-		buf_putc(buf, c);
-		log_info("packet_recv: first=%02x remaining=%02x",
-				  c & 0x80,
-				  c & 0x7f);
-		r = packet_recv_short(&len);
-		if (r <= 0)
-			return NULL;
-		log_info("packet_recv: len=%04hx (%hu)", len, len);
-		packet_crc_process(&crc, len >> 8);
-		packet_crc_process(&crc, len & 0xff);
-		buf_putc(buf, len >> 8);
-		buf_putc(buf, len & 0xff);
-		if (r > 0) {
-			len -= 5;
-			siz = (len <= 1) ? 0 : len - 1;
-			p = calloc(1,sizeof(packet_t) + siz);
+	if (c != S725_RESPONSE) {
+		log_info("packet_recv: type != S725_RESPONSE");
+		goto error;
+	}
 
-			if (!p) {
-				log_info("calloc(1,%ld): %s",
-						 (long)(sizeof(packet_t) + siz), strerror(errno));
-			} else {
-				p->type   = S725_RESPONSE;
-				p->id     = id;
-				p->length = len;
-				for (i = 0; i < len; i++) {
-					r = driver_read_byte(&p->data[i]);
-					packet_crc_process(&crc, p->data[i]);
-					buf_putc(buf, p->data[i]);
-					if (r <= 0) {
-						log_error("driver_read_byte failed");
-						free(p);
-						p = NULL;
-						break;
-					}
-				}
-				if (p != NULL) {
-					r = packet_recv_short(&p->checksum);
-					if (r <= 0) {
-						log_error("packet_recv: recv_short failed");
-						free(p);
-						p = NULL;
-						return NULL;
-					}
+	r = driver_read_byte(&id);
+	if (r <= 0)
+		goto error;
+	
+	buf_putc(buf, id);
+	log_info("packet_recv: subtype=%02hhx", id);
+	packet_crc_process(&crc, id);
 
-					buf_putc(buf, p->checksum >> 8);
-					buf_putc(buf, p->checksum & 0xff);
+	r = driver_read_byte(&c);
+	if (r <= 0)
+		goto error;
+	packet_crc_process(&crc, c);
+	buf_putc(buf, c);
+	log_info("packet_recv: first=%02x remaining=%02x", c & 0x80, c & 0x7f);
+	
+	r = packet_recv_short(&len);
+	if (r <= 0)
+		goto error;
+	log_info("packet_recv: len=%04hx (%hu)", len, len);
+	packet_crc_process(&crc, len >> 8);
+	packet_crc_process(&crc, len & 0xff);
+	buf_putc(buf, len >> 8);
+	buf_putc(buf, len & 0xff);
+	len -= 5;
+	siz = (len <= 1) ? 0 : len - 1;
 
-					if (log_get_level() >= 2) {
-						log_info("packet_recv: hexdump len=%zu", buf_len(buf));
-						log_hexdump(buf_get(buf), buf_len(buf));
-					}
-					
-					if (crc != p->checksum) {
-	    
-						/* 
-						   if the checksum failed, we have to jettison the whole 
-						   transmission.  i don't yet know how to request a single
-						   packet to be resent by the watch.  all we can do is 
-						   cancel the download and have the user attempt it again.
-						*/
-	    
-						log_error("packet_recv: CRC failed [id %d, length %d]", 
-								  p->id, p->length );
-						free(p);
-						p = NULL;
-						log_info("packet_recv: reading remaining bytes");
-						while (1) {
-							r = driver_read_byte(&c);
-							if (r <= 0) {
-								log_error("packet_recv: driver_read_byte failed (recv_short)");
-								return NULL;
-							}
-							log_info("packet_recv: got byte: %hhx", c);
-						}
-					}
+	p = calloc(1, sizeof(packet_t) + siz);
+	if (!p)
+		goto error;
 
-					log_info("packet_recv: crc correct");
-				}
-			}
+	p->type   = S725_RESPONSE;
+	p->id     = id;
+	p->length = len;
+	for (i = 0; i < len; i++) {
+		r = driver_read_byte(&p->data[i]);
+		packet_crc_process(&crc, p->data[i]);
+		buf_putc(buf, p->data[i]);
+		if (r <= 0) {
+			log_error("driver_read_byte failed");
+			free(p);
+			p = NULL;
+			break;
 		}
 	}
+
+	if (p == NULL)
+		goto error;
+	
+	r = packet_recv_short(&p->checksum);
+	if (r <= 0) {
+		log_error("packet_recv: recv_short failed");
+		free(p);
+		p = NULL;
+		return NULL;
+	}
+
+	buf_putc(buf, p->checksum >> 8);
+	buf_putc(buf, p->checksum & 0xff);
+
+	if (log_get_level() >= 2) {
+		log_info("packet_recv: hexdump len=%zu", buf_len(buf));
+		log_hexdump(buf_get(buf), buf_len(buf));
+	}
+	
+	if (crc != p->checksum) {
+		/* discard the whole transmission on crc mismatch,
+		   there is no way to retransmit a single packet   */
+		log_error("packet_recv: CRC failed [id %d, length %d]", 
+				  p->id, p->length );
+		log_info("packet_recv: reading remaining bytes");
+		while (1) {
+			r = driver_read_byte(&c);
+			if (r <= 0) {
+				log_error("packet_recv: driver_read_byte failed (recv_short)");
+				break;
+			}
+			log_info("packet_recv: got byte: %hhx", c);
+		}
+		goto error;
+	}
+
+	log_info("packet_recv: crc correct");
 	return p;
+	
+error:
+	log_info("packet_recv: error");
+	buf_free(buf);
+	if (p)
+		free(p);
+	return NULL;
 }
 
 /*
@@ -401,9 +403,8 @@ packet_serialize(packet_t *p, BUF *buf)
 	buf_putc(buf, 0);
 	buf_putc(buf, l >> 8);
 	buf_putc(buf, l & 0xff);
-	if (p->length > 0) {
+	if (p->length > 0)
 		buf_append(buf, p->data, p->length);
-	}
 	buf_putc(buf, p->checksum >> 8);
 	buf_putc(buf, p->checksum & 0xff);
 
@@ -413,7 +414,6 @@ packet_serialize(packet_t *p, BUF *buf)
 /* 
  * Thanks to Stefan Kleditzsch for decoding the checksum algorithm!
  */
-
 
 /*
  * crc16 checksum function with polynom=0x8005

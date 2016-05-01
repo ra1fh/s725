@@ -10,6 +10,7 @@
 #include <poll.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
@@ -186,6 +187,7 @@ serial_close(struct s725_driver *d)
 	 */
  	usleep(50000);
 	close(DP(d)->fd);
+	free(DP(d));
 	return 0;
 }
 	

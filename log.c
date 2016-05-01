@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <vis.h>
 
 #include "log.h"
 
@@ -78,23 +77,20 @@ log_close(void)
 static void
 log_vwrite(int newline, const char *msg, va_list ap)
 {
-	char *fmt, *out;
+	char *fmt;
 
 	if (vasprintf(&fmt, msg, ap) == -1)
 		exit(1);
-	if (stravis(&out, fmt, VIS_OCTAL|VIS_CSTYLE|VIS_SAFE) == -1)
-		exit(1);
 
 	if (log_file != NULL) {
-		if (fprintf(log_file, "%s%s", out, newline ? "\n" : "") == -1)
+		if (fprintf(log_file, "%s%s", fmt, newline ? "\n" : "") == -1)
 			exit(1);
 		fflush(log_file);
 	} else {
-		if (fprintf(stderr, "%s%s", out, newline ? "\n" : "") == -1)
+		if (fprintf(stderr, "%s%s", fmt, newline ? "\n" : "") == -1)
 			exit(1);
 	}
 	
-	free(out);
 	free(fmt);
 }
 
@@ -194,7 +190,7 @@ log_debug(const char *msg, ...)
 }
 
 /* Log a critical error with error string and die. */
-__dead void
+void
 fatal(const char *msg, ...)
 {
 	char *fmt;
@@ -208,7 +204,7 @@ fatal(const char *msg, ...)
 }
 
 /* Log a critical error and die. */
-__dead void
+void
 fatalx(const char *msg, ...)
 {
 	char *fmt;

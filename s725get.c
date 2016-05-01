@@ -74,7 +74,7 @@ main(int argc, char **argv)
 	int				  opt_listen = 0;
 	int				  opt_listen_bytes = 0;
 	const char		 *opt_byte = NULL;
-	int				  opt_count = 1;
+	long long			  opt_count = 1;
 	int				  ch;
 	int				  ok;
 
@@ -120,8 +120,8 @@ main(int argc, char **argv)
 			opt_listen_bytes = 1;
 			break;
 		case 'n':
-			opt_count = strtonum(optarg, 1, 100, NULL);
-			if (opt_count == 0)
+			opt_count = strtoll(optarg, NULL, 10);
+			if (opt_count < 0 || opt_count > 100)
 				opt_count = 1;
 			break;
 		case 'r':

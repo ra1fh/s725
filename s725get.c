@@ -248,6 +248,7 @@ write_bytes(const char *byte, int count)
 		log_writeln("");
 	}
 	driver_write(buf);
+	buf_free(buf);
 }
 
 static void
@@ -313,5 +314,6 @@ write_hrm_data(BUF *files, const char* directory, int format_hrm, int format_raw
 			}
 		}
 	}
+	buf_free(buf);
 	log_writeln("Saved %d file%s", count, (count==1) ? "" : "s");
 }

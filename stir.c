@@ -510,6 +510,7 @@ stir_send_packet(struct s725_driver *d, BUF *buf)
 
 	stir_fifo_txwait(data->handle, buf_len(txbuf));
 	
+	buf_free(txbuf);
 	return err;
 }
 

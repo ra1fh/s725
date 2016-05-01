@@ -251,8 +251,6 @@ packet_recv()
 	unsigned short crc = 0;
 
 	buf = buf_alloc(0);
-	if (buf == NULL)
-		return NULL;
 
 	r = driver_read_byte(&c);
 	if (r <= 0)

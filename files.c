@@ -17,117 +17,27 @@
 #include "packet.h"
 #include "utils.h"
 
+static int files_transfer(BUF *files, int packet_type);
+
 /* 
- * This function reads the user's workout data from the watch and stores
- * it in a structure which is nothing more than a giant byte array.  The
- * function, unfortunately, is error-prone because we don't have any good
- * way to check integrity of the data.  
+ * Send read request and receive training data. Each packet contains
+ * the number of remaining packets.  To proceed with transfer, a
+ * continue request has to be sent.
  */
 int
 files_get(BUF *files)
 {
-	packet_t *p;
-	int p_remaining = 1;
-	int p_first = 0;
-	unsigned short p_bytes = 0;
-	unsigned int start;
-
-	buf_empty(files);
-
-	log_write("Reading ");
-	log_prep_hash_marks();
-	log_print_hash_marks(0, 0);
-
-	p = packet_get_response(S725_GET_FILES);
-	
-	if (p == NULL) {
-		log_write("[error]");
-		return 0;
-	}
-
-	while (p != NULL) {
-		/* Bit 8: first packet, Bit 7-1: packets remaining */
-		p_first		= packet_data(p)[0] & 0x80;
-		p_remaining = packet_data(p)[0] & 0x7f;
-		if (p_first) {
-			/* Byte 1 and 2 of first packet: total size in bytes */
-			p_bytes = (packet_data(p)[1] << 8) + packet_data(p)[2];
-			/* Byte 3 and 4 of first packet: magic bytes */
-			start = 5;
-		} else {
-			start = 1;
-		}
-
-		unsigned char *pd = packet_data(p);
-		int len = packet_len(p);
-		buf_append(files, &pd[start], len - start);
-
-		if (p_bytes > 0) 
-			log_print_hash_marks(buf_len(files) * 100 / p_bytes, p_bytes);
-
-		/* free this packet and get the next one */
-		free(p);
-		p = packet_get_response(S725_CONTINUE_TRANSFER);
-	}
-
-	log_write("\n");
-
-	if (p_remaining != 0)
-		return 0;
-
-	return 1;
+	return files_transfer(files, S725_GET_FILES);
 }
 
 /* 
- * Listen for incoming training data. The send operation
- * has to be initiated from the watch
+ * Listen for incoming training data. The send operation has to be
+ * initiated from the watch
  */
 int
 files_listen(BUF *files)
 {
-	packet_t *p;
-	int p_remaining = 1;
-	int p_first = 0;
-	unsigned int start;
-
-	buf_empty(files);
-
-	log_write("Listening ");
-
-	p = packet_listen();
-	
-	if (p == NULL) {
-		log_write("[error]");
-		return 0;
-	}
-
-	while (p != NULL) {
-		/* Bit 8: first packet, Bit 7-1: packets remaining */
-		p_first		= packet_data(p)[0] & 0x80;
-		p_remaining = packet_data(p)[0] & 0x7f;
-		if (p_first) {
-			/* Byte 1 and 2 of first packet: total size in bytes */
-			/* Byte 3 and 4 of first packet: magic bytes */
-			start = 5;
-		} else {
-			start = 1;
-		}
-
-		unsigned char *pd = packet_data(p);
-		int len = packet_len(p);
-		buf_append(files, &pd[start], len - start);
-
-		/* free this packet and get the next one */
-		free(p);
-		p = packet_listen();
-	}
-
-	log_write("\n\n");
-
-	if (p_remaining != 0)
-		return 0;
-
-	return 1;
+	return files_transfer(files, S725_LISTEN);
 }
 
 int
@@ -170,4 +80,60 @@ files_timestamp (BUF *f, size_t offset)
 	ft         = mktime(&t);
   
 	return ft;
+}
+
+static int
+files_transfer(BUF *files, int packet_type)
+{
+	packet_t *p;
+	int p_remaining = 1;
+	int p_first = 0;
+	unsigned short p_bytes = 0;
+	unsigned int start;
+
+	buf_empty(files);
+
+	log_write("Reading ");
+	log_prep_hash_marks();
+	log_print_hash_marks(0, 0);
+
+	while (p_remaining) {
+		p = packet_get_response(packet_type);
+		if (p == NULL) {
+			log_write("[error]");
+			return 0;
+		}
+		/* Bit 8: first packet, Bit 7-1: packets remaining */
+		p_first		= packet_data(p)[0] & 0x80;
+		p_remaining = packet_data(p)[0] & 0x7f;
+		if (p_first) {
+			/* Byte 1 and 2 of first packet: total size in bytes */
+			p_bytes = (packet_data(p)[1] << 8) + packet_data(p)[2];
+			/* Byte 3 and 4 of first packet: magic bytes */
+			start = 5;
+		} else {
+			start = 1;
+		}
+
+		unsigned char *pd = packet_data(p);
+		int len = packet_len(p);
+		buf_append(files, &pd[start], len - start);
+
+		if (p_bytes > 0) 
+			log_print_hash_marks(buf_len(files) * 100 / p_bytes, p_bytes);
+
+		if (packet_type == S725_GET_FILES)
+			packet_type = S725_CONTINUE_TRANSFER;
+
+		/* free this packet and get the next one */
+		free(p);
+	}
+
+	if (p_remaining != 0) {
+		log_write("[error]");
+		return 0;
+	}
+
+	log_write("\n");
+	return 1;
 }

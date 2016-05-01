@@ -175,9 +175,17 @@ packet_get(S725_Packet_Index idx)
 packet_t *
 packet_get_response(S725_Packet_Index request)
 {
-	packet_t *send;
+	packet_t *send = NULL;
 	packet_t *recv = NULL;
 
+	if (request == S725_LISTEN) {
+		while (1) {
+			recv = packet_recv();
+			if (recv)
+				return(recv);
+		}
+	}
+	
 	send = packet_get(request);
 
 	if (send != NULL && packet_send(send) > 0)
@@ -195,22 +203,6 @@ packet_get_response(S725_Packet_Index request)
 	}
 
 	return recv;
-}
-
-/* listen for incoming data */
-packet_t *
-packet_listen()
-{
-	packet_t *recv = NULL;
-
-	while (1) {
-		recv = packet_recv();
-		if (recv)
-			return(recv);
-	}
-			
-
-	return NULL;
 }
 
 /* This file needs to be rewritten.  */

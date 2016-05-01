@@ -50,7 +50,8 @@ typedef enum {
 	S725_SET_REMINDER_5,
 	S725_SET_REMINDER_6,
 	S725_SET_REMINDER_7,
-	S725_HARD_RESET
+	S725_HARD_RESET,
+	S725_LISTEN = 255,
 } S725_Packet_Index;
 
 int       packet_send(packet_t *packet);

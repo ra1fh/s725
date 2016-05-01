@@ -168,7 +168,8 @@ buf_get(BUF *b)
 void
 buf_empty(BUF *b)
 {
-	memset(b->cb_buf, 0, b->cb_size);
+	if (b->cb_buf)
+		memset(b->cb_buf, 0, b->cb_size);
 	b->cb_len = 0;
 }
 

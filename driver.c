@@ -89,9 +89,7 @@ driver_close()
 int
 driver_name_to_type(const char *driver_name)
 {
-	if (!strcmp(driver_name, "ir")) {
-		return DRIVER_IR;
-	} else if (!strcmp(driver_name, "serial")) {
+	if (!strcmp(driver_name, "serial")) {
 		return DRIVER_SERIAL;
 	} else if (!strcmp(driver_name, "stir")) {
 		return DRIVER_STIR;
@@ -104,9 +102,6 @@ const char*
 driver_type_to_name(int driver_type)
 {
 	switch (driver_type) {
-	case DRIVER_IR:
-		return "ir";
-		break;
 	case DRIVER_SERIAL:
 		return "serial";
 		break;

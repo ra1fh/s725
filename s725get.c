@@ -64,7 +64,7 @@ main(int argc, char **argv)
 	char			  inipath[PATH_MAX];
 	const char		 *opt_directory_name = NULL;
 	const char		 *opt_driver_name = NULL;
-	int				  opt_driver_type = DRIVER_IR;
+	int				  opt_driver_type = DRIVER_SERIAL;
 	const char		 *opt_device_name = NULL;
 	int				  opt_hrm = 0;
 	BUF				 *files;
@@ -146,7 +146,7 @@ main(int argc, char **argv)
 		}
 	}
 
-	if (opt_driver_type == DRIVER_IR || opt_driver_type == DRIVER_SERIAL) {
+	if (opt_driver_type == DRIVER_SERIAL) {
 		if (!opt_device_name)
 			fatalx("device name required for %s driver",
 				   driver_type_to_name(opt_driver_type));

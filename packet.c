@@ -346,6 +346,7 @@ packet_recv()
 	}
 
 	log_info("packet_recv: crc correct");
+	buf_free(buf);
 	return p;
 	
 error:

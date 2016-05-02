@@ -733,6 +733,7 @@ workout_free (workout_t *w)
 		if (w->dist_data)  free(w->dist_data);
 		if (w->cad_data)   free(w->cad_data);
 		if (w->power_data) free(w->power_data);
+		if (w->hr_data)    free(w->hr_data);
 		free(w);
 	}
 }

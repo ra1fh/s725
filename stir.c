@@ -109,11 +109,11 @@ enum StirFifoCtlMask {
 	FIFOCTL_EMPTY = 0x04,
 };
 
-#define S725_STIR_VENDOR_ID   0x066f
-#define S725_STIR_PRODUCT_ID  0x4200
-#define S725_STIR_INTERFACE   0
-#define FIFO_REGS_SIZE		3
-#define STIR_FIFO_SIZE		4096
+#define S725_STIR_VENDOR_ID  0x066f
+#define S725_STIR_PRODUCT_ID 0x4200
+#define S725_STIR_INTERFACE 0
+#define FIFO_REGS_SIZE 3
+#define STIR_FIFO_SIZE 4096
 
 
 int
@@ -268,7 +268,6 @@ stir_init_port(struct s725_driver *d)
 		log_error("stir_init_port: %s", libusb_strerror(err));
 		return -1;
 	}
-
 
 	log_info("stir_init_port: *** DPLL");
 	err = stir_write_reg(data->handle, REG_DPLL, 0x15);

@@ -12,8 +12,8 @@
 struct s725_driver_ops;
 
 struct s725_driver {
-	char					path[PATH_MAX];
-	void				   *data;
+	char path[PATH_MAX];
+	void *data;
 	struct s725_driver_ops *dops;
 };
 

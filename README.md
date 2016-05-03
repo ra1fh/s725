@@ -26,6 +26,7 @@ s725 has been tested on the following systems:
   - OpenBSD-current (May 2016) amd64 with USB/FTDI/IRXON
   - OpenBSD 5.9 sparc64 with USB/FTDI/IRXON
   - OpenBSD 5.9 hppa with serial/IRXON
+  - OpenBSD 5.9 alpha with serial/IRXON
 
 ### Usage
 

@@ -20,6 +20,13 @@ yacc/byacc/bison:
 	pkg_add libusb1 gmake
 	gmake
 
+s725 has been tested on the following systems:
+  - Ubuntu 16.04 amd64 with both USB/FTDI/IRXON and builtin IR
+  - Debian GNU/Linux 8.0 amd64 with USB/FTDI/IRXON
+  - OpenBSD-current (May 2016) amd64 with USB/FTDI/IRXON
+  - OpenBSD 5.9 sparc64 with USB/FTDI/IRXON
+  - OpenBSD 5.9 hppa with serial/IRXON
+
 ### Usage
 
 The s725get utility takes a -d argument which specifies the driver

@@ -17,6 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <sys/stat.h>
+
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>
@@ -60,6 +62,7 @@ usage(void) {
 int
 main(int argc, char **argv)
 {
+	struct			  stat s;
 	char			  path[PATH_MAX];
 	char			  inipath[PATH_MAX];
 	const char		 *opt_directory_name = NULL;
@@ -170,7 +173,16 @@ main(int argc, char **argv)
 
 	if (!opt_directory_name)
 		fatalx("could not resolve path. check -f");
+	
+	if (access(opt_directory_name, R_OK | W_OK | X_OK) != 0)
+		fatalx("unable to access directory: %s", opt_directory_name);
+	
+	if (stat(opt_directory_name, &s) != 0)
+		fatalx("unable to stat directory: %s", opt_directory_name);
 
+	if (! S_ISDIR(s.st_mode))
+		fatalx("not a directory directory: %s", opt_directory_name);
+	
 	if (driver_open() < 0)
 		fatalx("unable to open port: %s", strerror(errno));
 

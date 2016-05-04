@@ -22,6 +22,7 @@
 #include "driver.h"
 
 void yyerror (char const *s);
+int yylex();
 extern int yylineno;
 
 int conf_driver_type = DRIVER_UNKNOWN;

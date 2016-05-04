@@ -16,14 +16,19 @@ yacc/byacc/bison:
 	apt-get install gcc make flex bison pkg-config libusb-1.0-0-dev
 	make
 
+	# Fedora
+	dnf install gcc make flex byacc libusb-devel
+	make
+
     # OpenBSD
 	pkg_add libusb1 gmake
 	gmake
 
 s725 has been tested on the following systems:
   - Ubuntu 16.04 amd64 with both USB/FTDI/IRXON and builtin IR
+  - Fedora 23 amd64 with both USB/FTDI/IRXON and builtin IR
   - Debian GNU/Linux 8.0 amd64 with USB/FTDI/IRXON
-  - OpenBSD-current (May 2016) amd64 with USB/FTDI/IRXON
+  - OpenBSD-current amd64 (May 2016) with USB/FTDI/IRXON
   - OpenBSD 5.9 sparc64 with USB/FTDI/IRXON
   - OpenBSD 5.9 hppa with serial/IRXON
   - OpenBSD 5.9 alpha with serial/IRXON
@@ -63,6 +68,31 @@ the following settings:
 
     # output directory
     directory = "/home/user/polar/data/"
+
+There are two ways to transfer data from the S725X watch:
+Put the watch into "Connect" mode, put it next to the IR interface
+and run s725get like this:
+
+    [user@host ~]$ s725get -d serial -D /dev/ttyUSB0 -f tmp
+    Reading [19163 bytes] [########################################] [  100%]
+    File 01: Saved as /home/user/tmp/20160503T180809.03621.txt
+    File 02: Saved as /home/user/tmp/20160501T215815.00149.txt
+    File 03: Saved as /home/user/tmp/20160428T173144.01881.txt
+    File 04: Saved as /home/user/tmp/20160426T181506.01677.txt
+    File 05: Saved as /home/user/tmp/20160302T102256.07165.txt
+    File 06: Saved as /home/user/tmp/20151103T140918.01129.txt
+    File 07: Saved as /home/user/tmp/20150829T093131.03392.txt
+    File 08: Saved as /home/user/tmp/20150813T180106.00149.txt
+    Saved 8 files
+
+This way the IR interface sends a "get" command and then waits for
+data to arrive.  The second option is to run s725get in listen mode,
+put the S725X watch into connect mode and select the file to transfer:
+
+    [user@host ~]$ s725get -d serial -D /dev/ttyUSB0 -f tmp -l
+    Reading [456 bytes] [########################################] [  100%]
+    File 01: Saved as /home/user/tmp/20160501T215815.00149.txt
+    Saved 1 files
 
 ### Drivers
 

@@ -18,8 +18,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#if defined(__LINUX__)
+#if defined(__linux__)
+#include <sys/socket.h>
 #include <linux/irda.h>
+#include <errno.h>
+#include <string.h>
+#include <unistd.h>
 #endif
 
 #include "driver_int.h"
@@ -38,7 +42,7 @@ struct s725_driver_ops irda_driver_ops = {
 	.close = irda_close,
 };
 
-#if defined(__LINUX__)
+#if defined(__linux__)
 
 struct driver_private {
 	int fd;
@@ -47,7 +51,8 @@ struct driver_private {
 #define DP(x) ((struct driver_private *)x->data)
 #define IRDA_DEVICES
 
-int irda_discover(int fd)
+static int
+irda_discover(int fd)
 {
     struct irda_device_list *list;
     unsigned char buf[sizeof(struct irda_device_info) * (IRDA_DEVICES + 1)];
@@ -62,7 +67,7 @@ int irda_discover(int fd)
 	log_info("irda_discover: starting discovery");
 
 	if (! getsockopt(fd, SOL_IRLMP, IRLMP_ENUMDEVICES, buf, &len)) {
-		log_error("irda_discover: getsockopt failed (%s)", sterror(errno));
+		log_error("irda_discover: getsockopt failed (%s)", strerror(errno));
 		return -1;
 	}
 
@@ -85,7 +90,32 @@ int irda_discover(int fd)
 static int  
 irda_init(struct s725_driver *d)
 {
-	DP(d)->fd = socket(AF_IRDA, SOCK_STREAM, 0);
+	struct sockaddr_irda peer;
+	int daddr;
+	int fd;
+	
+	fd = socket(AF_IRDA, SOCK_STREAM, 0);
+	daddr = irda_discover(fd);
+	if (daddr < 0) {
+		close(fd);
+		return -1;
+	}
+
+	peer.sir_family = AF_IRDA;
+	peer.sir_lsap_sel = LSAP_ANY;
+	peer.sir_addr = daddr;
+	strcpy(peer.sir_name, "HRM");
+	
+	if (connect(fd, (struct sockaddr*) &peer, sizeof(struct sockaddr_irda)) == -1) {
+		log_error("irda_init: connect failed");
+		close(fd);
+		return -1;
+	}
+
+	d->data = xmalloc(sizeof(struct driver_private));
+	DP(d)->fd = fd;
+
+	log_info("irda_init: connected");
 	return DP(d)->fd;
 }
 

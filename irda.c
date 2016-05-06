@@ -122,6 +122,10 @@ irda_init(struct s725_driver *d)
 static int
 irda_close(struct s725_driver *d)
 {
+	log_info("irda_close");
+	close(DP(d)->fd);
+	xfree(DP(d));
+
 	return 0;
 }
 	

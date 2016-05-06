@@ -18,6 +18,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#if defined(__LINUX__)
+#include <linux/irda.h>
+#endif
+
 #include "driver_int.h"
 #include "log.h"
 #include "xmalloc.h"
@@ -34,12 +38,46 @@ struct s725_driver_ops irda_driver_ops = {
 	.close = irda_close,
 };
 
+#if defined(__LINUX__)
+
 struct driver_private {
 	int fd;
 };
 
 #define DP(x) ((struct driver_private *)x->data)
+#define IRDA_DEVICES
 
+int irda_discover(int fd)
+{
+    struct irda_device_list *list;
+    unsigned char buf[sizeof(struct irda_device_info) * (IRDA_DEVICES + 1)];
+    unsigned int len;
+
+    len = sizeof(struct irda_device_list) * (IRDA_DEVICES + 1);
+
+	log_info("len=%d, sizeof(buf)=%d", len, sizeof(buf));
+	
+    list = (struct irda_device_list *) buf;
+        
+	log_info("irda_discover: starting discovery");
+
+	if (! getsockopt(fd, SOL_IRLMP, IRLMP_ENUMDEVICES, buf, &len)) {
+		log_error("irda_discover: getsockopt failed (%s)", sterror(errno));
+		return -1;
+	}
+
+	if (len <= 0) {
+		log_error("irda_discover: no devices found");
+		return -1;
+	}
+		
+	log_info("irda_discover: len=%d", list->len);
+	log_info("irda_discover: name=%s", list->dev[0].info);
+	log_info("irda_discover: daddr=%08x", list->dev[0].daddr);
+	log_info("irda_discover: saddr=%08x", list->dev[0].saddr);
+
+    return list->dev[0].daddr;
+}
 
 /* 
  * initialize the irda port
@@ -47,7 +85,8 @@ struct driver_private {
 static int  
 irda_init(struct s725_driver *d)
 {
-	return 0;
+	DP(d)->fd = socket(AF_IRDA, SOCK_STREAM, 0);
+	return DP(d)->fd;
 }
 
 static int
@@ -68,3 +107,34 @@ irda_write(struct s725_driver *d, BUF *buf)
 	return 0;
 }
 
+#else
+
+static int
+irda_init(struct s725_driver *d)
+{
+	fatalx("irda driver not supported");
+	return -1;
+}
+
+static int
+irda_close(struct s725_driver *d)
+{
+	fatalx("irda driver not supported");
+	return -1;
+}
+	
+static int
+irda_read_byte(struct s725_driver *d, unsigned char *byte)
+{
+	fatalx("irda driver not supported");
+	return -1;
+}
+
+static int
+irda_write(struct s725_driver *d, BUF *buf)
+{
+	fatalx("irda driver not supported");
+	return -1;
+}
+
+#endif

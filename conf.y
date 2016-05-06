@@ -3,6 +3,7 @@
 %token TOKDIRECTORY
 %token TOKDRIVER
 %token TOKSERIAL
+%token TOKIRDA
 %token TOKSTIR
 %token EOL
 
@@ -66,6 +67,7 @@ driver:			TOKDRIVER '=' driver_type
 
 driver_type:	TOKSERIAL { $$ = DRIVER_SERIAL; }
 		| 		TOKSTIR   { $$ = DRIVER_STIR; }
+		|		TOKIRDA   { $$ = DRIVER_IRDA; }
 				;
 
 

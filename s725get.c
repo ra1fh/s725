@@ -46,7 +46,7 @@ usage(void) {
 	printf("usage: s725get [-hHrv] [-b byte] [-d driver] [-D device] [-f directory]\n");
 	printf("        -b byte        send test byte (for debugging)\n");
 	printf("        -n count       send n test bytes (for debugging)\n");
-	printf("        -d driver      driver type: serial or stir. (default: serial).\n");
+	printf("        -d driver      driver type: serial, stir, irda. (default: serial).\n");
 	printf("        -D device      device file. required for serial and ir driver.\n");
 	printf("        -f directory   directory where output files are written to.\n");
 	printf("                       default: current working directory\n");

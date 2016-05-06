@@ -17,6 +17,7 @@ driver    { return TOKDRIVER;    }
 directory { return TOKDIRECTORY; }
 serial    { return TOKSERIAL;    }
 stir      { return TOKSTIR;      }
+irda      { return TOKIRDA;      }
 .         { return *yytext;      }
 
 \"[^\"\n]+\" { yylval.sval = yytext; return STRING; }

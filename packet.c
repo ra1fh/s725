@@ -224,9 +224,12 @@ packet_send(packet_t *p)
 
 	buf = buf_alloc(0);
 	p->checksum = packet_checksum(p);
-  
-	packet_serialize(p, buf);
 
+	if (driver_uses_frames()) {
+		packet_serialize(p, buf);
+	} else {
+		buf_putc(buf, p->id);
+	}
 	ret = driver_write(buf);
 
 	buf_free(buf);
@@ -234,11 +237,57 @@ packet_send(packet_t *p)
 	return ret != -1;
 }
 
+packet_t * packet_recv_noframes();
+packet_t * packet_recv_frames();
+
+packet_t *
+packet_recv()
+{
+	if (driver_uses_frames()) {
+		return packet_recv_frames();
+	} else {
+		return packet_recv_noframes();
+	}
+}
+
+packet_t *
+packet_recv_noframes()
+{
+	BUF *buf = NULL;
+	packet_t *p = NULL;
+
+	buf = buf_alloc(1024);
+	
+	if (driver_read(buf) <= 0) {
+		log_info("packet_recv_noframes: driver_read returned no data");
+		goto error;
+	}
+
+	p = calloc(1, sizeof(packet_t) + buf_len(buf));
+	if (!p)
+		goto error;
+
+	p->type   = S725_RESPONSE;
+	p->id     = buf_get(buf)[0];
+	p->length = buf_len(buf);
+	memcpy(p->data, buf_get(buf) + 1, buf_len(buf) - 1);
+
+	buf_free(buf);
+	return p;
+
+error:
+	log_info("packet_recv: error");
+	buf_free(buf);
+	if (p)
+		free(p);
+	return NULL;
+}
+
 /*
  * receive a packet from the S725 driver (allocates memory)
  */
 packet_t *
-packet_recv()
+packet_recv_frames()
 {
 	BUF *buf;
 	int r;

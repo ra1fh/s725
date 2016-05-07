@@ -22,6 +22,8 @@
 #include <sys/socket.h>
 #include <linux/irda.h>
 #include <errno.h>
+#include <poll.h>
+#include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 #endif
@@ -30,14 +32,18 @@
 #include "log.h"
 #include "xmalloc.h"
 
+#define IRDA_READ_TRIES 10
+
 static int irda_init(struct s725_driver *d);
 static int irda_write(struct s725_driver *d, BUF *buf);
+static int irda_read(struct s725_driver *d, BUF *buf);
 static int irda_read_byte(struct s725_driver *d, unsigned char *byte);
 static int irda_close(struct s725_driver *d);
 
 struct s725_driver_ops irda_driver_ops = {
 	.init = irda_init,
-	.read = irda_read_byte,
+	.read = irda_read,
+	.read_byte = irda_read_byte,
 	.write = irda_write,
 	.close = irda_close,
 };
@@ -51,8 +57,8 @@ struct driver_private {
 #define DP(x) ((struct driver_private *)x->data)
 #define IRDA_DEVICES
 
-static int
-irda_discover(int fd)
+static unsigned int
+irda_discover(int fd, uint32_t *daddr)
 {
     struct irda_device_list *list;
     unsigned char buf[sizeof(struct irda_device_info) * (IRDA_DEVICES + 1)];
@@ -64,16 +70,17 @@ irda_discover(int fd)
 	
     list = (struct irda_device_list *) buf;
         
-	log_info("irda_discover: starting discovery");
-
-	if (! getsockopt(fd, SOL_IRLMP, IRLMP_ENUMDEVICES, buf, &len)) {
+	log_info("irda_discover: starting discovery on fd=%d", fd);
+	
+	
+	if (getsockopt(fd, SOL_IRLMP, IRLMP_ENUMDEVICES, buf, &len) != 0) {
 		log_error("irda_discover: getsockopt failed (%s)", strerror(errno));
-		return -1;
+		return 0;
 	}
 
 	if (len <= 0) {
 		log_error("irda_discover: no devices found");
-		return -1;
+		return 0;
 	}
 		
 	log_info("irda_discover: len=%d", list->len);
@@ -81,7 +88,9 @@ irda_discover(int fd)
 	log_info("irda_discover: daddr=%08x", list->dev[0].daddr);
 	log_info("irda_discover: saddr=%08x", list->dev[0].saddr);
 
-    return list->dev[0].daddr;
+	*daddr = list->dev[0].daddr;
+	
+    return 1;
 }
 
 /* 
@@ -91,16 +100,19 @@ static int
 irda_init(struct s725_driver *d)
 {
 	struct sockaddr_irda peer;
-	int daddr;
+	uint32_t daddr;
 	int fd;
+
+	memset(&peer, 0, sizeof(peer));
 	
 	fd = socket(AF_IRDA, SOCK_STREAM, 0);
-	daddr = irda_discover(fd);
-	if (daddr < 0) {
+	if (! irda_discover(fd, &daddr)) {
 		close(fd);
 		return -1;
 	}
 
+	log_info("irda_init: connecting to %x08x", daddr);
+	
 	peer.sir_family = AF_IRDA;
 	peer.sir_lsap_sel = LSAP_ANY;
 	peer.sir_addr = daddr;
@@ -128,17 +140,72 @@ irda_close(struct s725_driver *d)
 
 	return 0;
 }
-	
+
+static int
+irda_read(struct s725_driver *d, BUF *buf)
+{
+	int r;
+
+	log_info("irda_read: buf=%08x, buf len=%d", (long long) buf, buf_len(buf));
+	r = recv(DP(d)->fd, buf_get(buf), buf_capacity(buf), 0);
+	if (r >= 0) {
+		buf_set_len(buf, r);
+	}
+	return r;
+}
+
 static int
 irda_read_byte(struct s725_driver *d, unsigned char *byte)
 {
-	return 0;
+	struct pollfd pfd[1];
+	int nready;
+
+	pfd[0].fd = DP(d)->fd;
+	pfd[0].events = POLLIN;
+
+	int r = 0;
+	int ntries = IRDA_READ_TRIES;
+
+	do {
+		nready = poll(pfd, 1, 100);
+		if (nready == -1) {
+			r = 0;
+			log_info("irda_read_byte: poll returned %s", strerror(errno));
+		}
+		if (nready == 0) {
+			r = 0;
+			log_debug("irda_read_byte: poll timeout");
+		}
+		if ((pfd[0].revents & (POLLERR|POLLNVAL))) {
+			r = 0;
+			log_error("irda_read_byte: poll bad fd %d", pfd[0].fd);
+		}
+		if ((pfd[0].revents & (POLLIN|POLLHUP))) {
+			r = read(DP(d)->fd,byte,1);
+			if (r == -1) {
+				log_error("irda_read_byte: error %s", strerror(errno));
+				r = 0;
+			}
+		}
+	} while (!r && ntries--);
+
+	return r;
 }
 
 static int
 irda_write(struct s725_driver *d, BUF *buf)
 {
-	return 0;
+	int ret = 0;
+	
+	log_info("irda_write: len=%zu", buf_len(buf));
+
+	if (log_get_level() >= 2)
+		log_hexdump(buf_get(buf), buf_len(buf));
+	
+	if ((write(DP(d)->fd, buf_get(buf), buf_len(buf)) < 0))
+		ret = -1;
+
+	return ret;
 }
 
 #else
@@ -157,6 +224,13 @@ irda_close(struct s725_driver *d)
 	return -1;
 }
 	
+static int
+irda_read(struct s725_driver *d, BUF *buf)
+{
+	fatalx("irda driver not supported");
+	return -1;
+}
+
 static int
 irda_read_byte(struct s725_driver *d, unsigned char *byte)
 {

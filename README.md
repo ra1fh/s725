@@ -37,8 +37,8 @@ s725 has been tested on the following systems:
 
 The s725get utility takes a -d argument which specifies the driver
 type to be used to communicate with the device.  Valid values are
-"serial", "stir".  A device filename is required for -d values of
-"serial", but not for "stir". The default is -d serial.
+"serial", "stir", "irda". A device filename is required for -d values
+of "serial", but not for "stir" or "irda". The default is -d serial.
 
 Examples:
 
@@ -60,7 +60,7 @@ the following settings:
 	# ~/.s725rc
 	#
 
-	# driver. possible values: serial, stir
+	# driver. possible values: serial, stir, irda
 	driver = serial
 
 	# device file name
@@ -112,3 +112,29 @@ libusb. This means it doesn't use the Linux IrDA stack.
 Current status: Sending works. Receiving always returns bit errors and
 CRC errors. It looks like this device can't handle Polar communication
 correctly.
+
+#### irda
+
+This driver uses the Linux IrDA stack to talk to a Polar HRM.
+
+The S725X has two modes. The mode used by the serial or stir driver
+respond to request frames containing a type field, len field and
+crc. In IrDA mode, the watch responds to discovery request from the
+IrDA host. The IrDA stack takes care of ensuring data transmissing,
+framing and checksums.
+
+After enabling the infrared interface on the Linux host and running
+irattach, the watch should appear in /proc/net/irda/discovery:
+
+	$ cat /proc/net/irda/discovery 
+	IrLMP: Discovery log:
+	
+	nickname: Polar S725X, hint: 0x8204, saddr: 0xa1a6cc7c, daddr: 0x3fcbdfde
+
+When this works, the s725get tool can be used like this:
+
+	$ s725get -d irda -t
+	2016-05-07T10:24:46
+
+This driver is work in progress and currently only works for simple
+requests, (like -t to query the time and date).

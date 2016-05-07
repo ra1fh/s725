@@ -222,12 +222,32 @@ buf_append(BUF *b, const void *data, size_t len)
 }
 
 /*
+ * Sets the size of the buffer that is being used.
+ */
+void
+buf_set_len(BUF *b, size_t len)
+{
+	if (len <= b->cb_size)
+		b->cb_len = len;
+}
+
+/*
  * Returns the size of the buffer that is being used.
  */
 size_t
 buf_len(BUF *b)
 {
 	return (b->cb_len);
+}
+
+
+/*
+ * Returns the capacity of the buffer that is being used.
+ */
+size_t
+buf_capacity(BUF *b)
+{
+	return (b->cb_size);
 }
 
 /*

@@ -37,7 +37,8 @@ static int stir_write_reg(libusb_device_handle *handle, uint16_t reg, uint8_t va
 	
 struct s725_driver_ops stir_driver_ops = {
 	.init = stir_init_port,
-	.read = stir_read_byte,
+	.read = NULL,
+	.read_byte = stir_read_byte,
 	.write = stir_send_packet,
 	.close = stir_shutdown_port,
 };

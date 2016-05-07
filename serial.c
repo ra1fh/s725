@@ -43,7 +43,8 @@ static int serial_close(struct s725_driver *d);
 
 struct s725_driver_ops serial_driver_ops = {
 	.init = serial_init,
-	.read = serial_read_byte,
+	.read = NULL,
+	.read_byte = serial_read_byte,
 	.write = serial_write,
 	.close = serial_close,
 };

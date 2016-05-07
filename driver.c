@@ -31,15 +31,18 @@ driver_init(const int driver_type, const char *device)
 		if (device != NULL) {
 			driver->dops = &serial_driver_ops;
 			strncpy(driver->path, device, sizeof(driver->path)-1);
+			driver->uses_frames = 1;
 			return 1;
 		}
 		break;
 	case DRIVER_STIR:
 		driver->dops = &stir_driver_ops;
+		driver->uses_frames = 1;
 		return 1;
 		break;
 	case DRIVER_IRDA:
 		driver->dops = &irda_driver_ops;
+		driver->uses_frames = 0;
 		return 1;
 		break;
 	}
@@ -59,10 +62,19 @@ driver_write(BUF *buf)
 }
 
 int
-driver_read_byte(unsigned char *b)
+driver_read(BUF *buf)
 {
 	if (driver->dops->read)
-		return driver->dops->read(driver, b);
+		return driver->dops->read(driver, buf);
+	else
+		return 0;
+}
+
+int
+driver_read_byte(unsigned char *b)
+{
+	if (driver->dops->read_byte)
+		return driver->dops->read_byte(driver, b);
 	else
 		return 0;
 }
@@ -89,6 +101,12 @@ driver_close()
 	free(driver);
 	driver = NULL;
 	return ret;
+}
+
+int
+driver_uses_frames()
+{
+	return driver->uses_frames;
 }
 
 int

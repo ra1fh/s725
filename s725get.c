@@ -38,13 +38,13 @@
 #include "workout.h"
 #include "workout_print.h"
 
-static void write_hrm_data(BUF *files, const char *directory, int format_hrm, int format_raw);
+static void write_hrm_data(BUF *files, const char *directory, int format_hrm, int format_raw, int format_tcx);
 static void listen_bytes();
 static void write_bytes(const char *byte, int n);
 
 static void
 usage(void) {
-	printf("usage: s725get [-hHrv] [-b byte] [-d driver] [-D device] [-f directory]\n");
+	printf("usage: s725get [-hHrvtT] [-b byte] [-d driver] [-D device] [-f directory]\n");
 	printf("        -b byte        send test byte (for debugging)\n");
 	printf("        -n count       send n test bytes (for debugging)\n");
 	printf("        -d driver      driver type: serial, stir, irda. (default: serial).\n");
@@ -53,9 +53,10 @@ usage(void) {
 	printf("                       default: current working directory\n");
 	printf("        -l             listen for incoming data\n");
 	printf("        -L             listen for incoming bytes (for debugging)\n");
-	printf("        -t             get time\n");
+	printf("        -T             get time\n");
 	printf("        -H             write HRM format\n");
 	printf("        -r             write raw srd format\n");
+	printf("        -t             write tcx format\n");
 	printf("        -u             get user data\n");
 	printf("        -v             verbose output\n");
 }
@@ -74,6 +75,7 @@ main(int argc, char **argv)
 	BUF				 *files;
 	int				  opt_raw = 0;
 	int				  opt_time = 0;
+	int               opt_tcx = 0;
 	int				  opt_user = 0;
 	int				  opt_listen = 0;
 	int				  opt_listen_bytes = 0;
@@ -97,7 +99,7 @@ main(int argc, char **argv)
 			opt_directory_name = conf_directory_name;
 	}
 
-	while ((ch = getopt(argc, argv, "b:d:D:f:hHlLn:rtuv")) != -1) {
+	while ((ch = getopt(argc, argv, "b:d:D:f:hHlLn:rtTuv")) != -1) {
 		switch (ch) {
 		case 'b':
 			opt_byte = optarg;;
@@ -131,8 +133,11 @@ main(int argc, char **argv)
 		case 'r':
 			opt_raw = 1;
 			break;
-		case 't':
+		case 'T':
 			opt_time = 1;
+			break;
+		case 't':
+			opt_tcx = 1;
 			break;
 		case 'u':
 			opt_user = 1;
@@ -215,11 +220,11 @@ main(int argc, char **argv)
 
 	if (opt_listen) {
 		if (files_listen(files)) {
-			write_hrm_data(files, opt_directory_name, opt_hrm, opt_raw);
+			write_hrm_data(files, opt_directory_name, opt_hrm, opt_raw, opt_tcx);
 		}
 	} else {
 		if (files_get(files)) {
-			write_hrm_data(files, opt_directory_name, opt_hrm, opt_raw);
+			write_hrm_data(files, opt_directory_name, opt_hrm, opt_raw, opt_tcx);
 		}
 	}
 
@@ -265,7 +270,7 @@ write_bytes(const char *byte, int count)
 }
 
 static void
-write_hrm_data(BUF *files, const char* directory, int format_hrm, int format_raw)
+write_hrm_data(BUF *files, const char* directory, int format_hrm, int format_raw, int format_tcx)
 {
 	const char *suffix;
 	workout_t *w;
@@ -275,13 +280,15 @@ write_hrm_data(BUF *files, const char* directory, int format_hrm, int format_raw
 	int	offset;
 	int count;
 
-	if (format_raw)
+	if (format_raw) {
 		suffix = "srd";
-	else
-		if (format_hrm)
-			suffix = "hrm";
-		else
-			suffix = "txt";
+	} else if (format_hrm) {
+		suffix = "hrm";
+	} else if (format_tcx) {
+		suffix = "tcx";
+	} else {
+		suffix = "txt";
+	}
 
 	buf = buf_alloc(0);
 	offset = 0;
@@ -312,10 +319,13 @@ write_hrm_data(BUF *files, const char* directory, int format_hrm, int format_raw
 				f = fopen(fnbuf, "w");
 				if (f) {
 					log_writeln("File %02d: Saved as %s", count, fnbuf);
-					if (format_hrm)
+					if (format_hrm) {
 						workout_print_hrm(w, f);
-					else
+					} else if (format_tcx) {
+						workout_print_tcx(w, f);
+					} else {
 						workout_print_txt(w, f, S725_WORKOUT_FULL);
+					}
 					fclose(f);
 				} else {
 					log_writeln("File %02d: Unable to save %s: %s",

@@ -39,64 +39,64 @@ static packet_t gPacket[] = {
 	/* name                type          id    len checksum data          */
 	
 	/* S725_GET_OVERVIEW */
-	{ "get overview",      S725_REQUEST, 0x15, 0, 0x3790, { 0 } },
+	{ "get overview",      S725_REQUEST, 0x15, 0, 0, { 0 } },
 
 	/* S725_GET_USER */
-	{ "get user",          S725_REQUEST, 0x06, 0, 0x4b96, { 0 } },
+	{ "get user",          S725_REQUEST, 0x06, 0, 0, { 0 } },
 
 	/* S725_GET_WATCH */
-	{ "get watch",         S725_REQUEST, 0x02, 0, 0x9b95, { 0 } },
+	{ "get watch",         S725_REQUEST, 0x02, 0, 0, { 0 } },
 
 	/* S725_GET_LOGO */
-	{ "get logo",          S725_REQUEST, 0x10, 0, 0x7390, { 0 } },
+	{ "get logo",          S725_REQUEST, 0x10, 0, 0, { 0 } },
 
 	/* S725_GET_BIKE */
-	{ "get bike",          S725_REQUEST, 0x14, 0, 0xa393, { 0 } },
+	{ "get bike",          S725_REQUEST, 0x14, 0, 0, { 0 } },
 
 	/* S725_GET_EXERCISE_1 */
-	{ "get exercise 1",    S725_REQUEST, 0x04, 1, 0x1d2f, { 0x11 } },
+	{ "get exercise 1",    S725_REQUEST, 0x04, 1, 0, { 0x11 } },
 
 	/* S725_GET_EXERCISE_2 */
-	{ "get exercise 2",    S725_REQUEST, 0x04, 1, 0x1d85, { 0x22 } },
+	{ "get exercise 2",    S725_REQUEST, 0x04, 1, 0, { 0x22 } },
 
 	/* S725_GET_EXERCISE_3 */
-	{ "get exercise 3",    S725_REQUEST, 0x04, 1, 0x1de3, { 0x33 } },
+	{ "get exercise 3",    S725_REQUEST, 0x04, 1, 0, { 0x33 } },
 
 	/* S725_GET_EXERCISE_4 */
-	{ "get exercise 4",    S725_REQUEST, 0x04, 1, 0x1cd1, { 0x44 } },
+	{ "get exercise 4",    S725_REQUEST, 0x04, 1, 0, { 0x44 } },
 
 	/* S725_GET_EXERCISE_5 */
-	{ "get exercise 5",    S725_REQUEST, 0x04, 1, 0x1cb7, { 0x55 } },
+	{ "get exercise 5",    S725_REQUEST, 0x04, 1, 0, { 0x55 } },
 
 	/* S725_GET_REMINDER_1 */
-	{ "get reminder 1",    S725_REQUEST, 0x0e, 1, 0x1e79, { 0x00 } },
+	{ "get reminder 1",    S725_REQUEST, 0x0e, 1, 0, { 0x00 } },
 
 	/* S725_GET_REMINDER_2 */
-	{ "get reminder 2",    S725_REQUEST, 0x0e, 1, 0x9e7c, { 0x01 } },
+	{ "get reminder 2",    S725_REQUEST, 0x0e, 1, 0, { 0x01 } },
 
 	/* S725_GET_REMINDER_3 */
-	{ "get reminder 3",    S725_REQUEST, 0x0e, 1, 0x9e76, { 0x02 } },
+	{ "get reminder 3",    S725_REQUEST, 0x0e, 1, 0, { 0x02 } },
 
 	/* S725_GET_REMINDER_4 */
-	{ "get reminder 4",    S725_REQUEST, 0x0e, 1, 0x1e73, { 0x03 } },
+	{ "get reminder 4",    S725_REQUEST, 0x0e, 1, 0, { 0x03 } },
 
 	/* S725_GET_REMINDER_5 */
-	{ "get reminder 5",    S725_REQUEST, 0x0e, 1, 0x9e62, { 0x04 } },
+	{ "get reminder 5",    S725_REQUEST, 0x0e, 1, 0, { 0x04 } },
 
 	/* S725_GET_REMINDER_6 */
-	{ "get reminder 6",    S725_REQUEST, 0x0e, 1, 0x1e67, { 0x05 } },
+	{ "get reminder 6",    S725_REQUEST, 0x0e, 1, 0, { 0x05 } },
 
 	/* S725_GET_REMINDER_7 */
-	{ "get reminder 7",    S725_REQUEST, 0x0e, 1, 0x1e6d, { 0x06 } },
+	{ "get reminder 7",    S725_REQUEST, 0x0e, 1, 0, { 0x06 } },
 
 	/* S725_GET_FILES */
-	{ "get files",         S725_REQUEST, 0x0b, 0, 0x2f95, { 0 } },   
+	{ "get files",         S725_REQUEST, 0x0b, 0, 0, { 0 } },   
 
 	/* S725_CONTINUE_TRANSFER */
-	{ "continue transfer", S725_REQUEST, 0x16, 0, 0x0b90, { 0 } },
+	{ "continue transfer", S725_REQUEST, 0x16, 0, 0, { 0 } },
 
 	/* S725_CLOSE_CONNECTION */
-	{ "close connection",  S725_REQUEST, 0x0a, 0, 0xbb96, { 0 } },
+	{ "close connection",  S725_REQUEST, 0x0a, 0, 0, { 0 } },
 
 	/* S725_SET_USER */
 	{ "set user",          S725_REQUEST, 0x05, 21, 0, { 0 } },

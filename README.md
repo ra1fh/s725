@@ -25,13 +25,14 @@ yacc/byacc/bison:
 	gmake
 
 s725 has been tested on the following systems:
-  - Ubuntu 16.04 amd64 with both USB/FTDI/IRXON and builtin IR
-  - Fedora 23 amd64 with both USB/FTDI/IRXON and builtin IR
-  - Debian GNU/Linux 8.0 amd64 with USB/FTDI/IRXON
-  - OpenBSD-current amd64 (May 2016) with USB/FTDI/IRXON
-  - OpenBSD 5.9 sparc64 with USB/FTDI/IRXON
-  - OpenBSD 5.9 hppa with serial/IRXON
-  - OpenBSD 5.9 alpha with serial/IRXON
+
+ * Ubuntu 16.04 amd64 with both USB/FTDI/IRXON and builtin IR
+ * Fedora 23 amd64 with both USB/FTDI/IRXON and builtin IR
+ * Debian GNU/Linux 8.0 amd64 with USB/FTDI/IRXON
+ * OpenBSD-current amd64 (May 2016) with USB/FTDI/IRXON
+ * OpenBSD 5.9 sparc64 with USB/FTDI/IRXON
+ * OpenBSD 5.9 hppa with serial/IRXON
+ * OpenBSD 5.9 alpha with serial/IRXON
 
 ### Usage
 
@@ -102,10 +103,11 @@ put the S725X watch into connect mode and select the file to transfer:
 #### serial
 
 This driver is known to work with:
-  - Serial infrared adapter IRXON SMH-IR220 attached via USB serial adapter
-	http://www.irxon.com/english/products/ir220_e.htm
-  - Builtin Fujitsu Lifebook T4215 IR interface in IrDA mode (see BIOS
-	setup) that is accessed like a standard serial port
+
+ * Serial infrared adapter IRXON SMH-IR220 attached via USB serial adapter
+   http://www.irxon.com/english/products/ir220_e.htm
+ * Builtin Fujitsu Lifebook T4215 IR interface in IrDA mode (see BIOS
+   setup) that is accessed like a standard serial port
 
 #### stir
 

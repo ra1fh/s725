@@ -36,21 +36,6 @@
 #define S725_AM_PM_MODE_SET   1
 #define S725_AM_PM_MODE_PM    2
 
-#define S725_TIC_PLAIN        0
-#define S725_TIC_LINES        1
-#define S725_TIC_SHADE        2
-#define S725_TIC_SHADE_RED    (S725_TIC_SHADE | 4)
-#define S725_TIC_SHADE_GREEN  (S725_TIC_SHADE | 8)
-#define S725_TIC_SHADE_BLUE   (S725_TIC_SHADE | 16)
-
-#define S725_Y_AXIS_LEFT        -1
-#define S725_Y_AXIS_RIGHT        1
-
-#define S725_X_MARGIN         15
-#define S725_Y_MARGIN         15
-
-#define S725_BLANK_SAMPLE_LIMIT  2880 /* 4 hours at 5 second intervals. */
-
 #define S725_HEADER_SIZE_S625X 130
 #define S725_HEADER_SIZE_S725  109
 #define S725_HEADER_SIZE_S610   78

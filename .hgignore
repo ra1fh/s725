@@ -9,7 +9,9 @@ Makefile$
 ^s725get$
 ^srdcat$
 ^srdhead$
+^srdtcx$
 ^conf.tab.c$
 ^conf.tab.h$
 ^lex.yy.c$
 ^parser$
+^\.depend$

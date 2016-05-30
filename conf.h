@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 extern int conf_driver_type;
+extern int conf_format_type;
 extern const char *conf_device_name;
 extern const char *conf_directory_name;
 extern const char *conf_filename;

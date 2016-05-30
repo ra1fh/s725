@@ -18,6 +18,11 @@ directory { return TOKDIRECTORY; }
 serial    { return TOKSERIAL;    }
 stir      { return TOKSTIR;      }
 irda      { return TOKIRDA;      }
+format    { return TOKFORMAT;    }
+hrm       { return TOKHRM;       }
+raw       { return TOKRAW;       }
+tcx       { return TOKTCX;       }
+txt       { return TOKTXT;       }
 .         { return *yytext;      }
 
 \"[^\"\n]+\" { yylval.sval = yytext; return STRING; }

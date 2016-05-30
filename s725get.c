@@ -33,30 +33,24 @@
 #include "conf.h"
 #include "driver.h"
 #include "files.h"
+#include "format.h"
 #include "log.h"
 #include "misc.h"
 #include "workout.h"
 #include "workout_print.h"
 
-static void write_hrm_data(BUF *files, const char *directory, int format_hrm, int format_raw, int format_tcx);
-static void listen_bytes();
-static void write_bytes(const char *byte, int n);
+static void write_hrm_data(BUF *files, const char *directory, int format);
 
 static void
 usage(void) {
-	printf("usage: s725get [-hHrvtT] [-b byte] [-d driver] [-D device] [-f directory]\n");
-	printf("        -b byte        send test byte (for debugging)\n");
-	printf("        -n count       send n test bytes (for debugging)\n");
+	printf("usage: s725get [-hvt] [-d driver] [-D device] [-f directory] [-o format]\n");
 	printf("        -d driver      driver type: serial, stir, irda. (default: serial).\n");
 	printf("        -D device      device file. required for serial and ir driver.\n");
 	printf("        -f directory   directory where output files are written to.\n");
 	printf("                       default: current working directory\n");
 	printf("        -l             listen for incoming data\n");
-	printf("        -L             listen for incoming bytes (for debugging)\n");
-	printf("        -T             get time\n");
-	printf("        -H             write HRM format\n");
-	printf("        -r             write raw srd format\n");
-	printf("        -t             write tcx format\n");
+	printf("        -o format      output format: hrm, raw, tcx, txt\n");
+	printf("        -t             get time\n");
 	printf("        -u             get user data\n");
 	printf("        -v             verbose output\n");
 }
@@ -71,16 +65,11 @@ main(int argc, char **argv)
 	const char		 *opt_driver_name = NULL;
 	int				  opt_driver_type = DRIVER_SERIAL;
 	const char		 *opt_device_name = NULL;
-	int				  opt_hrm = 0;
+	int				  opt_format = FORMAT_UNKNOWN;
 	BUF				 *files;
-	int				  opt_raw = 0;
 	int				  opt_time = 0;
-	int               opt_tcx = 0;
 	int				  opt_user = 0;
 	int				  opt_listen = 0;
-	int				  opt_listen_bytes = 0;
-	const char		 *opt_byte = NULL;
-	long long			  opt_count = 1;
 	int				  ch;
 	int				  ok;
 
@@ -93,17 +82,16 @@ main(int argc, char **argv)
 			exit(1);
 		if (conf_driver_type != DRIVER_UNKNOWN)
 			opt_driver_type = conf_driver_type;
+		if (conf_format_type != FORMAT_UNKNOWN)
+			opt_format = conf_format_type;
 		if (conf_device_name != NULL)
 			opt_device_name = conf_device_name;
 		if (conf_directory_name != NULL)
 			opt_directory_name = conf_directory_name;
 	}
 
-	while ((ch = getopt(argc, argv, "b:d:D:f:hHlLn:rtTuv")) != -1) {
+	while ((ch = getopt(argc, argv, "d:D:f:hlo:rtuv")) != -1) {
 		switch (ch) {
-		case 'b':
-			opt_byte = optarg;;
-			break;
 		case 'd':
 			opt_driver_name = optarg;
 			opt_driver_type = driver_name_to_type(opt_driver_name);
@@ -116,28 +104,16 @@ main(int argc, char **argv)
 		case 'f':
 			opt_directory_name = optarg;
 			break;
-		case 'H':
-			opt_hrm = 1;
-			break;
 		case 'l':
 			opt_listen = 1;
 			break;
-		case 'L':
-			opt_listen_bytes = 1;
-			break;
-		case 'n':
-			opt_count = strtoll(optarg, NULL, 10);
-			if (opt_count < 0 || opt_count > 100)
-				opt_count = 1;
-			break;
-		case 'r':
-			opt_raw = 1;
-			break;
-		case 'T':
-			opt_time = 1;
+		case 'o':
+			opt_format = format_from_str(optarg);
+			if (opt_format == FORMAT_UNKNOWN)
+				fatalx("unknown output format: %s", optarg);
 			break;
 		case 't':
-			opt_tcx = 1;
+			opt_time = 1;
 			break;
 		case 'u':
 			opt_user = 1;
@@ -159,6 +135,11 @@ main(int argc, char **argv)
 		if (!opt_device_name)
 			fatalx("device name required for %s driver",
 				   driver_type_to_name(opt_driver_type));
+	}
+
+	if (! (opt_time || opt_user)) {
+		if (opt_format == FORMAT_UNKNOWN) 
+			fatalx("no output format specified");
 	}
 	
 	log_info("driver name: %s", driver_type_to_name(opt_driver_type));
@@ -192,18 +173,6 @@ main(int argc, char **argv)
 	if (driver_open() < 0)
 		fatalx("unable to open port: %s", strerror(errno));
 
-	if (opt_byte) {
-		write_bytes(opt_byte, opt_count);
-		driver_close();
-		return 0;
-	}
-
-	if (opt_listen_bytes) {
-		listen_bytes();
-		driver_close();
-		return 0;
-	}
-	
 	if (opt_time) {
 		time_get();
 		driver_close();
@@ -220,11 +189,11 @@ main(int argc, char **argv)
 
 	if (opt_listen) {
 		if (files_listen(files)) {
-			write_hrm_data(files, opt_directory_name, opt_hrm, opt_raw, opt_tcx);
+			write_hrm_data(files, opt_directory_name, opt_format);
 		}
 	} else {
 		if (files_get(files)) {
-			write_hrm_data(files, opt_directory_name, opt_hrm, opt_raw, opt_tcx);
+			write_hrm_data(files, opt_directory_name, opt_format);
 		}
 	}
 
@@ -234,43 +203,7 @@ main(int argc, char **argv)
 }
 
 static void
-listen_bytes()
-{
-	unsigned char byte;
-	while (1) {
-		if (driver_read_byte(&byte)) {
-			log_write("0x%02hhx %c\n", byte, byte);
-		}
-	}
-}
-
-static void
-write_bytes(const char *byte, int count)
-{
-	BUF	*buf;
-	unsigned char mask = 128;
-	unsigned char out;
-	int c;
-	int i;
-	sscanf(byte, "%u", &c);
-	out = (unsigned char) c;
-	buf = buf_alloc(0);
-	for (i = 0; i < count; ++i)
-		buf_putc(buf, out);
-	if (log_get_level() > 0) {
-		log_writeln("byte: %hhu", out);
-		log_write("bits: ");
-		for (; mask; mask >>=1) {
-			log_write("%u", out & mask ? 1 : 0);
-		}
-		log_writeln("");
-	}
-	driver_write(buf);
-	buf_free(buf);
-}
-
-static void
-write_hrm_data(BUF *files, const char* directory, int format_hrm, int format_raw, int format_tcx)
+write_hrm_data(BUF *files, const char* directory, int format)
 {
 	const char *suffix;
 	workout_t *w;
@@ -280,16 +213,8 @@ write_hrm_data(BUF *files, const char* directory, int format_hrm, int format_raw
 	int	offset;
 	int count;
 
-	if (format_raw) {
-		suffix = "srd";
-	} else if (format_hrm) {
-		suffix = "hrm";
-	} else if (format_tcx) {
-		suffix = "tcx";
-	} else {
-		suffix = "txt";
-	}
-
+	suffix = format_to_str(format);
+	
 	buf = buf_alloc(0);
 	offset = 0;
 	count = 0;
@@ -303,7 +228,7 @@ write_hrm_data(BUF *files, const char* directory, int format_hrm, int format_raw
 		snprintf(fnbuf, sizeof(fnbuf), "%s/%s.%05zd.%s",
 				 directory, tmbuf, buf_len(buf), suffix);
 
-		if (format_raw) {
+		if (format == FORMAT_RAW) {
 			f = fopen(fnbuf, "w");
 			if (f) {
 				log_writeln("File %02d: Saved as %s", count, fnbuf);
@@ -319,11 +244,11 @@ write_hrm_data(BUF *files, const char* directory, int format_hrm, int format_raw
 				f = fopen(fnbuf, "w");
 				if (f) {
 					log_writeln("File %02d: Saved as %s", count, fnbuf);
-					if (format_hrm) {
+					if (format == FORMAT_HRM) {
 						workout_print_hrm(w, f);
-					} else if (format_tcx) {
+					} else if (format == FORMAT_TCX) {
 						workout_print_tcx(w, f);
-					} else {
+					} else if (format == FORMAT_TXT) {
 						workout_print_txt(w, f, S725_WORKOUT_FULL);
 					}
 					fclose(f);

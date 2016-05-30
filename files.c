@@ -100,7 +100,7 @@ files_transfer(BUF *files, int packet_type)
 	while (p_remaining) {
 		p = packet_get_response(packet_type);
 		if (p == NULL) {
-			log_write("[error]");
+			log_write("[error]\n");
 			return 0;
 		}
 		/* Bit 8: first packet, Bit 7-1: packets remaining */
@@ -130,7 +130,7 @@ files_transfer(BUF *files, int packet_type)
 	}
 
 	if (p_remaining != 0) {
-		log_write("[error]");
+		log_write("[error]\n");
 		return 0;
 	}
 

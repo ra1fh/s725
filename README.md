@@ -42,8 +42,8 @@ of "serial", but not for "stir" or "irda". The default is -d serial.
 
 Examples:
 
-	s725get -d serial -D /dev/cua00
-	s725get -d serial -D /dev/ttyUSB0
+	s725get -d serial -D /dev/cua00 -o tcx
+	s725get -d serial -D /dev/ttyUSB0 -o hrm
 
 You must have write permissions for the device file to use s725get.
 
@@ -69,11 +69,14 @@ the following settings:
     # output directory
     directory = "/home/user/polar/data/"
 
+    # output format
+    format = tcx
+
 There are two ways to transfer data from the S725X watch:
 Put the watch into "Connect" mode, put it next to the IR interface
 and run s725get like this:
 
-    [user@host ~]$ s725get -d serial -D /dev/ttyUSB0 -f tmp
+    [user@host ~]$ s725get -d serial -D /dev/ttyUSB0 -f tmp -o txt
     Reading [19163 bytes] [########################################] [  100%]
     File 01: Saved as /home/user/tmp/20160503T180809.03621.txt
     File 02: Saved as /home/user/tmp/20160501T215815.00149.txt
@@ -89,7 +92,7 @@ This way the IR interface sends a "get" command and then waits for
 data to arrive.  The second option is to run s725get in listen mode,
 put the S725X watch into connect mode and select the file to transfer:
 
-    [user@host ~]$ s725get -d serial -D /dev/ttyUSB0 -f tmp -l
+    [user@host ~]$ s725get -d serial -D /dev/ttyUSB0 -f tmp -o txt -l
     Reading [456 bytes] [########################################] [  100%]
     File 01: Saved as /home/user/tmp/20160501T215815.00149.txt
     Saved 1 files

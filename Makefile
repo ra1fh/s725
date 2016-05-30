@@ -21,7 +21,7 @@ PROGS= s725get srdcat srdtcx srdhead
 COMMON_SRCS= workout.c workout_label.c workout_print.c workout_time.c \
 	xmalloc.c buf.c log.c
 
-S725GET_SRCS= $(COMMON_SRCS) s725get.c driver.c files.c irda.c	\
+S725GET_SRCS= $(COMMON_SRCS) s725get.c driver.c files.c format.c irda.c \
 	misc.c packet.c serial.c stir.c
 
 SRDCAT_SRCS= $(COMMON_SRCS) srdcat.c

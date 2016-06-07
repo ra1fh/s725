@@ -10,7 +10,8 @@ addons:
     packages:
       - flex
       - bison
-      - libusb-1.0.0-dev
+      - libusb-1.0-0-dev
+      - pkg-config
   
 script:
   - make

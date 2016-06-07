@@ -1,0 +1,16 @@
+
+language: c
+
+compiler:
+  - clang
+  - gcc
+
+addons:
+  apt:
+    packages:
+      - flex
+      - bison
+      - libusb-1.0.0-dev
+  
+script:
+  - make

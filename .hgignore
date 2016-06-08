@@ -7,9 +7,7 @@ cscope.files
 Makefile$
 ^cscope\.(out|files)$
 ^s725get$
-^srdcat$
-^srdhead$
-^srdtcx$
+^hrmbabel$
 ^conf.tab.c$
 ^conf.tab.h$
 ^lex.yy.c$

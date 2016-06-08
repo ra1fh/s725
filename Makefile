@@ -16,7 +16,7 @@ INSTALLDIR= install -d
 INSTALLBIN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 555
 INSTALLMAN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 444
 
-PROGS= s725get srdcat srdtcx srdhead
+PROGS= s725get hrmbabel
 
 COMMON_SRCS= workout.c workout_label.c workout_print.c workout_time.c \
 	xmalloc.c buf.c log.c
@@ -24,16 +24,10 @@ COMMON_SRCS= workout.c workout_label.c workout_print.c workout_time.c \
 S725GET_SRCS= $(COMMON_SRCS) s725get.c driver.c files.c format.c irda.c \
 	misc.c packet.c serial.c stir.c
 
-SRDCAT_SRCS= $(COMMON_SRCS) srdcat.c
-
-SRDTCX_SRCS= $(COMMON_SRCS) srdtcx.c
-
-SRDHEAD_SRCS= $(COMMON_SRCS) srdhead.c
+HRMBABEL_SRCS= $(COMMON_SRCS) hrmbabel.c format.c
 
 S725GET_OBJS= $(patsubst %.c,%.o,$(S725GET_SRCS))
-SRDCAT_OBJS= $(patsubst %.c,%.o,$(SRDCAT_SRCS))
-SRDTCX_OBJS= $(patsubst %.c,%.o,$(SRDTCX_SRCS))
-SRDHEAD_OBJS= $(patsubst %.c,%.o,$(SRDHEAD_SRCS))
+HRMBABEL_OBJS= $(patsubst %.c,%.o,$(HRMBABEL_SRCS))
 PROG_OBJS= $(patsubst %,%.o,$(PROGS))
 CPPFLAGS+= $(DEFS) -I. $(INCDIRS)
 
@@ -62,7 +56,7 @@ CFLAGS+= -Wall
 CONF_OBJS= conf.tab.o lex.yy.o
 CONF_MISC= conf.tab.c conf.tab.h lex.yy.c parser parser.o
 
-CLEANFILES= $(S725GET_OBJS) $(SRDCAT_OBJS) $(SRDTCX_OBJS) $(SRDHEAD_OBJS)
+CLEANFILES= $(S725GET_OBJS) $(HRMBABEL_OBJS)
 CLEANFILES+= $(PROGS) $(PROG_OBJS) $(COMPAT_OBJS) .depend
 CLEANFILES+= $(CONF_OBJS) $(CONF_MISC)
 
@@ -89,13 +83,7 @@ parser.o: parser.c
 parser: $(CONF_OBJS) parser.o
 	$(CC) -o parser parser.o $(CONF_OBJS)
 
-srdcat: $(SRDCAT_OBJS) $(COMPAT_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $+ 
-
-srdtcx: $(SRDTCX_OBJS) $(COMPAT_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $+ 
-
-srdhead: $(SRDHEAD_OBJS) $(COMPAT_OBJS)
+hrmbabel: $(HRMBABEL_OBJS) $(COMPAT_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $+
 
 depend: $(S725GET_SRCS) $(SRDCAT_SRCS) $(SRDTCX_SRCS) $(SRDHEAD_SRCS)

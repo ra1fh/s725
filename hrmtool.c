@@ -1,4 +1,4 @@
-/* hrmbabel main */
+/* hrmtool main */
 
 /*
  * Copyright (C) 2016  Ralf Horstmann
@@ -41,7 +41,7 @@
 
 static void
 usage(void) {
-	printf("usage: hrmbabel [options] [-i intype] [-o outtype] [-f infile] [-F outfile]\n");
+	printf("usage: hrmtool [options] [-i intype] [-o outtype] [-f infile] [-F outfile]\n");
 	printf("        -i intype      input file type: hrm, srd, tcx, txt\n");
 	printf("        -o outtype     output file type: hrm, srd, tcx, txt\n");
 	printf("        -f infile      input file name\n");

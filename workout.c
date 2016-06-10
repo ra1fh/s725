@@ -39,6 +39,65 @@ static void workout_compute_speed_info(workout_t *w);
 static workout_t * workout_extract(unsigned char *buf, S725_HRM_Type type);
 static S725_HRM_Type workout_detect_hrm_type(unsigned char *buf, unsigned int bytes);
 
+workout_t *
+workout_read_buf(BUF *buf)
+{
+	int type;
+	workout_t *w = NULL;
+	off_t size;
+
+	if (buf_len(buf) < 2) {
+		log_error("workout_read_buf: buffer size too small");
+		return NULL;
+	}
+
+	size = buf_get(buf)[0] + (buf_get(buf)[1]<<8);
+	
+	if (size != buf_len(buf)) {
+		log_error("workout_read_buf: len does not match buffer len");
+		return NULL;
+	}
+
+	type = workout_detect_hrm_type(buf_get(buf), buf_len(buf));
+
+	if (type == S725_HRM_UNKNOWN) {
+		log_error("workout_read_buf: unable to auto-detect HRM type");
+		return NULL;
+	}
+
+	w = workout_extract(buf_get(buf), type);
+
+	return w;
+}
+
+workout_t *
+workout_read(char *filename)
+{
+	workout_t *w = NULL;
+	BUF *buf;
+
+	buf = buf_load(filename);
+	if (buf)
+		w = workout_read_buf(buf);
+
+	return w;
+}
+
+void
+workout_free (workout_t *w)
+{
+	if (w != NULL) {
+		if (w->lap_data)   free(w->lap_data);
+		if (w->alt_data)   free(w->alt_data);
+		if (w->speed_data) free(w->speed_data);
+		if (w->dist_data)  free(w->dist_data);
+		if (w->cad_data)   free(w->cad_data);
+		if (w->power_data) free(w->power_data);
+		if (w->hr_data)    free(w->hr_data);
+		free(w);
+	}
+}
+
 static void
 workout_read_preamble(workout_t *w, unsigned char *buf)
 {
@@ -583,50 +642,6 @@ workout_detect_hrm_type(unsigned char * buf, unsigned int bytes)
 	return type;
 }
 
-workout_t *
-workout_read_buf(BUF *buf)
-{
-	int type;
-	workout_t *w = NULL;
-	off_t size;
-
-	if (buf_len(buf) < 2) {
-		log_error("workout_read_buf: buffer size too small");
-		return NULL;
-	}
-
-	size = buf_get(buf)[0] + (buf_get(buf)[1]<<8);
-	
-	if (size != buf_len(buf)) {
-		log_error("workout_read_buf: len does not match buffer len");
-		return NULL;
-	}
-
-	type = workout_detect_hrm_type(buf_get(buf), buf_len(buf));
-
-	if (type == S725_HRM_UNKNOWN) {
-		log_error("workout_read_buf: unable to auto-detect HRM type");
-		return NULL;
-	}
-
-	w = workout_extract(buf_get(buf), type);
-
-	return w;
-}
-
-workout_t *
-workout_read(char *filename)
-{
-	workout_t *w = NULL;
-	BUF *buf;
-
-	buf = buf_load(filename);
-	if (buf)
-		w = workout_read_buf(buf);
-
-	return w;
-}
-
 int
 workout_header_size(workout_t *w)
 {
@@ -721,19 +736,4 @@ workout_allocate_sample_space (workout_t *w)
 #undef MAKEBUF
 
 	return ok;
-}
-
-void
-workout_free (workout_t *w)
-{
-	if (w != NULL) {
-		if (w->lap_data)   free(w->lap_data);
-		if (w->alt_data)   free(w->alt_data);
-		if (w->speed_data) free(w->speed_data);
-		if (w->dist_data)  free(w->dist_data);
-		if (w->cad_data)   free(w->cad_data);
-		if (w->power_data) free(w->power_data);
-		if (w->hr_data)    free(w->hr_data);
-		free(w);
-	}
 }

@@ -7,7 +7,7 @@
 %token TOKSTIR
 %token TOKFORMAT
 %token TOKHRM
-%token TOKRAW
+%token TOKSRD
 %token TOKTCX
 %token TOKTXT
 %token EOL
@@ -86,7 +86,7 @@ format:			TOKFORMAT '=' format_type
 				;
 
 format_type:	TOKHRM { $$ = FORMAT_HRM; }
-		|		TOKRAW { $$ = FORMAT_RAW; }
+		|		TOKSRD { $$ = FORMAT_SRD; }
 		|		TOKTCX { $$ = FORMAT_TCX; }
 		|		TOKTXT { $$ = FORMAT_TXT; }
 				;

@@ -20,7 +20,7 @@ stir      { return TOKSTIR;      }
 irda      { return TOKIRDA;      }
 format    { return TOKFORMAT;    }
 hrm       { return TOKHRM;       }
-raw       { return TOKRAW;       }
+srd       { return TOKSRD;       }
 tcx       { return TOKTCX;       }
 txt       { return TOKTXT;       }
 .         { return *yytext;      }

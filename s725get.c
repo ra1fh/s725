@@ -49,7 +49,7 @@ usage(void) {
 	printf("        -f directory   directory where output files are written to.\n");
 	printf("                       default: current working directory\n");
 	printf("        -l             listen for incoming data\n");
-	printf("        -o format      output format: hrm, raw, tcx, txt\n");
+	printf("        -o format      output format: hrm, srd, tcx, txt\n");
 	printf("        -t             get time\n");
 	printf("        -u             get user data\n");
 	printf("        -v             verbose output\n");
@@ -228,7 +228,7 @@ write_hrm_data(BUF *files, const char* directory, int format)
 		snprintf(fnbuf, sizeof(fnbuf), "%s/%s.%05zd.%s",
 				 directory, tmbuf, buf_len(buf), suffix);
 
-		if (format == FORMAT_RAW) {
+		if (format == FORMAT_SRD) {
 			f = fopen(fnbuf, "w");
 			if (f) {
 				log_writeln("File %02d: Saved as %s", count, fnbuf);

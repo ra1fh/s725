@@ -27,8 +27,8 @@ format_from_str(const char *format)
 {
 	if (!strcmp(format, "hrm")) {
 		return FORMAT_HRM;
-	} else if (!strcmp(format, "raw")) {
-		return FORMAT_RAW;
+	} else if (!strcmp(format, "srd")) {
+		return FORMAT_SRD;
 	} else if (!strcmp(format, "tcx")) {
 		return FORMAT_TCX;
 	} else if (!strcmp(format, "txt")) {
@@ -41,8 +41,8 @@ const char*
 format_to_str(int format)
 {
 	switch(format) {
-	case FORMAT_RAW:
-		return "raw";
+	case FORMAT_SRD:
+		return "srd";
 		break;
 	case FORMAT_TCX:
 		return "tcx";

@@ -42,8 +42,8 @@
 static void
 usage(void) {
 	printf("usage: hrmbabel [options] [-i intype] [-o outtype] [-f infile] [-F outfile]\n");
-	printf("        -i intype      input file type: hrm, raw, tcx, txt\n");
-	printf("        -o outtype     output file type: hrm, raw, tcx, txt\n");
+	printf("        -i intype      input file type: hrm, srd, tcx, txt\n");
+	printf("        -o outtype     output file type: hrm, srd, tcx, txt\n");
 	printf("        -f infile      input file name\n");
 	printf("        -F outfile     output file name\n");
 	printf("        -v             verbose output\n");
@@ -90,7 +90,7 @@ main(int argc, char **argv)
 	int input_type = format_from_str(opt_input_type);
 	int output_type = format_from_str(opt_output_type);
 
-	if (input_type != FORMAT_RAW) {
+	if (input_type != FORMAT_SRD) {
 		usage();
 		return 1;
 	}

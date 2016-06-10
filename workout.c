@@ -39,6 +39,8 @@ static void workout_compute_speed_info(workout_t *w);
 static workout_t * workout_extract(unsigned char *buf, S725_HRM_Type type);
 static S725_HRM_Type workout_detect_hrm_type(unsigned char *buf, unsigned int bytes);
 
+/**********************************************************************/
+
 workout_t *
 workout_read_buf(BUF *buf)
 {
@@ -96,6 +98,69 @@ workout_free (workout_t *w)
 		if (w->hr_data)    free(w->hr_data);
 		free(w);
 	}
+}
+
+/**********************************************************************/
+
+static workout_t *
+workout_extract(unsigned char *buf, S725_HRM_Type type)
+{
+	workout_t *w = NULL;
+	int ok = 1;
+
+	if ((w = calloc(1,sizeof(workout_t))) == NULL) {
+		log_error("extract_workout: calloc(%ld): %s",
+				  (long)sizeof(workout_t),strerror(errno));
+		return NULL;
+	}
+
+	/* Define the type of the HRM */
+	w->type = type;
+
+	/* Now extract the header data */
+	workout_read_preamble(w,buf);
+	workout_read_date(w,buf+10);
+	workout_read_duration(w,buf+15);
+
+	w->avg_hr        = buf[19];
+	w->max_hr        = buf[20];
+	w->laps          = BCD(buf[21]);
+	w->manual_laps   = BCD(buf[22]);
+	w->interval_mode = buf[23];
+	w->user_id       = BCD(buf[24]);
+
+	workout_read_units(w,buf[25]);
+
+	/* recording mode and interval */
+	if (w->type == S725_HRM_S610) {
+		w->mode = 0;
+		workout_read_recording_interval  (w,buf+26);
+		workout_read_hr_limits           (w,buf+28);
+		workout_read_bestlap_split       (w,buf+65);
+		workout_read_energy              (w,buf+69);
+		workout_read_cumulative_exercise (w,buf+75);
+	} else {
+		w->mode = buf[26];
+		workout_read_recording_interval  (w,buf+27);
+		workout_read_hr_limits           (w,buf+29);
+		workout_read_bestlap_split       (w,buf+66);
+		workout_read_energy              (w,buf+70);
+		workout_read_cumulative_exercise (w,buf+76);
+		workout_read_ride_info           (w,buf+79);
+	}
+
+	workout_read_laps(w, buf);
+	ok = workout_read_samples(w, buf);
+
+	/* never let a partially allocated workout get through. */
+	if (!ok) {
+		workout_free(w);
+		return NULL;
+	}
+
+	workout_compute_speed_info(w);
+
+	return w;
 }
 
 static void
@@ -519,70 +584,6 @@ workout_compute_speed_info(workout_t *w)
 		}
 		w->median_speed = avg;
 	}
-}
-
-/* 
- * don't call this unless you're sure it's going to be ok.
- */
-static workout_t *
-workout_extract(unsigned char *buf, S725_HRM_Type type)
-{
-	workout_t *w = NULL;
-	int ok = 1;
-
-	if ((w = calloc(1,sizeof(workout_t))) == NULL) {
-		log_error("extract_workout: calloc(%ld): %s",
-				  (long)sizeof(workout_t),strerror(errno));
-		return NULL;
-	}
-
-	/* Define the type of the HRM */
-	w->type = type;
-
-	/* Now extract the header data */
-	workout_read_preamble(w,buf);
-	workout_read_date(w,buf+10);
-	workout_read_duration(w,buf+15);
-
-	w->avg_hr        = buf[19];
-	w->max_hr        = buf[20];
-	w->laps          = BCD(buf[21]);
-	w->manual_laps   = BCD(buf[22]);
-	w->interval_mode = buf[23];
-	w->user_id       = BCD(buf[24]);
-
-	workout_read_units(w,buf[25]);
-
-	/* recording mode and interval */
-	if (w->type == S725_HRM_S610) {
-		w->mode = 0;
-		workout_read_recording_interval  (w,buf+26);
-		workout_read_hr_limits           (w,buf+28);
-		workout_read_bestlap_split       (w,buf+65);
-		workout_read_energy              (w,buf+69);
-		workout_read_cumulative_exercise (w,buf+75);
-	} else {
-		w->mode = buf[26];
-		workout_read_recording_interval  (w,buf+27);
-		workout_read_hr_limits           (w,buf+29);
-		workout_read_bestlap_split       (w,buf+66);
-		workout_read_energy              (w,buf+70);
-		workout_read_cumulative_exercise (w,buf+76);
-		workout_read_ride_info           (w,buf+79);
-	}
-
-	workout_read_laps(w, buf);
-	ok = workout_read_samples(w, buf);
-
-	/* never let a partially allocated workout get through. */
-	if (!ok) {
-		workout_free(w);
-		return NULL;
-	}
-
-	workout_compute_speed_info(w);
-
-	return w;
 }
 
 /* 

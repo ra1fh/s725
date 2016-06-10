@@ -97,6 +97,9 @@ install:
 	$(INSTALLBIN) $(PROGS) $(DESTDIR)$(PREFIX)/bin
 	$(INSTALLBIN) s725html $(DESTDIR)$(PREFIX)/bin
 
+check:
+	@cd tests && $(SHELL) runtests
+
 ifeq ($(wildcard .depend),.depend)
 include .depend
 endif

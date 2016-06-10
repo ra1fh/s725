@@ -1,0 +1,24 @@
+#!/bin/sh
+
+retval=0
+
+for t in *.srd; do
+	b=$(basename $t .srd)
+
+	for f in txt hrm tcx; do
+		if [ -f $b.$f ]; then
+			echo -n "$t -> $b.$f"
+			../hrmtool -i srd -f $t -o $f -F $b.out
+			if ! cmp -s $b.$f $b.out; then
+				echo " FAIL"
+				diff -u $b.$f $b.out
+				retval=1
+			else
+				echo " OK"
+			fi
+			rm $b.out
+		fi
+	done
+done
+
+exit $retval

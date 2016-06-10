@@ -18,3 +18,4 @@ addons:
   
 script:
   - make
+  - make check

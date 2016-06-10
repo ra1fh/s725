@@ -1,0 +1,2344 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<TrainingCenterDatabase
+    xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2
+    http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd">
+<Activities>
+  <Activity Sport="Running">
+    <Id>2016-05-22T11:42:25Z</Id>
+    <Lap StartTime="2016-05-22T11:42:25Z">
+      <TotalTimeSeconds>19821.00000</TotalTimeSeconds>
+      <DistanceMeters>0.00000</DistanceMeters>
+      <MaximumSpeed>0.00000</MaximumSpeed>
+      <Calories>10255</Calories>
+      <AverageHeartRateBpm><Value>60</Value></AverageHeartRateBpm>
+      <MaximumHeartRateBpm><Value>60</Value></MaximumHeartRateBpm>
+      <Intensity>Active</Intensity>
+      <TriggerMethod>Manual</TriggerMethod>
+      <Track>
+        <Trackpoint>
+        <!-- sample #0 -->
+          <Time>2016-05-22T11:42:25Z</Time>
+          <AltitudeMeters>185.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>67</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #1 -->
+          <Time>2016-05-22T11:43:25Z</Time>
+          <AltitudeMeters>186.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>102</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #2 -->
+          <Time>2016-05-22T11:44:25Z</Time>
+          <AltitudeMeters>185.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>107</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #3 -->
+          <Time>2016-05-22T11:45:25Z</Time>
+          <AltitudeMeters>184.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>110</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #4 -->
+          <Time>2016-05-22T11:46:25Z</Time>
+          <AltitudeMeters>188.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>126</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #5 -->
+          <Time>2016-05-22T11:47:25Z</Time>
+          <AltitudeMeters>192.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>115</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #6 -->
+          <Time>2016-05-22T11:48:25Z</Time>
+          <AltitudeMeters>191.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>120</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #7 -->
+          <Time>2016-05-22T11:49:25Z</Time>
+          <AltitudeMeters>187.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>128</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #8 -->
+          <Time>2016-05-22T11:50:25Z</Time>
+          <AltitudeMeters>187.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>121</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #9 -->
+          <Time>2016-05-22T11:51:25Z</Time>
+          <AltitudeMeters>190.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>132</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #10 -->
+          <Time>2016-05-22T11:52:25Z</Time>
+          <AltitudeMeters>197.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>134</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #11 -->
+          <Time>2016-05-22T11:53:25Z</Time>
+          <AltitudeMeters>199.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>129</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #12 -->
+          <Time>2016-05-22T11:54:25Z</Time>
+          <AltitudeMeters>205.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>125</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #13 -->
+          <Time>2016-05-22T11:55:25Z</Time>
+          <AltitudeMeters>213.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>134</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #14 -->
+          <Time>2016-05-22T11:56:25Z</Time>
+          <AltitudeMeters>224.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>136</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #15 -->
+          <Time>2016-05-22T11:57:25Z</Time>
+          <AltitudeMeters>237.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>138</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #16 -->
+          <Time>2016-05-22T11:58:25Z</Time>
+          <AltitudeMeters>230.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>102</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #17 -->
+          <Time>2016-05-22T11:59:25Z</Time>
+          <AltitudeMeters>213.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>107</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #18 -->
+          <Time>2016-05-22T12:00:25Z</Time>
+          <AltitudeMeters>224.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>134</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #19 -->
+          <Time>2016-05-22T12:01:25Z</Time>
+          <AltitudeMeters>233.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>146</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #20 -->
+          <Time>2016-05-22T12:02:25Z</Time>
+          <AltitudeMeters>241.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>141</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #21 -->
+          <Time>2016-05-22T12:03:25Z</Time>
+          <AltitudeMeters>251.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>144</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #22 -->
+          <Time>2016-05-22T12:04:25Z</Time>
+          <AltitudeMeters>261.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>145</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #23 -->
+          <Time>2016-05-22T12:05:25Z</Time>
+          <AltitudeMeters>266.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>132</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #24 -->
+          <Time>2016-05-22T12:06:25Z</Time>
+          <AltitudeMeters>278.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>139</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #25 -->
+          <Time>2016-05-22T12:07:25Z</Time>
+          <AltitudeMeters>290.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>144</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #26 -->
+          <Time>2016-05-22T12:08:25Z</Time>
+          <AltitudeMeters>290.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>126</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #27 -->
+          <Time>2016-05-22T12:09:25Z</Time>
+          <AltitudeMeters>297.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>136</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #28 -->
+          <Time>2016-05-22T12:10:25Z</Time>
+          <AltitudeMeters>305.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>136</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #29 -->
+          <Time>2016-05-22T12:11:25Z</Time>
+          <AltitudeMeters>311.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>137</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #30 -->
+          <Time>2016-05-22T12:12:25Z</Time>
+          <AltitudeMeters>312.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>121</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #31 -->
+          <Time>2016-05-22T12:13:25Z</Time>
+          <AltitudeMeters>297.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>95</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #32 -->
+          <Time>2016-05-22T12:14:25Z</Time>
+          <AltitudeMeters>307.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>141</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #33 -->
+          <Time>2016-05-22T12:15:25Z</Time>
+          <AltitudeMeters>315.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>132</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #34 -->
+          <Time>2016-05-22T12:16:25Z</Time>
+          <AltitudeMeters>309.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>124</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #35 -->
+          <Time>2016-05-22T12:17:25Z</Time>
+          <AltitudeMeters>307.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>128</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #36 -->
+          <Time>2016-05-22T12:18:25Z</Time>
+          <AltitudeMeters>315.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>135</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #37 -->
+          <Time>2016-05-22T12:19:25Z</Time>
+          <AltitudeMeters>276.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>103</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #38 -->
+          <Time>2016-05-22T12:20:25Z</Time>
+          <AltitudeMeters>275.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>140</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #39 -->
+          <Time>2016-05-22T12:21:25Z</Time>
+          <AltitudeMeters>278.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>142</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #40 -->
+          <Time>2016-05-22T12:22:25Z</Time>
+          <AltitudeMeters>271.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>129</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #41 -->
+          <Time>2016-05-22T12:23:25Z</Time>
+          <AltitudeMeters>274.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>128</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #42 -->
+          <Time>2016-05-22T12:24:25Z</Time>
+          <AltitudeMeters>266.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>106</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #43 -->
+          <Time>2016-05-22T12:25:25Z</Time>
+          <AltitudeMeters>261.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>125</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #44 -->
+          <Time>2016-05-22T12:26:25Z</Time>
+          <AltitudeMeters>265.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>126</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #45 -->
+          <Time>2016-05-22T12:27:25Z</Time>
+          <AltitudeMeters>279.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>141</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #46 -->
+          <Time>2016-05-22T12:28:25Z</Time>
+          <AltitudeMeters>283.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>130</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #47 -->
+          <Time>2016-05-22T12:29:25Z</Time>
+          <AltitudeMeters>286.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>136</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #48 -->
+          <Time>2016-05-22T12:30:25Z</Time>
+          <AltitudeMeters>288.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>132</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #49 -->
+          <Time>2016-05-22T12:31:25Z</Time>
+          <AltitudeMeters>262.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>101</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #50 -->
+          <Time>2016-05-22T12:32:25Z</Time>
+          <AltitudeMeters>244.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>111</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #51 -->
+          <Time>2016-05-22T12:33:25Z</Time>
+          <AltitudeMeters>242.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>114</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #52 -->
+          <Time>2016-05-22T12:34:25Z</Time>
+          <AltitudeMeters>241.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>118</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #53 -->
+          <Time>2016-05-22T12:35:25Z</Time>
+          <AltitudeMeters>239.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>121</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #54 -->
+          <Time>2016-05-22T12:36:25Z</Time>
+          <AltitudeMeters>237.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>124</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #55 -->
+          <Time>2016-05-22T12:37:25Z</Time>
+          <AltitudeMeters>238.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>135</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #56 -->
+          <Time>2016-05-22T12:38:25Z</Time>
+          <AltitudeMeters>240.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>133</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #57 -->
+          <Time>2016-05-22T12:39:25Z</Time>
+          <AltitudeMeters>247.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>136</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #58 -->
+          <Time>2016-05-22T12:40:25Z</Time>
+          <AltitudeMeters>252.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>129</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #59 -->
+          <Time>2016-05-22T12:41:25Z</Time>
+          <AltitudeMeters>257.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>127</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #60 -->
+          <Time>2016-05-22T12:42:25Z</Time>
+          <AltitudeMeters>261.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>129</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #61 -->
+          <Time>2016-05-22T12:43:25Z</Time>
+          <AltitudeMeters>269.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>134</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #62 -->
+          <Time>2016-05-22T12:44:25Z</Time>
+          <AltitudeMeters>274.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>133</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #63 -->
+          <Time>2016-05-22T12:45:25Z</Time>
+          <AltitudeMeters>280.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>135</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #64 -->
+          <Time>2016-05-22T12:46:25Z</Time>
+          <AltitudeMeters>289.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>131</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #65 -->
+          <Time>2016-05-22T12:47:25Z</Time>
+          <AltitudeMeters>297.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>136</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #66 -->
+          <Time>2016-05-22T12:48:25Z</Time>
+          <AltitudeMeters>296.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>113</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #67 -->
+          <Time>2016-05-22T12:49:25Z</Time>
+          <AltitudeMeters>297.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>120</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #68 -->
+          <Time>2016-05-22T12:50:25Z</Time>
+          <AltitudeMeters>303.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>133</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #69 -->
+          <Time>2016-05-22T12:51:25Z</Time>
+          <AltitudeMeters>311.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>136</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #70 -->
+          <Time>2016-05-22T12:52:25Z</Time>
+          <AltitudeMeters>324.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>142</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #71 -->
+          <Time>2016-05-22T12:53:25Z</Time>
+          <AltitudeMeters>328.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>126</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #72 -->
+          <Time>2016-05-22T12:54:25Z</Time>
+          <AltitudeMeters>328.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>132</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #73 -->
+          <Time>2016-05-22T12:55:25Z</Time>
+          <AltitudeMeters>337.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>139</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #74 -->
+          <Time>2016-05-22T12:56:25Z</Time>
+          <AltitudeMeters>350.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #75 -->
+          <Time>2016-05-22T12:57:25Z</Time>
+          <AltitudeMeters>361.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>140</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #76 -->
+          <Time>2016-05-22T12:58:25Z</Time>
+          <AltitudeMeters>367.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>131</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #77 -->
+          <Time>2016-05-22T12:59:25Z</Time>
+          <AltitudeMeters>372.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>132</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #78 -->
+          <Time>2016-05-22T13:00:25Z</Time>
+          <AltitudeMeters>368.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>127</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #79 -->
+          <Time>2016-05-22T13:01:25Z</Time>
+          <AltitudeMeters>371.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>132</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #80 -->
+          <Time>2016-05-22T13:02:25Z</Time>
+          <AltitudeMeters>353.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>113</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #81 -->
+          <Time>2016-05-22T13:03:25Z</Time>
+          <AltitudeMeters>311.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>96</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #82 -->
+          <Time>2016-05-22T13:04:25Z</Time>
+          <AltitudeMeters>263.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>95</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #83 -->
+          <Time>2016-05-22T13:05:25Z</Time>
+          <AltitudeMeters>271.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>129</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #84 -->
+          <Time>2016-05-22T13:06:25Z</Time>
+          <AltitudeMeters>287.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #85 -->
+          <Time>2016-05-22T13:07:25Z</Time>
+          <AltitudeMeters>303.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>144</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #86 -->
+          <Time>2016-05-22T13:08:25Z</Time>
+          <AltitudeMeters>318.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>149</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #87 -->
+          <Time>2016-05-22T13:09:25Z</Time>
+          <AltitudeMeters>322.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>131</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #88 -->
+          <Time>2016-05-22T13:10:25Z</Time>
+          <AltitudeMeters>342.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>153</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #89 -->
+          <Time>2016-05-22T13:11:25Z</Time>
+          <AltitudeMeters>360.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>153</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #90 -->
+          <Time>2016-05-22T13:12:25Z</Time>
+          <AltitudeMeters>374.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>152</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #91 -->
+          <Time>2016-05-22T13:13:25Z</Time>
+          <AltitudeMeters>381.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>133</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #92 -->
+          <Time>2016-05-22T13:14:25Z</Time>
+          <AltitudeMeters>380.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>124</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #93 -->
+          <Time>2016-05-22T13:15:25Z</Time>
+          <AltitudeMeters>367.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>109</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #94 -->
+          <Time>2016-05-22T13:16:25Z</Time>
+          <AltitudeMeters>360.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>120</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #95 -->
+          <Time>2016-05-22T13:17:25Z</Time>
+          <AltitudeMeters>338.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>99</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #96 -->
+          <Time>2016-05-22T13:18:25Z</Time>
+          <AltitudeMeters>269.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>102</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #97 -->
+          <Time>2016-05-22T13:19:25Z</Time>
+          <AltitudeMeters>263.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>113</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #98 -->
+          <Time>2016-05-22T13:20:25Z</Time>
+          <AltitudeMeters>261.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>102</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #99 -->
+          <Time>2016-05-22T13:21:25Z</Time>
+          <AltitudeMeters>270.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>125</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #100 -->
+          <Time>2016-05-22T13:22:25Z</Time>
+          <AltitudeMeters>286.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>144</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #101 -->
+          <Time>2016-05-22T13:23:25Z</Time>
+          <AltitudeMeters>296.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>133</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #102 -->
+          <Time>2016-05-22T13:24:25Z</Time>
+          <AltitudeMeters>294.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>109</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #103 -->
+          <Time>2016-05-22T13:25:25Z</Time>
+          <AltitudeMeters>309.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>147</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #104 -->
+          <Time>2016-05-22T13:26:25Z</Time>
+          <AltitudeMeters>318.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>140</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #105 -->
+          <Time>2016-05-22T13:27:25Z</Time>
+          <AltitudeMeters>328.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>138</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #106 -->
+          <Time>2016-05-22T13:28:25Z</Time>
+          <AltitudeMeters>321.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>115</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #107 -->
+          <Time>2016-05-22T13:29:25Z</Time>
+          <AltitudeMeters>321.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>131</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #108 -->
+          <Time>2016-05-22T13:30:25Z</Time>
+          <AltitudeMeters>318.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>111</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #109 -->
+          <Time>2016-05-22T13:31:25Z</Time>
+          <AltitudeMeters>305.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>107</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #110 -->
+          <Time>2016-05-22T13:32:25Z</Time>
+          <AltitudeMeters>313.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>137</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #111 -->
+          <Time>2016-05-22T13:33:25Z</Time>
+          <AltitudeMeters>325.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>136</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #112 -->
+          <Time>2016-05-22T13:34:25Z</Time>
+          <AltitudeMeters>335.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>141</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #113 -->
+          <Time>2016-05-22T13:35:25Z</Time>
+          <AltitudeMeters>345.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>138</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #114 -->
+          <Time>2016-05-22T13:36:25Z</Time>
+          <AltitudeMeters>358.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>142</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #115 -->
+          <Time>2016-05-22T13:37:25Z</Time>
+          <AltitudeMeters>368.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>144</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #116 -->
+          <Time>2016-05-22T13:38:25Z</Time>
+          <AltitudeMeters>381.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>139</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #117 -->
+          <Time>2016-05-22T13:39:25Z</Time>
+          <AltitudeMeters>393.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>141</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #118 -->
+          <Time>2016-05-22T13:40:25Z</Time>
+          <AltitudeMeters>403.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>139</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #119 -->
+          <Time>2016-05-22T13:41:25Z</Time>
+          <AltitudeMeters>408.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>136</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #120 -->
+          <Time>2016-05-22T13:42:25Z</Time>
+          <AltitudeMeters>413.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>135</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #121 -->
+          <Time>2016-05-22T13:43:25Z</Time>
+          <AltitudeMeters>421.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>139</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #122 -->
+          <Time>2016-05-22T13:44:25Z</Time>
+          <AltitudeMeters>429.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>136</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #123 -->
+          <Time>2016-05-22T13:45:25Z</Time>
+          <AltitudeMeters>437.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>135</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #124 -->
+          <Time>2016-05-22T13:46:25Z</Time>
+          <AltitudeMeters>444.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>135</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #125 -->
+          <Time>2016-05-22T13:47:25Z</Time>
+          <AltitudeMeters>441.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>113</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #126 -->
+          <Time>2016-05-22T13:48:25Z</Time>
+          <AltitudeMeters>440.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>131</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #127 -->
+          <Time>2016-05-22T13:49:25Z</Time>
+          <AltitudeMeters>448.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>138</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #128 -->
+          <Time>2016-05-22T13:50:25Z</Time>
+          <AltitudeMeters>458.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>140</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #129 -->
+          <Time>2016-05-22T13:51:25Z</Time>
+          <AltitudeMeters>464.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>132</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #130 -->
+          <Time>2016-05-22T13:52:25Z</Time>
+          <AltitudeMeters>462.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>128</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #131 -->
+          <Time>2016-05-22T13:53:25Z</Time>
+          <AltitudeMeters>469.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>132</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #132 -->
+          <Time>2016-05-22T13:54:25Z</Time>
+          <AltitudeMeters>462.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>134</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #133 -->
+          <Time>2016-05-22T13:55:25Z</Time>
+          <AltitudeMeters>470.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>139</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #134 -->
+          <Time>2016-05-22T13:56:25Z</Time>
+          <AltitudeMeters>477.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>134</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #135 -->
+          <Time>2016-05-22T13:57:25Z</Time>
+          <AltitudeMeters>481.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>142</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #136 -->
+          <Time>2016-05-22T13:58:25Z</Time>
+          <AltitudeMeters>479.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>136</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #137 -->
+          <Time>2016-05-22T13:59:25Z</Time>
+          <AltitudeMeters>479.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>141</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #138 -->
+          <Time>2016-05-22T14:00:25Z</Time>
+          <AltitudeMeters>479.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>133</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #139 -->
+          <Time>2016-05-22T14:01:25Z</Time>
+          <AltitudeMeters>471.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>128</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #140 -->
+          <Time>2016-05-22T14:02:25Z</Time>
+          <AltitudeMeters>461.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>114</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #141 -->
+          <Time>2016-05-22T14:03:25Z</Time>
+          <AltitudeMeters>429.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>96</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #142 -->
+          <Time>2016-05-22T14:04:25Z</Time>
+          <AltitudeMeters>391.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>95</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #143 -->
+          <Time>2016-05-22T14:05:25Z</Time>
+          <AltitudeMeters>359.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>91</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #144 -->
+          <Time>2016-05-22T14:06:25Z</Time>
+          <AltitudeMeters>370.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>134</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #145 -->
+          <Time>2016-05-22T14:07:25Z</Time>
+          <AltitudeMeters>377.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>133</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #146 -->
+          <Time>2016-05-22T14:08:25Z</Time>
+          <AltitudeMeters>366.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>129</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #147 -->
+          <Time>2016-05-22T14:09:25Z</Time>
+          <AltitudeMeters>331.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>97</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #148 -->
+          <Time>2016-05-22T14:10:25Z</Time>
+          <AltitudeMeters>283.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>91</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #149 -->
+          <Time>2016-05-22T14:11:25Z</Time>
+          <AltitudeMeters>280.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>113</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #150 -->
+          <Time>2016-05-22T14:12:25Z</Time>
+          <AltitudeMeters>285.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>123</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #151 -->
+          <Time>2016-05-22T14:13:25Z</Time>
+          <AltitudeMeters>300.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>142</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #152 -->
+          <Time>2016-05-22T14:14:25Z</Time>
+          <AltitudeMeters>311.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>141</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #153 -->
+          <Time>2016-05-22T14:15:25Z</Time>
+          <AltitudeMeters>328.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>147</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #154 -->
+          <Time>2016-05-22T14:16:25Z</Time>
+          <AltitudeMeters>343.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>153</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #155 -->
+          <Time>2016-05-22T14:17:25Z</Time>
+          <AltitudeMeters>358.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>155</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #156 -->
+          <Time>2016-05-22T14:18:25Z</Time>
+          <AltitudeMeters>366.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #157 -->
+          <Time>2016-05-22T14:19:25Z</Time>
+          <AltitudeMeters>373.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>141</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #158 -->
+          <Time>2016-05-22T14:20:25Z</Time>
+          <AltitudeMeters>361.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>107</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #159 -->
+          <Time>2016-05-22T14:21:25Z</Time>
+          <AltitudeMeters>351.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>137</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #160 -->
+          <Time>2016-05-22T14:22:25Z</Time>
+          <AltitudeMeters>340.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>125</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #161 -->
+          <Time>2016-05-22T14:23:25Z</Time>
+          <AltitudeMeters>347.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>137</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #162 -->
+          <Time>2016-05-22T14:24:25Z</Time>
+          <AltitudeMeters>357.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>140</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #163 -->
+          <Time>2016-05-22T14:25:25Z</Time>
+          <AltitudeMeters>360.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>122</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #164 -->
+          <Time>2016-05-22T14:26:25Z</Time>
+          <AltitudeMeters>347.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>109</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #165 -->
+          <Time>2016-05-22T14:27:25Z</Time>
+          <AltitudeMeters>315.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>131</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #166 -->
+          <Time>2016-05-22T14:28:25Z</Time>
+          <AltitudeMeters>301.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>131</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #167 -->
+          <Time>2016-05-22T14:29:25Z</Time>
+          <AltitudeMeters>288.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>128</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #168 -->
+          <Time>2016-05-22T14:30:25Z</Time>
+          <AltitudeMeters>288.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>137</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #169 -->
+          <Time>2016-05-22T14:31:25Z</Time>
+          <AltitudeMeters>289.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>128</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #170 -->
+          <Time>2016-05-22T14:32:25Z</Time>
+          <AltitudeMeters>294.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>134</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #171 -->
+          <Time>2016-05-22T14:33:25Z</Time>
+          <AltitudeMeters>305.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>142</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #172 -->
+          <Time>2016-05-22T14:34:25Z</Time>
+          <AltitudeMeters>317.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>146</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #173 -->
+          <Time>2016-05-22T14:35:25Z</Time>
+          <AltitudeMeters>329.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>140</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #174 -->
+          <Time>2016-05-22T14:36:25Z</Time>
+          <AltitudeMeters>342.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>145</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #175 -->
+          <Time>2016-05-22T14:37:25Z</Time>
+          <AltitudeMeters>350.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>142</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #176 -->
+          <Time>2016-05-22T14:38:25Z</Time>
+          <AltitudeMeters>359.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #177 -->
+          <Time>2016-05-22T14:39:25Z</Time>
+          <AltitudeMeters>370.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>142</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #178 -->
+          <Time>2016-05-22T14:40:25Z</Time>
+          <AltitudeMeters>378.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>139</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #179 -->
+          <Time>2016-05-22T14:41:25Z</Time>
+          <AltitudeMeters>377.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>121</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #180 -->
+          <Time>2016-05-22T14:42:25Z</Time>
+          <AltitudeMeters>339.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>101</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #181 -->
+          <Time>2016-05-22T14:43:25Z</Time>
+          <AltitudeMeters>338.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>134</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #182 -->
+          <Time>2016-05-22T14:44:25Z</Time>
+          <AltitudeMeters>344.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>141</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #183 -->
+          <Time>2016-05-22T14:45:25Z</Time>
+          <AltitudeMeters>333.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>124</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #184 -->
+          <Time>2016-05-22T14:46:25Z</Time>
+          <AltitudeMeters>316.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>127</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #185 -->
+          <Time>2016-05-22T14:47:25Z</Time>
+          <AltitudeMeters>315.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>132</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #186 -->
+          <Time>2016-05-22T14:48:25Z</Time>
+          <AltitudeMeters>308.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>110</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #187 -->
+          <Time>2016-05-22T14:49:25Z</Time>
+          <AltitudeMeters>317.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #188 -->
+          <Time>2016-05-22T14:50:25Z</Time>
+          <AltitudeMeters>310.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>129</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #189 -->
+          <Time>2016-05-22T14:51:25Z</Time>
+          <AltitudeMeters>322.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>142</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #190 -->
+          <Time>2016-05-22T14:52:25Z</Time>
+          <AltitudeMeters>336.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>151</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #191 -->
+          <Time>2016-05-22T14:53:25Z</Time>
+          <AltitudeMeters>323.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>124</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #192 -->
+          <Time>2016-05-22T14:54:25Z</Time>
+          <AltitudeMeters>293.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>118</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #193 -->
+          <Time>2016-05-22T14:55:25Z</Time>
+          <AltitudeMeters>274.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>137</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #194 -->
+          <Time>2016-05-22T14:56:25Z</Time>
+          <AltitudeMeters>262.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>125</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #195 -->
+          <Time>2016-05-22T14:57:25Z</Time>
+          <AltitudeMeters>249.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>92</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #196 -->
+          <Time>2016-05-22T14:58:25Z</Time>
+          <AltitudeMeters>232.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>133</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #197 -->
+          <Time>2016-05-22T14:59:25Z</Time>
+          <AltitudeMeters>234.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>140</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #198 -->
+          <Time>2016-05-22T15:00:25Z</Time>
+          <AltitudeMeters>241.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>137</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #199 -->
+          <Time>2016-05-22T15:01:25Z</Time>
+          <AltitudeMeters>246.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>135</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #200 -->
+          <Time>2016-05-22T15:02:25Z</Time>
+          <AltitudeMeters>236.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>111</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #201 -->
+          <Time>2016-05-22T15:03:25Z</Time>
+          <AltitudeMeters>240.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>135</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #202 -->
+          <Time>2016-05-22T15:04:25Z</Time>
+          <AltitudeMeters>247.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>139</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #203 -->
+          <Time>2016-05-22T15:05:25Z</Time>
+          <AltitudeMeters>256.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>138</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #204 -->
+          <Time>2016-05-22T15:06:25Z</Time>
+          <AltitudeMeters>264.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>141</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #205 -->
+          <Time>2016-05-22T15:07:25Z</Time>
+          <AltitudeMeters>264.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>125</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #206 -->
+          <Time>2016-05-22T15:08:25Z</Time>
+          <AltitudeMeters>273.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>139</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #207 -->
+          <Time>2016-05-22T15:09:25Z</Time>
+          <AltitudeMeters>286.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>147</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #208 -->
+          <Time>2016-05-22T15:10:25Z</Time>
+          <AltitudeMeters>293.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>141</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #209 -->
+          <Time>2016-05-22T15:11:25Z</Time>
+          <AltitudeMeters>294.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>133</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #210 -->
+          <Time>2016-05-22T15:12:25Z</Time>
+          <AltitudeMeters>272.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>108</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #211 -->
+          <Time>2016-05-22T15:13:25Z</Time>
+          <AltitudeMeters>276.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>137</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #212 -->
+          <Time>2016-05-22T15:14:25Z</Time>
+          <AltitudeMeters>279.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>140</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #213 -->
+          <Time>2016-05-22T15:15:25Z</Time>
+          <AltitudeMeters>285.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>137</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #214 -->
+          <Time>2016-05-22T15:16:25Z</Time>
+          <AltitudeMeters>288.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #215 -->
+          <Time>2016-05-22T15:17:25Z</Time>
+          <AltitudeMeters>291.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>140</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #216 -->
+          <Time>2016-05-22T15:18:25Z</Time>
+          <AltitudeMeters>302.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>145</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #217 -->
+          <Time>2016-05-22T15:19:25Z</Time>
+          <AltitudeMeters>311.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>141</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #218 -->
+          <Time>2016-05-22T15:20:25Z</Time>
+          <AltitudeMeters>323.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>149</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #219 -->
+          <Time>2016-05-22T15:21:25Z</Time>
+          <AltitudeMeters>327.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>138</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #220 -->
+          <Time>2016-05-22T15:22:25Z</Time>
+          <AltitudeMeters>336.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>146</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #221 -->
+          <Time>2016-05-22T15:23:25Z</Time>
+          <AltitudeMeters>339.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>147</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #222 -->
+          <Time>2016-05-22T15:24:25Z</Time>
+          <AltitudeMeters>339.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #223 -->
+          <Time>2016-05-22T15:25:25Z</Time>
+          <AltitudeMeters>348.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>148</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #224 -->
+          <Time>2016-05-22T15:26:25Z</Time>
+          <AltitudeMeters>355.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #225 -->
+          <Time>2016-05-22T15:27:25Z</Time>
+          <AltitudeMeters>356.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>139</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #226 -->
+          <Time>2016-05-22T15:28:25Z</Time>
+          <AltitudeMeters>355.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>128</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #227 -->
+          <Time>2016-05-22T15:29:25Z</Time>
+          <AltitudeMeters>340.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>119</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #228 -->
+          <Time>2016-05-22T15:30:25Z</Time>
+          <AltitudeMeters>333.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>136</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #229 -->
+          <Time>2016-05-22T15:31:25Z</Time>
+          <AltitudeMeters>307.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>103</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #230 -->
+          <Time>2016-05-22T15:32:25Z</Time>
+          <AltitudeMeters>289.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>131</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #231 -->
+          <Time>2016-05-22T15:33:25Z</Time>
+          <AltitudeMeters>298.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #232 -->
+          <Time>2016-05-22T15:34:25Z</Time>
+          <AltitudeMeters>285.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>122</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #233 -->
+          <Time>2016-05-22T15:35:25Z</Time>
+          <AltitudeMeters>295.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>145</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #234 -->
+          <Time>2016-05-22T15:36:25Z</Time>
+          <AltitudeMeters>274.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>103</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #235 -->
+          <Time>2016-05-22T15:37:25Z</Time>
+          <AltitudeMeters>268.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>112</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #236 -->
+          <Time>2016-05-22T15:38:25Z</Time>
+          <AltitudeMeters>273.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>136</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #237 -->
+          <Time>2016-05-22T15:39:25Z</Time>
+          <AltitudeMeters>282.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>134</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #238 -->
+          <Time>2016-05-22T15:40:25Z</Time>
+          <AltitudeMeters>296.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #239 -->
+          <Time>2016-05-22T15:41:25Z</Time>
+          <AltitudeMeters>310.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>148</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #240 -->
+          <Time>2016-05-22T15:42:25Z</Time>
+          <AltitudeMeters>325.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>151</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #241 -->
+          <Time>2016-05-22T15:43:25Z</Time>
+          <AltitudeMeters>339.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>151</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #242 -->
+          <Time>2016-05-22T15:44:25Z</Time>
+          <AltitudeMeters>351.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>149</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #243 -->
+          <Time>2016-05-22T15:45:25Z</Time>
+          <AltitudeMeters>336.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>116</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #244 -->
+          <Time>2016-05-22T15:46:25Z</Time>
+          <AltitudeMeters>274.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>101</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #245 -->
+          <Time>2016-05-22T15:47:25Z</Time>
+          <AltitudeMeters>272.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>137</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #246 -->
+          <Time>2016-05-22T15:48:25Z</Time>
+          <AltitudeMeters>274.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>126</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #247 -->
+          <Time>2016-05-22T15:49:25Z</Time>
+          <AltitudeMeters>275.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>121</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #248 -->
+          <Time>2016-05-22T15:50:25Z</Time>
+          <AltitudeMeters>283.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>133</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #249 -->
+          <Time>2016-05-22T15:51:25Z</Time>
+          <AltitudeMeters>288.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>128</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #250 -->
+          <Time>2016-05-22T15:52:25Z</Time>
+          <AltitudeMeters>299.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>133</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #251 -->
+          <Time>2016-05-22T15:53:25Z</Time>
+          <AltitudeMeters>311.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>147</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #252 -->
+          <Time>2016-05-22T15:54:25Z</Time>
+          <AltitudeMeters>324.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>150</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #253 -->
+          <Time>2016-05-22T15:55:25Z</Time>
+          <AltitudeMeters>332.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>146</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #254 -->
+          <Time>2016-05-22T15:56:25Z</Time>
+          <AltitudeMeters>344.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>145</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #255 -->
+          <Time>2016-05-22T15:57:25Z</Time>
+          <AltitudeMeters>360.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>155</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #256 -->
+          <Time>2016-05-22T15:58:25Z</Time>
+          <AltitudeMeters>372.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>152</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #257 -->
+          <Time>2016-05-22T15:59:25Z</Time>
+          <AltitudeMeters>388.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>154</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #258 -->
+          <Time>2016-05-22T16:00:25Z</Time>
+          <AltitudeMeters>402.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>153</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #259 -->
+          <Time>2016-05-22T16:01:25Z</Time>
+          <AltitudeMeters>417.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>159</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #260 -->
+          <Time>2016-05-22T16:02:25Z</Time>
+          <AltitudeMeters>433.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>160</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #261 -->
+          <Time>2016-05-22T16:03:25Z</Time>
+          <AltitudeMeters>448.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>163</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #262 -->
+          <Time>2016-05-22T16:04:25Z</Time>
+          <AltitudeMeters>465.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>167</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #263 -->
+          <Time>2016-05-22T16:05:25Z</Time>
+          <AltitudeMeters>447.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>122</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #264 -->
+          <Time>2016-05-22T16:06:25Z</Time>
+          <AltitudeMeters>440.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>129</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #265 -->
+          <Time>2016-05-22T16:07:25Z</Time>
+          <AltitudeMeters>449.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>151</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #266 -->
+          <Time>2016-05-22T16:08:25Z</Time>
+          <AltitudeMeters>452.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>142</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #267 -->
+          <Time>2016-05-22T16:09:25Z</Time>
+          <AltitudeMeters>418.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>104</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #268 -->
+          <Time>2016-05-22T16:10:25Z</Time>
+          <AltitudeMeters>409.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>145</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #269 -->
+          <Time>2016-05-22T16:11:25Z</Time>
+          <AltitudeMeters>415.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>140</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #270 -->
+          <Time>2016-05-22T16:12:25Z</Time>
+          <AltitudeMeters>420.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>142</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #271 -->
+          <Time>2016-05-22T16:13:25Z</Time>
+          <AltitudeMeters>425.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>149</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #272 -->
+          <Time>2016-05-22T16:14:25Z</Time>
+          <AltitudeMeters>426.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>138</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #273 -->
+          <Time>2016-05-22T16:15:25Z</Time>
+          <AltitudeMeters>421.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>144</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #274 -->
+          <Time>2016-05-22T16:16:25Z</Time>
+          <AltitudeMeters>400.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>118</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #275 -->
+          <Time>2016-05-22T16:17:25Z</Time>
+          <AltitudeMeters>383.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>128</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #276 -->
+          <Time>2016-05-22T16:18:25Z</Time>
+          <AltitudeMeters>389.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #277 -->
+          <Time>2016-05-22T16:19:25Z</Time>
+          <AltitudeMeters>373.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>107</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #278 -->
+          <Time>2016-05-22T16:20:25Z</Time>
+          <AltitudeMeters>385.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>146</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #279 -->
+          <Time>2016-05-22T16:21:25Z</Time>
+          <AltitudeMeters>394.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>145</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #280 -->
+          <Time>2016-05-22T16:22:25Z</Time>
+          <AltitudeMeters>405.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>149</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #281 -->
+          <Time>2016-05-22T16:23:25Z</Time>
+          <AltitudeMeters>411.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>141</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #282 -->
+          <Time>2016-05-22T16:24:25Z</Time>
+          <AltitudeMeters>413.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>140</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #283 -->
+          <Time>2016-05-22T16:25:25Z</Time>
+          <AltitudeMeters>402.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>121</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #284 -->
+          <Time>2016-05-22T16:26:25Z</Time>
+          <AltitudeMeters>388.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>129</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #285 -->
+          <Time>2016-05-22T16:27:25Z</Time>
+          <AltitudeMeters>365.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>135</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #286 -->
+          <Time>2016-05-22T16:28:25Z</Time>
+          <AltitudeMeters>364.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>139</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #287 -->
+          <Time>2016-05-22T16:29:25Z</Time>
+          <AltitudeMeters>336.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>133</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #288 -->
+          <Time>2016-05-22T16:30:25Z</Time>
+          <AltitudeMeters>326.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>118</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #289 -->
+          <Time>2016-05-22T16:31:25Z</Time>
+          <AltitudeMeters>333.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #290 -->
+          <Time>2016-05-22T16:32:25Z</Time>
+          <AltitudeMeters>345.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>142</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #291 -->
+          <Time>2016-05-22T16:33:25Z</Time>
+          <AltitudeMeters>353.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>137</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #292 -->
+          <Time>2016-05-22T16:34:25Z</Time>
+          <AltitudeMeters>361.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #293 -->
+          <Time>2016-05-22T16:35:25Z</Time>
+          <AltitudeMeters>368.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>147</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #294 -->
+          <Time>2016-05-22T16:36:25Z</Time>
+          <AltitudeMeters>375.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>144</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #295 -->
+          <Time>2016-05-22T16:37:25Z</Time>
+          <AltitudeMeters>336.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>111</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #296 -->
+          <Time>2016-05-22T16:38:25Z</Time>
+          <AltitudeMeters>308.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>125</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #297 -->
+          <Time>2016-05-22T16:39:25Z</Time>
+          <AltitudeMeters>294.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>128</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #298 -->
+          <Time>2016-05-22T16:40:25Z</Time>
+          <AltitudeMeters>286.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>120</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #299 -->
+          <Time>2016-05-22T16:41:25Z</Time>
+          <AltitudeMeters>299.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #300 -->
+          <Time>2016-05-22T16:42:25Z</Time>
+          <AltitudeMeters>313.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>148</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #301 -->
+          <Time>2016-05-22T16:43:25Z</Time>
+          <AltitudeMeters>325.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #302 -->
+          <Time>2016-05-22T16:44:25Z</Time>
+          <AltitudeMeters>338.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>149</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #303 -->
+          <Time>2016-05-22T16:45:25Z</Time>
+          <AltitudeMeters>347.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>145</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #304 -->
+          <Time>2016-05-22T16:46:25Z</Time>
+          <AltitudeMeters>345.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>145</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #305 -->
+          <Time>2016-05-22T16:47:25Z</Time>
+          <AltitudeMeters>353.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>151</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #306 -->
+          <Time>2016-05-22T16:48:25Z</Time>
+          <AltitudeMeters>348.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #307 -->
+          <Time>2016-05-22T16:49:25Z</Time>
+          <AltitudeMeters>338.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>113</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #308 -->
+          <Time>2016-05-22T16:50:25Z</Time>
+          <AltitudeMeters>319.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>101</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #309 -->
+          <Time>2016-05-22T16:51:25Z</Time>
+          <AltitudeMeters>324.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>141</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #310 -->
+          <Time>2016-05-22T16:52:25Z</Time>
+          <AltitudeMeters>326.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>145</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #311 -->
+          <Time>2016-05-22T16:53:25Z</Time>
+          <AltitudeMeters>329.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>144</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #312 -->
+          <Time>2016-05-22T16:54:25Z</Time>
+          <AltitudeMeters>315.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>112</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #313 -->
+          <Time>2016-05-22T16:55:25Z</Time>
+          <AltitudeMeters>288.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>137</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #314 -->
+          <Time>2016-05-22T16:56:25Z</Time>
+          <AltitudeMeters>274.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>119</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #315 -->
+          <Time>2016-05-22T16:57:25Z</Time>
+          <AltitudeMeters>280.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>147</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #316 -->
+          <Time>2016-05-22T16:58:25Z</Time>
+          <AltitudeMeters>267.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>126</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #317 -->
+          <Time>2016-05-22T16:59:25Z</Time>
+          <AltitudeMeters>259.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>116</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #318 -->
+          <Time>2016-05-22T17:00:25Z</Time>
+          <AltitudeMeters>256.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>149</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #319 -->
+          <Time>2016-05-22T17:01:25Z</Time>
+          <AltitudeMeters>255.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>136</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #320 -->
+          <Time>2016-05-22T17:02:25Z</Time>
+          <AltitudeMeters>250.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>128</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #321 -->
+          <Time>2016-05-22T17:03:25Z</Time>
+          <AltitudeMeters>247.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #322 -->
+          <Time>2016-05-22T17:04:25Z</Time>
+          <AltitudeMeters>210.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>111</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #323 -->
+          <Time>2016-05-22T17:05:25Z</Time>
+          <AltitudeMeters>205.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>138</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #324 -->
+          <Time>2016-05-22T17:06:25Z</Time>
+          <AltitudeMeters>202.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #325 -->
+          <Time>2016-05-22T17:07:25Z</Time>
+          <AltitudeMeters>198.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>143</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #326 -->
+          <Time>2016-05-22T17:08:25Z</Time>
+          <AltitudeMeters>193.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>144</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #327 -->
+          <Time>2016-05-22T17:09:25Z</Time>
+          <AltitudeMeters>190.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>148</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #328 -->
+          <Time>2016-05-22T17:10:25Z</Time>
+          <AltitudeMeters>181.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>138</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #329 -->
+          <Time>2016-05-22T17:11:25Z</Time>
+          <AltitudeMeters>183.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>142</Value></HeartRateBpm>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #330 -->
+          <Time>2016-05-22T17:12:25Z</Time>
+          <AltitudeMeters>185.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>125</Value></HeartRateBpm>
+        </Trackpoint>
+      </Track>
+    </Lap>
+  </Activity>
+</Activities>
+</TrainingCenterDatabase>
+<!-- output count: 331 -->
+<!-- data samples: 331 -->
+<!-- after end:      0 -->

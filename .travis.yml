@@ -13,7 +13,6 @@ addons:
     packages:
       - flex
       - bison
-      - pkg-config
   
 script:
   - make

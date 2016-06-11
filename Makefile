@@ -26,25 +26,18 @@ S725GET_SRCS= $(COMMON_SRCS) s725get.c driver.c files.c format.c irda.c \
 
 HRMTOOL_SRCS= $(COMMON_SRCS) hrmtool.c format.c
 
-S725GET_OBJS= $(patsubst %.c,%.o,$(S725GET_SRCS))
-HRMTOOL_OBJS= $(patsubst %.c,%.o,$(HRMTOOL_SRCS))
-PROG_OBJS= $(patsubst %,%.o,$(PROGS))
+S725GET_OBJS= $(S725GET_SRCS:.c=.o)
+TEST_OBJS= $(S725GET_SRCS:.c=.o)
+HRMTOOL_OBJS= $(HRMTOOL_SRCS:.c=.o)
+PROG_OBJS= $(PROGS:=.o)
+
+COMPAT_CFLAGS != uname -s | grep -q Linux && echo -D_GNU_SOURCE -Icompat ||:
+COMPAT_SRCS   != uname -s | grep -q Linux && echo compat/strclcpy.c      ||:
+
+COMPAT_OBJS = $(COMPAT_SRCS:.c=.o)
+
 CPPFLAGS+= $(DEFS) -I. $(INCDIRS)
-
-ifneq (, $(filter Linux GNU GNU/%, $(shell uname -s)))
-CFLAGS+= -D_GNU_SOURCE -Icompat
-COMPAT_SRCS+= compat/strlcpy.c
-endif
-
-ifdef DEBUG
-CFLAGS+= -DDEBUG
-endif
-
-CFLAGS+= -g
-
-COMPAT_OBJS= $(patsubst %.c,%.o,$(COMPAT_SRCS))
-
-CFLAGS+= -Wall
+CFLAGS+= -g -Wall $(COMPAT_CFLAGS)
 
 CONF_OBJS= conf.tab.o lex.yy.o
 CONF_MISC= conf.tab.c conf.tab.h lex.yy.c parser parser.o
@@ -54,9 +47,6 @@ CLEANFILES+= $(PROGS) $(PROG_OBJS) $(COMPAT_OBJS) .depend
 CLEANFILES+= $(CONF_OBJS) $(CONF_MISC)
 
 all: $(PROGS)
-
-s725get: $(CONF_OBJS) $(S725GET_OBJS) $(COMPAT_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $+ $(LIBS) 
 
 conf.tab.c conf.tab.h: conf.y
 	$(YACC) -b conf -d conf.y
@@ -76,14 +66,17 @@ parser.o: parser.c
 parser: $(CONF_OBJS) parser.o
 	$(CC) -o parser parser.o $(CONF_OBJS)
 
+s725get: $(CONF_OBJS) $(S725GET_OBJS) $(COMPAT_OBJS)
+	$(CC) $(LDFLAGS) -o $@ $(CONF_OBJS) $(S725GET_OBJS) $(COMPAT_OBJS) $(LIBS) 
+
 hrmtool: $(HRMTOOL_OBJS) $(COMPAT_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $+
+	$(CC) $(LDFLAGS) -o $@ $(HRMTOOL_OBJS) $(COMPAT_OBJS)
 
 depend: $(S725GET_SRCS) $(SRDCAT_SRCS) $(SRDTCX_SRCS) $(SRDHEAD_SRCS)
-	$(CC) $(CPPFLAGS) -MM $+ > .depend
+	$(CC) $(CPPFLAGS) -MM $(S725GET_SRCS) $(SRDCAT_SRCS) $(SRDTCX_SRCS) $(SRDHEAD_SRCS) > .depend
 
 clean:
-	rm -rf $(CLEANFILES) *.104r.expand callgraph.png
+	rm -rf $(CLEANFILES)
 
 install:
 	$(INSTALLDIR) $(DESTDIR)$(PREFIX)/bin
@@ -93,7 +86,5 @@ install:
 check: hrmtool
 	@cd tests && $(SHELL) runtests
 
-ifeq ($(wildcard .depend),.depend)
-include .depend
-endif
+-include .depend
 

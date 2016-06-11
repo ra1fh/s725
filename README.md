@@ -9,7 +9,7 @@ This project is based on s710 from http://code.google.com/p/s710/.
 
 ### Building
 
-Building s725 requires GNU make, flex,
+Building s725 requires make, gcc/clang, flex,
 yacc/byacc/bison:
 
 	# Debian/Ubuntu
@@ -21,8 +21,7 @@ yacc/byacc/bison:
 	make
 
     # OpenBSD
-	pkg_add gmake
-	gmake
+	make
 
 s725 has been tested on the following systems:
 

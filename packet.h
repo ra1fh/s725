@@ -61,5 +61,6 @@ packet_t *packet_get_response(S725_Packet_Index request);
 packet_t *packet_listen();
 u_char   *packet_data(packet_t *p);
 u_short   packet_len(packet_t *p);
+u_char    packet_get_type(packet_t *p);
 
 #endif	/* PACKET_H */

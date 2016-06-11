@@ -164,6 +164,12 @@ packet_len(packet_t *p)
 	return p->length;
 }
 
+unsigned char
+packet_get_type(packet_t *p)
+{
+	return p->type;
+}
+
 /* return a packet pointer for a given packet index */
 packet_t *
 packet_get(S725_Packet_Index idx)

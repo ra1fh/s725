@@ -47,7 +47,7 @@ files_split(BUF *files, int *offset, BUF *out)
 	u_char *bp;
 
 	if (*offset < buf_len(files) - 2) {
-		size  = (buf_getc(files, *offset + 1) << 8) + buf_getc(files, *offset);
+		size = (buf_getc(files, *offset + 1) << 8) + buf_getc(files, *offset);
 		buf_empty(out);
 		bp = buf_get(files);
 		buf_append(out, &bp[*offset], size);

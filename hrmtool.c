@@ -87,6 +87,11 @@ main(int argc, char **argv)
 		}
 	}
 
+	if (opt_input_type == NULL || opt_output_type == NULL ) {
+		usage();
+		return 1;
+	}
+
 	int input_type = format_from_str(opt_input_type);
 	int output_type = format_from_str(opt_output_type);
 

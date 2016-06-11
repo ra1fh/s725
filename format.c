@@ -25,7 +25,9 @@
 int
 format_from_str(const char *format)
 {
-	if (!strcmp(format, "hrm")) {
+	if (format == NULL) {
+		return FORMAT_UNKNOWN;
+	} else if (!strcmp(format, "hrm")) {
 		return FORMAT_HRM;
 	} else if (!strcmp(format, "srd")) {
 		return FORMAT_SRD;

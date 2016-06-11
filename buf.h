@@ -58,4 +58,5 @@ size_t		 buf_capacity(BUF *);
 int			 buf_write_fd(BUF *, int);
 int			 buf_write(BUF *, const char *, mode_t);
 u_char		*buf_get(BUF *b);
+int			 buf_get_readerr(BUF *);
 #endif	/* BUF_H */

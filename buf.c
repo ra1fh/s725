@@ -45,6 +45,8 @@ struct buf {
 	u_char	*cb_buf;
 	size_t	 cb_size;
 	size_t	 cb_len;
+	/* record out of bounds access when reading */
+	int		 cb_readerr;
 };
 
 #define SIZE_LEFT(b)	(b->cb_size - b->cb_len)
@@ -70,6 +72,7 @@ buf_alloc(size_t len)
 
 	b->cb_size = len;
 	b->cb_len = 0;
+	b->cb_readerr = 0;
 
 	return (b);
 }
@@ -171,6 +174,7 @@ buf_empty(BUF *b)
 	if (b->cb_buf)
 		memset(b->cb_buf, 0, b->cb_size);
 	b->cb_len = 0;
+	b->cb_readerr = 0;
 }
 
 /*
@@ -194,6 +198,10 @@ buf_putc(BUF *b, int c)
 u_char
 buf_getc(BUF *b, size_t pos)
 {
+	if (pos >= b->cb_len) {
+		b->cb_readerr = 1;
+		return 0;
+	}
 	return (b->cb_buf[pos]);
 }
 
@@ -203,7 +211,13 @@ buf_getc(BUF *b, size_t pos)
 int
 buf_getbcd(BUF *b, size_t pos)
 {
-	u_char val = b->cb_buf[pos];
+	u_char val;
+	
+	if (pos >= b->cb_len) {
+		b->cb_readerr = 1;
+		return 0;
+	}
+	val = b->cb_buf[pos];
 	return ((val >> 4) * 10 + (val & 0x0f));
 }
 
@@ -213,7 +227,13 @@ buf_getbcd(BUF *b, size_t pos)
 int
 buf_getbcd_masked(BUF *b, size_t pos, unsigned char mask)
 {
-	u_char val = b->cb_buf[pos] & mask;
+	u_char val;
+	
+	if (pos >= b->cb_len) {
+		b->cb_readerr = 1;
+		return 0;
+	}
+	val = b->cb_buf[pos] & mask;
 	return ((val >> 4) * 10 + (val & 0x0f));
 }
 
@@ -223,6 +243,10 @@ buf_getbcd_masked(BUF *b, size_t pos, unsigned char mask)
 int
 buf_getshort(BUF *b, size_t pos)
 {
+	if (pos >= b->cb_len - 1) {
+		b->cb_readerr = 1;
+		return 0;
+	}
 	return buf_getc(b, pos) + (buf_getc(b, pos + 1) << 8);
 }
 
@@ -334,6 +358,12 @@ buf_write(BUF *b, const char *path, mode_t mode)
 	(void)close(fd);
 
 	return (0);
+}
+
+int
+buf_get_readerr(BUF * b)
+{
+	return b->cb_readerr;
 }
 
 /*

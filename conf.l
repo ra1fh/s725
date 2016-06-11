@@ -16,7 +16,6 @@ device    { return TOKDEVICE;    }
 driver    { return TOKDRIVER;    }
 directory { return TOKDIRECTORY; }
 serial    { return TOKSERIAL;    }
-stir      { return TOKSTIR;      }
 irda      { return TOKIRDA;      }
 format    { return TOKFORMAT;    }
 hrm       { return TOKHRM;       }

@@ -9,7 +9,6 @@
 #include "driver_int.h"
 
 extern struct s725_driver_ops serial_driver_ops;
-extern struct s725_driver_ops stir_driver_ops;
 extern struct s725_driver_ops irda_driver_ops;
 
 static struct s725_driver *driver;
@@ -34,11 +33,6 @@ driver_init(const int driver_type, const char *device)
 			driver->uses_frames = 1;
 			return 1;
 		}
-		break;
-	case DRIVER_STIR:
-		driver->dops = &stir_driver_ops;
-		driver->uses_frames = 1;
-		return 1;
 		break;
 	case DRIVER_IRDA:
 		driver->dops = &irda_driver_ops;
@@ -114,8 +108,6 @@ driver_name_to_type(const char *driver_name)
 {
 	if (!strcmp(driver_name, "serial")) {
 		return DRIVER_SERIAL;
-	} else if (!strcmp(driver_name, "stir")) {
-		return DRIVER_STIR;
 	} else if (!strcmp(driver_name, "irda")) {
 		return DRIVER_IRDA;
 	} else {
@@ -129,9 +121,6 @@ driver_type_to_name(int driver_type)
 	switch (driver_type) {
 	case DRIVER_SERIAL:
 		return "serial";
-		break;
-	case DRIVER_STIR:
-		return "stir";
 		break;
 	case DRIVER_IRDA:
 		return "irda";

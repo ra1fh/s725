@@ -9,19 +9,19 @@ This project is based on s710 from http://code.google.com/p/s710/.
 
 ### Building
 
-Building s725 requires libusb 1.0 or later, GNU make, flex,
+Building s725 requires GNU make, flex,
 yacc/byacc/bison:
 
 	# Debian/Ubuntu
-	apt-get install gcc make flex bison pkg-config libusb-1.0-0-dev
+	apt-get install gcc make flex bison pkg-config
 	make
 
 	# Fedora
-	dnf install gcc make flex byacc libusb-devel
+	dnf install gcc make flex byacc
 	make
 
     # OpenBSD
-	pkg_add libusb1 gmake
+	pkg_add gmake
 	gmake
 
 s725 has been tested on the following systems:
@@ -38,8 +38,8 @@ s725 has been tested on the following systems:
 
 The s725get utility takes a -d argument which specifies the driver
 type to be used to communicate with the device.  Valid values are
-"serial", "stir", "irda". A device filename is required for -d values
-of "serial", but not for "stir" or "irda". The default is -d serial.
+"serial", "irda". A device filename is required for -d values
+of "serial", but not for "irda". The default is -d serial.
 
 Examples:
 
@@ -61,7 +61,7 @@ the following settings:
 	# ~/.s725rc
 	#
 
-	# driver. possible values: serial, stir, irda
+	# driver. possible values: serial, irda
 	driver = serial
 
 	# device file name
@@ -109,20 +109,11 @@ This driver is known to work with:
  * Builtin Fujitsu Lifebook T4215 IR interface in IrDA mode (see BIOS
    setup) that is accessed like a standard serial port
 
-#### stir
-
-This stir driver handles SigmaTel STIr4200 based USB IrDA bridges via
-libusb. This means it doesn't use the Linux IrDA stack.
-
-Current status: Sending works. Receiving always returns bit errors and
-CRC errors. It looks like this device can't handle Polar communication
-correctly.
-
 #### irda
 
 This driver uses the Linux IrDA stack to talk to a Polar HRM.
 
-The S725X has two modes. The mode used by the serial or stir driver
+The S725X has two modes. The mode used by the serial driver
 respond to request frames containing a type field, len field and
 crc. In IrDA mode, the watch responds to discovery request from the
 IrDA host. The IrDA stack takes care of ensuring data transmissing,

@@ -22,7 +22,7 @@ COMMON_SRCS= workout.c workout_print.c workout_time.c \
 	xmalloc.c buf.c log.c
 
 S725GET_SRCS= $(COMMON_SRCS) s725get.c driver.c files.c format.c irda.c \
-	misc.c packet.c serial.c stir.c
+	misc.c packet.c serial.c
 
 HRMTOOL_SRCS= $(COMMON_SRCS) hrmtool.c format.c
 
@@ -30,13 +30,6 @@ S725GET_OBJS= $(patsubst %.c,%.o,$(S725GET_SRCS))
 HRMTOOL_OBJS= $(patsubst %.c,%.o,$(HRMTOOL_SRCS))
 PROG_OBJS= $(patsubst %,%.o,$(PROGS))
 CPPFLAGS+= $(DEFS) -I. $(INCDIRS)
-
-ifeq ($(shell pkg-config --exists libusb-1.0 && echo yes), yes)
-	CFLAGS+= $(shell pkg-config --cflags libusb-1.0)
-	LIBS+= $(shell pkg-config --libs libusb-1.0)	
-else
-	ERROR:= $(error libusb not found)
-endif
 
 ifneq (, $(filter Linux GNU GNU/%, $(shell uname -s)))
 CFLAGS+= -D_GNU_SOURCE -Icompat

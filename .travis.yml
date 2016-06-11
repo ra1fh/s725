@@ -13,7 +13,6 @@ addons:
     packages:
       - flex
       - bison
-      - libusb-1.0-0-dev
       - pkg-config
   
 script:

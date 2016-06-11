@@ -61,6 +61,8 @@ lex.yy.o: lex.yy.c
 
 s725get: $(CONF_OBJS) $(S725GET_OBJS) $(COMPAT_OBJS)
 	@uname -s
+	@uname -s | grep Linux
+	@uname -s | grep -q Linux | echo -D_GNU_SOURCE -Icompat ||:
 	@echo $(COMPAT_CFLAGS)
 	$(CC) $(LDFLAGS) -o $@ $(CONF_OBJS) $(S725GET_OBJS) $(COMPAT_OBJS) $(LIBS) 
 

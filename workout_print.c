@@ -657,16 +657,6 @@ workout_print_tcx(workout_t *w, FILE *fp)
 		return;
 	}
 
-	/* 
-	 * Sometimes users leave the watch in cycling mode when they don't
-	 * mean to.  Either they forget to change modes, or they just don't
-	 * feel like it.  The Polar software seems to "correct" for this by
-	 * detecting if the user actually recorded any meaningful speed, 
-	 * power and/or cadence data.  If they didn't, then the corresponding
-	 * flag is turned off, regardless of whether it was actually set in
-	 * the watch.  Seems like a reasonable idea, so let's do the same.
-	*/
-
 	sum_altitude = 0;
 	sum_cadence  = 0;
 	sum_speed    = 0;

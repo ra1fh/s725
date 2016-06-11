@@ -27,8 +27,8 @@ workout_time_increment(S725_Time *t, unsigned int seconds)
 	int minutes;
 	int secs;
 
-	hours   = seconds/3600;
-	minutes = (seconds/60)%60;
+	hours   = seconds / 3600;
+	minutes = (seconds / 60) % 60;
 	secs    = seconds % 60;
 
 	if (secs + t->seconds >= 60) {

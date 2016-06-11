@@ -336,7 +336,6 @@ workout_read_units(workout_t *w, BUF *buf)
 	}
 }
 
-
 static int
 workout_get_recording_interval(unsigned char b)
 {
@@ -351,7 +350,6 @@ workout_get_recording_interval(unsigned char b)
 
 	return ri;
 }
-
 
 static void
 workout_read_recording_interval(workout_t *w, BUF *buf, size_t offset)

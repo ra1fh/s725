@@ -40,11 +40,10 @@ CPPFLAGS+= $(DEFS) -I. $(INCDIRS)
 CFLAGS+= -g -Wall $(COMPAT_CFLAGS)
 
 CONF_OBJS= conf.tab.o lex.yy.o
-CONF_MISC= conf.tab.c conf.tab.h lex.yy.c parser parser.o
 
 CLEANFILES= $(S725GET_OBJS) $(HRMTOOL_OBJS)
 CLEANFILES+= $(PROGS) $(PROG_OBJS) $(COMPAT_OBJS) .depend
-CLEANFILES+= $(CONF_OBJS) $(CONF_MISC)
+CLEANFILES+= $(CONF_OBJS)
 
 all: $(PROGS)
 
@@ -59,12 +58,6 @@ conf.tab.o: conf.tab.c
 
 lex.yy.o: lex.yy.c
 	$(CC) -c -o lex.yy.o lex.yy.c
-
-parser.o: parser.c
-	$(CC) -c -o parser.o parser.c
-
-parser: $(CONF_OBJS) parser.o
-	$(CC) -o parser parser.o $(CONF_OBJS)
 
 s725get: $(CONF_OBJS) $(S725GET_OBJS) $(COMPAT_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $(CONF_OBJS) $(S725GET_OBJS) $(COMPAT_OBJS) $(LIBS) 

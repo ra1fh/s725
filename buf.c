@@ -208,6 +208,16 @@ buf_getbcd(BUF *b, size_t pos)
 }
 
 /*
+ * Return bcd decoded value at buffer position <pos>.
+ */
+int
+buf_getbcd_masked(BUF *b, size_t pos, unsigned char mask)
+{
+	u_char val = b->cb_buf[pos] & mask;
+	return ((val >> 4) * 10 + (val & 0x0f));
+}
+
+/*
  * Return little endian short value at buffer position <pos>.
  */
 int

@@ -15,7 +15,6 @@
 #include "files.h"
 #include "log.h"
 #include "packet.h"
-#include "utils.h"
 
 static int files_transfer(BUF *files, int packet_type);
 
@@ -63,9 +62,9 @@ files_timestamp (BUF *f, size_t offset)
 	struct tm t;
 	time_t ft;
 
-	t.tm_sec   = BCD(buf_getc(f, offset + 10));
-	t.tm_min   = BCD(buf_getc(f, offset + 11));
-	t.tm_hour  = BCD(buf_getc(f, offset + 12) & 0x7f);
+	t.tm_sec   = buf_getbcd(f, offset + 10);
+	t.tm_min   = buf_getbcd(f, offset + 11);
+	t.tm_hour  = buf_getbcd_masked(f, offset + 12, 0x7f);
 
 	/* PATCH for AM/PM mode detection from Berend Ozceri */
 	t.tm_hour += (buf_getc(f, offset + 13) & 0x80) ?                       /* am/pm mode?   */
@@ -73,9 +72,9 @@ files_timestamp (BUF *f, size_t offset)
 		 ((t.tm_hour >= 12) ? -12 : 0)) :                  /* yes, pm unset */
 		0;                                                 /* no            */
 
-	t.tm_mon   = LNIB(buf_getc(f, offset + 15) - 1);
-	t.tm_mday  = BCD(buf_getc(f, offset + 13) & 0x7f);
-	t.tm_year  = 100 + BCD(buf_getc(f, offset + 14));
+	t.tm_mon   = (buf_getc(f, offset + 15) - 1) &0x0f;
+	t.tm_mday  = buf_getbcd_masked(f, offset + 13, 0x7f);
+	t.tm_year  = 100 + buf_getbcd(f, offset + 14);
 	t.tm_isdst = -1;
 	ft         = mktime(&t);
   

@@ -12,7 +12,6 @@
 #include <unistd.h>
 
 #include "log.h"
-#include "utils.h"
 #include "workout.h"
 #include "workout_int.h"
 #include "workout_label.h"

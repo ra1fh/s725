@@ -47,6 +47,7 @@ void		 buf_free(BUF *);
 void		*buf_release(BUF *);
 u_char		 buf_getc(BUF *, size_t);
 int			 buf_getbcd(BUF *, size_t);
+int			 buf_getbcd_masked(BUF *b, size_t pos, unsigned char mask);
 int			 buf_getshort(BUF *, size_t);
 void		 buf_empty(BUF *);
 size_t		 buf_append(BUF *, const void *, size_t);

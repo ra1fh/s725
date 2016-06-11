@@ -20,7 +20,6 @@
 #include "files.h"
 #include "log.h"
 #include "packet.h"
-#include "utils.h"
 
 int time_get() {
 	packet_t *p = NULL;

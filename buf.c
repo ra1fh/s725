@@ -198,6 +198,25 @@ buf_getc(BUF *b, size_t pos)
 }
 
 /*
+ * Return bcd decoded value at buffer position <pos>.
+ */
+int
+buf_getbcd(BUF *b, size_t pos)
+{
+	u_char val = b->cb_buf[pos];
+	return ((val >> 4) * 10 + (val & 0x0f));
+}
+
+/*
+ * Return little endian short value at buffer position <pos>.
+ */
+int
+buf_getshort(BUF *b, size_t pos)
+{
+	return buf_getc(b, pos) + (buf_getc(b, pos + 1) << 8);
+}
+
+/*
  * Append <len> bytes of data pointed to by <data> to the buffer <b>.  If the
  * buffer is too small to accept all data, it will get resized to an
  * appropriate size to accept all data.

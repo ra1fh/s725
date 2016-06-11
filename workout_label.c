@@ -10,16 +10,16 @@ static char alpha_map(unsigned char c);
 static unsigned char inverse_alpha_map(char c);
 
 void
-workout_label_extract(unsigned char *buf, S725_Label *label, int bytes)
+workout_label_extract(BUF *buf, size_t offset, S725_Label *label, int bytes)
 {
 	int i;
 	char *p = (char*) label;
 
-	for (i = 0; i < bytes && i < (int) sizeof(S725_Label)-1; i++) {
-		*(p+i) = alpha_map(buf[i]);
+	for (i = 0; i < bytes && i < (int) sizeof(S725_Label) - 1; i++) {
+		*(p + i) = alpha_map(buf_getc(buf, i + offset));
 	}
 
-	*(p+i) = 0;
+	*(p + i) = 0;
 }
 
 void

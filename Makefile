@@ -97,7 +97,7 @@ install:
 	$(INSTALLBIN) $(PROGS) $(DESTDIR)$(PREFIX)/bin
 	$(INSTALLBIN) s725html $(DESTDIR)$(PREFIX)/bin
 
-check:
+check: hrmtool
 	@cd tests && $(SHELL) runtests
 
 ifeq ($(wildcard .depend),.depend)

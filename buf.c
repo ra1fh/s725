@@ -310,63 +310,6 @@ buf_capacity(BUF *b)
 	return (b->cb_size);
 }
 
-/*
- * Write the contents of the buffer <b> to the specified <fd>
- */
-int
-buf_write_fd(BUF *b, int fd)
-{
-	u_char *bp;
-	size_t len;
-	ssize_t ret;
-
-	len = b->cb_len;
-	bp = b->cb_buf;
-
-	do {
-		ret = write(fd, bp, len);
-		if (ret == -1) {
-			if (errno == EINTR || errno == EAGAIN)
-				continue;
-			return (-1);
-		}
-
-		len -= (size_t)ret;
-		bp += (size_t)ret;
-	} while (len > 0);
-
-	return (0);
-}
-
-/*
- * Write the contents of the buffer <b> to the file whose path is given in
- * <path>.  If the file does not exist, it is created with mode <mode>.
- */
-int
-buf_write(BUF *b, const char *path, mode_t mode)
-{
-	int fd;
- open:
-	if ((fd = open(path, O_WRONLY|O_CREAT|O_TRUNC, mode)) == -1) {
-		if (errno == EACCES && unlink(path) != -1)
-			goto open;
-		else
-			err(1, "%s", path);
-	}
-
-	if (buf_write_fd(b, fd) == -1) {
-		(void)unlink(path);
-		errx(1, "buf_write: buf_write_fd: `%s'", path);
-	}
-
-	if (fchmod(fd, mode) < 0)
-		warn("permissions not set on file %s", path);
-
-	(void)close(fd);
-
-	return (0);
-}
-
 int
 buf_get_readerr(BUF * b)
 {

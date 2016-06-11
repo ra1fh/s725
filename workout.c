@@ -14,7 +14,6 @@
 #include "log.h"
 #include "workout.h"
 #include "workout_int.h"
-#include "workout_label.h"
 #include "workout_time.h"
 
 static S725_HRM_Type workout_detect_hrm_type(BUF *buf);
@@ -37,6 +36,8 @@ static void workout_read_ride_info(workout_t *w, BUF *buf, size_t offset);
 static int workout_read_laps(workout_t *w, BUF *buf);
 static void workout_compute_speed_info(workout_t *w);
 static int workout_read_samples(workout_t *w, BUF *buf);
+static void workout_label_extract(BUF *buf, size_t offset, S725_Label *label, int bytes);
+static char alpha_map(unsigned char c);
 
 /**********************************************************************/
 
@@ -815,4 +816,62 @@ workout_allocate_sample_space (workout_t *w)
 #undef MAKEBUF
 
 	return ok;
+}
+
+static void
+workout_label_extract(BUF *buf, size_t offset, S725_Label *label, int bytes)
+{
+	int i;
+	char *p = (char*) label;
+
+	for (i = 0; i < bytes && i < (int) sizeof(S725_Label) - 1; i++) {
+		*(p + i) = alpha_map(buf_getc(buf, i + offset));
+	}
+
+	*(p + i) = 0;
+}
+
+static char
+alpha_map(unsigned char c)
+{
+	char a = '?';
+
+	switch (c) {
+	case 0: case 1: case 2: case 3: case 4: 
+	case 5: case 6: case 7: case 8: case 9:
+		a = '0' + c;
+		break;
+	case 10:
+		a = ' ';
+		break;
+	case 11: case 12: case 13: case 14: case 15:
+	case 16: case 17: case 18: case 19: case 20:
+	case 21: case 22: case 23: case 24: case 25:
+	case 26: case 27: case 28: case 29: case 30:
+	case 31: case 32: case 33: case 34: case 35:
+	case 36:
+		a = 'A' + c - 11;
+		break;
+	case 37: case 38: case 39: case 40: case 41:
+	case 42: case 43: case 44: case 45: case 46:
+	case 47: case 48: case 49: case 50: case 51:
+	case 52: case 53: case 54: case 55: case 56:
+	case 57: case 58: case 59: case 60: case 61:
+	case 62:
+		a = 'a' + c - 37;
+		break;
+	case 63: a = '-'; break;
+	case 64: a = '%'; break;
+	case 65: a = '/'; break;
+	case 66: a = '('; break;
+	case 67: a = ')'; break;
+	case 68: a = '*'; break;
+	case 69: a = '+'; break;
+	case 70: a = '.'; break;
+	case 71: a = ':'; break;
+	case 72: a = '?'; break;
+	default:          break;
+	}
+  
+	return a;
 }

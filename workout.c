@@ -48,21 +48,21 @@ workout_read_buf(BUF *buf)
 	off_t size;
 
 	if (buf_len(buf) < 2) {
-		log_error("workout_read_buf: buffer size too small");
+		log_info("workout_read_buf: buffer size too small");
 		return NULL;
 	}
 
 	size = buf_getshort(buf, 0);
 	
 	if (size != buf_len(buf)) {
-		log_error("workout_read_buf: len does not match buffer len");
+		log_info("workout_read_buf: len does not match buffer len");
 		return NULL;
 	}
 
 	type = workout_detect_hrm_type(buf);
 
 	if (type == S725_HRM_UNKNOWN || buf_get_readerr(buf)) {
-		log_error("workout_read_buf: unable to auto-detect HRM type");
+		log_info("workout_read_buf: unable to auto-detect HRM type");
 		return NULL;
 	}
 
@@ -80,6 +80,8 @@ workout_read(char *filename)
 	buf = buf_load(filename);
 	if (buf)
 		w = workout_read_buf(buf);
+	else
+		log_info("workout_read: load error");
 
 	return w;
 }
@@ -171,7 +173,7 @@ workout_extract(BUF *buf, S725_HRM_Type type)
 	int ok = 1;
 	
 	if ((w = calloc(1, sizeof(workout_t))) == NULL) {
-		log_error("workout_extract: calloc: %s", strerror(errno));
+		log_info("workout_extract: calloc: %s", strerror(errno));
 		return NULL;
 	}
 
@@ -184,7 +186,8 @@ workout_extract(BUF *buf, S725_HRM_Type type)
 	workout_read_duration(w, buf, 15);
 
 	if (buf_get_readerr(buf)) {
-		log_error("workout_extract: readerr after header");
+		log_info("workout_extract: readerr after header (%d > %d)",
+				 buf_get_readerr_offset(buf), buf_len(buf));
 		workout_free(w);
 		return NULL;
 	}
@@ -199,7 +202,8 @@ workout_extract(BUF *buf, S725_HRM_Type type)
 	workout_read_units(w, buf);
 
 	if (buf_get_readerr(buf)) {
-		log_error("workout_extract: readerr after units");
+		log_info("workout_extract: readerr after units (%d > %d)",
+				 buf_get_readerr_offset(buf), buf_len(buf));
 		workout_free(w);
 		return NULL;
 	}
@@ -223,19 +227,32 @@ workout_extract(BUF *buf, S725_HRM_Type type)
 	}
 
 	if (buf_get_readerr(buf)) {
-		log_error("workout_extract: readerr after mode");
+		log_info("workout_extract: readerr after mode (%d > %d)",
+				 buf_get_readerr_offset(buf), buf_len(buf));
 		workout_free(w);
 		return NULL;
 	}
 	
 	ok = workout_read_laps(w, buf);
-	if (!ok || buf_get_readerr(buf)) {
+	if (buf_get_readerr(buf)) {
+		log_info("workout_extract: readerr after read laps (%d > %d)",
+				 buf_get_readerr_offset(buf), buf_len(buf));
+		workout_free(w);
+		return NULL;
+	}
+	if (!ok) {
 		workout_free(w);
 		return NULL;
 	}
 	
 	ok = workout_read_samples(w, buf);
-	if (!ok || buf_get_readerr(buf)) {
+	if (buf_get_readerr(buf)) {
+		log_info("workout_extract: readerr after read samples (%d > %d)",
+				 buf_get_readerr_offset(buf), buf_len(buf));
+		workout_free(w);
+		return NULL;
+	}
+	if (!ok) {
 		workout_free(w);
 		return NULL;
 	}
@@ -509,14 +526,14 @@ workout_read_laps(workout_t *w, BUF *buf)
 	hdr_size = workout_header_size(w);
 
 	if (w->laps <=0 || w->laps > 1024) {
-		log_error("workout_read_laps: invalid number of laps (%d)", w->laps);
+		log_info("workout_read_laps: invalid number of laps (%d)", w->laps);
 		return 0;
 	}
 		
 	w->lap_data = calloc(w->laps, sizeof(lap_data_t));
 
 	if (w->lap_data == NULL) {
-		log_error("workout_read_laps: calloc (%s)", strerror(errno));
+		log_info("workout_read_laps: calloc (%s)", strerror(errno));
 		return 0;
 	}
 

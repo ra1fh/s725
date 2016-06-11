@@ -60,6 +60,8 @@ lex.yy.o: lex.yy.c
 	$(CC) -c -o lex.yy.o lex.yy.c
 
 s725get: $(CONF_OBJS) $(S725GET_OBJS) $(COMPAT_OBJS)
+	@uname -s
+	@echo $(COMPAT_CFLAGS)
 	$(CC) $(LDFLAGS) -o $@ $(CONF_OBJS) $(S725GET_OBJS) $(COMPAT_OBJS) $(LIBS) 
 
 hrmtool: $(HRMTOOL_OBJS) $(COMPAT_OBJS)

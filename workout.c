@@ -61,7 +61,7 @@ workout_read_buf(BUF *buf)
 
 	type = workout_detect_hrm_type(buf);
 
-	if (type == S725_HRM_UNKNOWN) {
+	if (type == S725_HRM_UNKNOWN || buf_get_readerr(buf)) {
 		log_error("workout_read_buf: unable to auto-detect HRM type");
 		return NULL;
 	}
@@ -171,7 +171,7 @@ workout_extract(BUF *buf, S725_HRM_Type type)
 	int ok = 1;
 	
 	if ((w = calloc(1, sizeof(workout_t))) == NULL) {
-		log_error("extract_workout: calloc: %s", strerror(errno));
+		log_error("workout_extract: calloc: %s", strerror(errno));
 		return NULL;
 	}
 
@@ -183,6 +183,12 @@ workout_extract(BUF *buf, S725_HRM_Type type)
 	workout_read_date(w, buf);
 	workout_read_duration(w, buf, 15);
 
+	if (buf_get_readerr(buf)) {
+		log_error("workout_extract: readerr after header");
+		workout_free(w);
+		return NULL;
+	}
+	
 	w->avg_hr        = buf_getc(buf, 19);
 	w->max_hr        = buf_getc(buf, 20);
 	w->laps          = buf_getbcd(buf, 21);
@@ -191,6 +197,12 @@ workout_extract(BUF *buf, S725_HRM_Type type)
 	w->user_id       = buf_getbcd(buf, 24);
 
 	workout_read_units(w, buf);
+
+	if (buf_get_readerr(buf)) {
+		log_error("workout_extract: readerr after units");
+		workout_free(w);
+		return NULL;
+	}
 
 	/* recording mode and interval */
 	if (w->type == S725_HRM_S610) {
@@ -210,11 +222,17 @@ workout_extract(BUF *buf, S725_HRM_Type type)
 		workout_read_ride_info           (w, buf, 79);
 	}
 
+	if (buf_get_readerr(buf)) {
+		log_error("workout_extract: readerr after mode");
+		workout_free(w);
+		return NULL;
+	}
+	
 	workout_read_laps(w, buf);
 	ok = workout_read_samples(w, buf);
 
 	/* never let a partially allocated workout get through. */
-	if (!ok) {
+	if (!ok || buf_get_readerr(buf)) {
 		workout_free(w);
 		return NULL;
 	}

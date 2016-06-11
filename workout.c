@@ -34,7 +34,7 @@ static void workout_read_bestlap_split(workout_t *w, BUF *buf, size_t offset);
 static void workout_read_energy(workout_t *w, BUF *buf, size_t offset);
 static void workout_read_cumulative_exercise(workout_t *w, BUF *buf, size_t offset);
 static void workout_read_ride_info(workout_t *w, BUF *buf, size_t offset);
-static void workout_read_laps(workout_t *w, BUF *buf);
+static int workout_read_laps(workout_t *w, BUF *buf);
 static void workout_compute_speed_info(workout_t *w);
 static int workout_read_samples(workout_t *w, BUF *buf);
 
@@ -228,10 +228,13 @@ workout_extract(BUF *buf, S725_HRM_Type type)
 		return NULL;
 	}
 	
-	workout_read_laps(w, buf);
+	ok = workout_read_laps(w, buf);
+	if (!ok || buf_get_readerr(buf)) {
+		workout_free(w);
+		return NULL;
+	}
+	
 	ok = workout_read_samples(w, buf);
-
-	/* never let a partially allocated workout get through. */
 	if (!ok || buf_get_readerr(buf)) {
 		workout_free(w);
 		return NULL;
@@ -489,7 +492,7 @@ workout_read_ride_info(workout_t *w, BUF *buf, size_t offset)
 /*
  * Extract the lap data. 
  */
-static void
+static int
 workout_read_laps(workout_t *w, BUF *buf)
 {
 	S725_Distance prev_lap_dist;
@@ -504,7 +507,18 @@ workout_read_laps(workout_t *w, BUF *buf)
 	prev_lap_dist = 0;
 	lap_size = workout_bytes_per_lap(w->type, w->mode, w->interval_mode);
 	hdr_size = workout_header_size(w);
+
+	if (w->laps <=0 || w->laps > 1024) {
+		log_error("workout_read_laps: invalid number of laps (%d)", w->laps);
+		return 0;
+	}
+		
 	w->lap_data = calloc(w->laps, sizeof(lap_data_t));
+
+	if (w->lap_data == NULL) {
+		log_error("workout_read_laps: calloc (%s)", strerror(errno));
+		return 0;
+	}
 
 	for (i = 0; i < w->laps; i++) {
 		/* position to the start of the lap */
@@ -581,6 +595,8 @@ workout_read_laps(workout_t *w, BUF *buf)
       		l->speed = buf_getc(buf, offset + 2) + ((buf_getc(buf, offset + 3) & 0xf0) << 4);
 		}
 	}
+
+	return 1;
 }
 
 static int
@@ -757,6 +773,11 @@ workout_allocate_sample_space (workout_t *w)
 {
 	int ok = 1;
 
+	if (w->samples <= 0 || w->samples > 1048576) {
+		log_error("workout_allocate_sample_space: invalid number of samples (%d)", w->samples);
+		return 0;
+	}
+	
 #define  MAKEBUF(a, b)											\
 	if ((w->a = calloc(w->samples, sizeof(b))) == NULL) {		\
 		log_error("%s: calloc(%d,%ld): %s",					    \

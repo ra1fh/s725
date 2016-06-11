@@ -47,6 +47,7 @@ struct buf {
 	size_t	 cb_len;
 	/* record out of bounds access when reading */
 	int		 cb_readerr;
+	size_t	 cb_readerr_offset;
 };
 
 #define SIZE_LEFT(b)	(b->cb_size - b->cb_len)
@@ -73,6 +74,7 @@ buf_alloc(size_t len)
 	b->cb_size = len;
 	b->cb_len = 0;
 	b->cb_readerr = 0;
+	b->cb_readerr_offset = 0;
 
 	return (b);
 }
@@ -175,6 +177,7 @@ buf_empty(BUF *b)
 		memset(b->cb_buf, 0, b->cb_size);
 	b->cb_len = 0;
 	b->cb_readerr = 0;
+	b->cb_readerr_offset = 0;
 }
 
 /*
@@ -200,6 +203,7 @@ buf_getc(BUF *b, size_t pos)
 {
 	if (pos >= b->cb_len) {
 		b->cb_readerr = 1;
+		b->cb_readerr_offset = pos;
 		return 0;
 	}
 	return (b->cb_buf[pos]);
@@ -215,6 +219,7 @@ buf_getbcd(BUF *b, size_t pos)
 	
 	if (pos >= b->cb_len) {
 		b->cb_readerr = 1;
+		b->cb_readerr_offset = pos;
 		return 0;
 	}
 	val = b->cb_buf[pos];
@@ -231,6 +236,7 @@ buf_getbcd_masked(BUF *b, size_t pos, unsigned char mask)
 	
 	if (pos >= b->cb_len) {
 		b->cb_readerr = 1;
+		b->cb_readerr_offset = pos;
 		return 0;
 	}
 	val = b->cb_buf[pos] & mask;
@@ -245,6 +251,7 @@ buf_getshort(BUF *b, size_t pos)
 {
 	if (pos >= b->cb_len - 1) {
 		b->cb_readerr = 1;
+		b->cb_readerr_offset = pos;
 		return 0;
 	}
 	return buf_getc(b, pos) + (buf_getc(b, pos + 1) << 8);
@@ -366,6 +373,12 @@ buf_get_readerr(BUF * b)
 	return b->cb_readerr;
 }
 
+size_t
+buf_get_readerr_offset(BUF * b)
+{
+	return b->cb_readerr_offset;
+}
+
 /*
  * Grow the buffer <b> by <len> bytes.  The contents are unchanged by this
  * operation regardless of the result.
@@ -376,4 +389,3 @@ buf_grow(BUF *b, size_t len)
 	b->cb_buf = xrealloc(b->cb_buf, 1, b->cb_size + len);
 	b->cb_size += len;
 }
-

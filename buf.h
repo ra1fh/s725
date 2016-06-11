@@ -59,4 +59,5 @@ int			 buf_write_fd(BUF *, int);
 int			 buf_write(BUF *, const char *, mode_t);
 u_char		*buf_get(BUF *b);
 int			 buf_get_readerr(BUF *);
+size_t		 buf_get_readerr_offset(BUF *);
 #endif	/* BUF_H */

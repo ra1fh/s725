@@ -268,7 +268,7 @@ packet_recv_noframes()
 		goto error;
 
 	p->type   = S725_RESPONSE;
-	p->id     = buf_get(buf)[0];
+	p->id     = buf_getc(buf, 0);
 	p->length = buf_len(buf);
 	memcpy(p->data, buf_get(buf) + 1, buf_len(buf) - 1);
 

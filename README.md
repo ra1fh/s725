@@ -13,7 +13,7 @@ Building s725 requires make, gcc/clang, flex,
 yacc/byacc/bison:
 
 	# Debian/Ubuntu
-	apt-get install gcc make flex bison pkg-config
+	apt-get install gcc make flex bison
 	make
 
 	# Fedora

@@ -81,19 +81,6 @@ xfree(void *ptr)
 	free(ptr);
 }
 
-char *
-xstrdup(const char *str)
-{
-	size_t len;
-	char *cp;
-
-	len = strlen(str) + 1;
-	cp = xmalloc(len);
-	if (strlcpy(cp, str, len) >= len)
-		errx(1, "xstrdup: string truncated");
-	return cp;
-}
-
 int
 xasprintf(char **ret, const char *fmt, ...)
 {

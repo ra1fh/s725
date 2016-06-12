@@ -19,7 +19,7 @@ INSTALLMAN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 444
 PROGS= s725get hrmtool
 
 COMMON_SRCS= workout.c workout_print.c workout_time.c \
-	xmalloc.c buf.c log.c strlcpy.c
+	xmalloc.c buf.c log.c
 
 S725GET_SRCS= $(COMMON_SRCS) s725get.c driver.c files.c format.c irda.c \
 	misc.c packet.c serial.c
@@ -54,7 +54,7 @@ lex.yy.o: lex.yy.c
 	$(CC) -c -o lex.yy.o lex.yy.c
 
 s725get: $(CONF_OBJS) $(S725GET_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $(CONF_OBJS) $(S725GET_OBJS) $(LIBS) 
+	$(CC) $(LDFLAGS) -o $@ $(CONF_OBJS) $(S725GET_OBJS)
 
 hrmtool: $(HRMTOOL_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $(HRMTOOL_OBJS)

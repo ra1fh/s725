@@ -126,7 +126,7 @@ workout_time_print(S725_Time *t, const char *format, FILE *fp)
 		switch (*p) {
 		case 'h': case 'H':
 			if (r) fprintf(fp, ":");
-			fprintf(fp, "%d", t->hours);
+			fprintf(fp, "%02d", t->hours);
 			r = 1;
 			break;
 		case 'm': case 'M':

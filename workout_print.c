@@ -259,7 +259,7 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
 	if (what & S725_WORKOUT_SAMPLES) {
 		/* sample data */
 		fprintf(fp, "# \n# Recorded data:\n# \n");
-		fprintf(fp, "# Time\t\t HR");
+		fprintf(fp, "# Time\t HR");
 
 		if (S725_HAS_ALTITUDE(w->mode)) {
 			fprintf(fp, "\t Alt\t    VAM");
@@ -276,7 +276,7 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
 		memset(&s, 0, sizeof(s));
 		for (i = 0; i < w->samples; i++) {
 			workout_time_print(&s, "hms", fp);
-			fprintf(fp, "\t\t%3d", w->hr_data[i]);
+			fprintf(fp, "\t%3d", w->hr_data[i]);
 
 			if (S725_HAS_ALTITUDE(w->mode)) {
 				/* compute VAM as the average of the past 60 seconds... */

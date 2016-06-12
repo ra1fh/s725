@@ -1,4 +1,4 @@
-/* s725get main */
+/* s725get.c - s725get main */
 
 /*
  * Copyright (C) 2016  Ralf Horstmann

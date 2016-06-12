@@ -1,4 +1,4 @@
-/* hrmtool main */
+/* hrmtool.c - hrmtool main */
 
 /*
  * Copyright (C) 2016  Ralf Horstmann

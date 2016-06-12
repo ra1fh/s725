@@ -1,4 +1,4 @@
-/* serial/ir driver */
+/* serial.c - serial/ir driver */
 
 /*
  * Copyright (C) 2016 Ralf Horstmann

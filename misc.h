@@ -1,3 +1,5 @@
+/* misc.c - misc protocol commands */
+
 /*
  * Copyright (c) 2016 Ralf Horstmann <ralf@ackstorm.de>
  * 

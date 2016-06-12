@@ -1,5 +1,8 @@
+/* buf.c - buffer library */
+
 /*
  * Copyright (c) 2003 Jean-Francois Brousseau <jfb@openbsd.org>
+ * Copyright (c) 2016 Ralf Horstmann <ralf@ackstorm.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

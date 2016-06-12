@@ -1,4 +1,4 @@
-/* irda driver */
+/* irda.c - irda driver using Linux irda socket */
 
 /*
  * Copyright (C) 2016 Ralf Horstmann

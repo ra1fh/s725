@@ -1,4 +1,4 @@
-/* log.h */
+/* log.h - logging api */
 
 /*
  * Copyright (c) 2003, 2004 Henning Brauer <henning@openbsd.org>

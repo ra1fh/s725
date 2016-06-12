@@ -17,18 +17,14 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import matplotlib.pyplot as plt
-import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import numpy as np
 
 import sys
-import csv
 import os
 
-from datetime import datetime
-
 def usage():
-    print("usage: plot <input> <output directory>")
+    print("usage: s725plot <input> <output directory>")
     sys.exit()
 
 def bytespdate2num(fmt, encoding='ascii'):

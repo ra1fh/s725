@@ -37,7 +37,7 @@ CONF_OBJS= conf.tab.o lex.yy.o
 
 CLEANFILES= $(S725GET_OBJS) $(HRMTOOL_OBJS)
 CLEANFILES+= $(PROGS) $(PROG_OBJS) .depend
-CLEANFILES+= $(CONF_OBJS)
+CLEANFILES+= $(CONF_OBJS) conf.tab.c conf.tab.h lex.yy.c
 
 all: $(PROGS)
 

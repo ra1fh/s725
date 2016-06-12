@@ -19,7 +19,7 @@ INSTALLMAN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 444
 PROGS= s725get hrmtool
 
 COMMON_SRCS= workout.c workout_print.c workout_time.c \
-	xmalloc.c buf.c log.c
+	xmalloc.c buf.c log.c strlcpy.c
 
 S725GET_SRCS= $(COMMON_SRCS) s725get.c driver.c files.c format.c irda.c \
 	misc.c packet.c serial.c
@@ -27,22 +27,16 @@ S725GET_SRCS= $(COMMON_SRCS) s725get.c driver.c files.c format.c irda.c \
 HRMTOOL_SRCS= $(COMMON_SRCS) hrmtool.c format.c
 
 S725GET_OBJS= $(S725GET_SRCS:.c=.o)
-TEST_OBJS= $(S725GET_SRCS:.c=.o)
 HRMTOOL_OBJS= $(HRMTOOL_SRCS:.c=.o)
 PROG_OBJS= $(PROGS:=.o)
 
-COMPAT_CFLAGS != uname -s | grep -q Linux && echo -D_GNU_SOURCE -Icompat ||:
-COMPAT_SRCS   != uname -s | grep -q Linux && echo compat/strclcpy.c      ||:
-
-COMPAT_OBJS = $(COMPAT_SRCS:.c=.o)
-
 CPPFLAGS+= $(DEFS) -I. $(INCDIRS)
-CFLAGS+= -g -Wall $(COMPAT_CFLAGS)
+CFLAGS+= -g -Wall
 
 CONF_OBJS= conf.tab.o lex.yy.o
 
 CLEANFILES= $(S725GET_OBJS) $(HRMTOOL_OBJS)
-CLEANFILES+= $(PROGS) $(PROG_OBJS) $(COMPAT_OBJS) .depend
+CLEANFILES+= $(PROGS) $(PROG_OBJS) .depend
 CLEANFILES+= $(CONF_OBJS)
 
 all: $(PROGS)
@@ -59,15 +53,11 @@ conf.tab.o: conf.tab.c
 lex.yy.o: lex.yy.c
 	$(CC) -c -o lex.yy.o lex.yy.c
 
-s725get: $(CONF_OBJS) $(S725GET_OBJS) $(COMPAT_OBJS)
-	@uname -s
-	@uname -s | grep Linux
-	@uname -s | grep -q Linux | echo -D_GNU_SOURCE -Icompat ||:
-	@echo $(COMPAT_CFLAGS)
-	$(CC) $(LDFLAGS) -o $@ $(CONF_OBJS) $(S725GET_OBJS) $(COMPAT_OBJS) $(LIBS) 
+s725get: $(CONF_OBJS) $(S725GET_OBJS)
+	$(CC) $(LDFLAGS) -o $@ $(CONF_OBJS) $(S725GET_OBJS) $(LIBS) 
 
-hrmtool: $(HRMTOOL_OBJS) $(COMPAT_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $(HRMTOOL_OBJS) $(COMPAT_OBJS)
+hrmtool: $(HRMTOOL_OBJS)
+	$(CC) $(LDFLAGS) -o $@ $(HRMTOOL_OBJS)
 
 depend: $(S725GET_SRCS) $(SRDCAT_SRCS) $(SRDTCX_SRCS) $(SRDHEAD_SRCS)
 	$(CC) $(CPPFLAGS) -MM $(S725GET_SRCS) $(SRDCAT_SRCS) $(SRDTCX_SRCS) $(SRDHEAD_SRCS) > .depend

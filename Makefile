@@ -31,7 +31,7 @@ HRMTOOL_OBJS= $(HRMTOOL_SRCS:.c=.o)
 PROG_OBJS= $(PROGS:=.o)
 
 CPPFLAGS+= $(DEFS) -I. $(INCDIRS)
-CFLAGS+= -g -Wall
+CFLAGS+= -g -Wall -D_GNU_SOURCE
 
 CONF_OBJS= conf.tab.o lex.yy.o
 

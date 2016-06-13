@@ -74,7 +74,7 @@ check: hrmtool
 	@cd tests && $(SHELL) runtests
 
 valgrind: hrmtool
-	@cd tests && $(SHELL) runtests valgrind
+	@cd tests && $(SHELL) runtests "valgrind --error-exitcode=1 --leak-check=full"
 
 -include .depend
 

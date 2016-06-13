@@ -133,3 +133,17 @@ When this works, the s725get tool can be used like this:
 
 This driver is work in progress and currently only works for simple
 requests, (like -t to query the time and date).
+
+### s725plot
+
+#### Usage
+
+	usage: s725plot <path to txt file> <output directory>
+
+#### Examples
+
+![Heart Rate Diagram](examples/20160522T114225.01469-hr.png)
+
+![Altitude Diagram](examples/20160522T114225.01469-alt.png)
+
+![Histogram](examples/20160522T114225.01469-hist.png)

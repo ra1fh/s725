@@ -1,23 +1,36 @@
 #!/bin/sh
 
 retval=0
+wrapper=$1
+
+if [ -n "$wrapper" ]; then
+	nl="\n"
+	pad="========= "
+fi
 
 for t in *.srd; do
 	b=$(basename $t .srd)
 
 	for f in txt hrm tcx; do
-		if [ -f $b.$f ]; then
-			echo -n "$t -> $b.$f"
-			../hrmtool -i srd -f $t -o $f -F $b.out
-			if ! cmp -s $b.$f $b.out; then
-				echo " FAIL"
+		[ -f $b.$f ] || continue
+		h="$t -> $b.$f"
+		echo -n "${pad}${h} ${nl}"
+
+		$wrapper ../hrmtool -i srd -f $t -o $f -F $b.out || retval=1
+		if [ -f $b.out ]; then
+			if cmp -s $b.$f $b.out; then
+				echo "${pad}OK${nl}"
+			else
+				echo "${pad}FAIL${nl}"
 				diff -u $b.$f $b.out
 				retval=1
-			else
-				echo " OK"
 			fi
-			rm $b.out
+		else
+			echo "${pad}FAIL${nl}"
+			retval=1
 		fi
+		
+ 		rm -f $b.out
 	done
 done
 

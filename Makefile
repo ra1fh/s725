@@ -1,5 +1,5 @@
 
-.PHONY: clean
+.PHONY: clean check valgrind
 
 FLEX?= flex
 YACC?= yacc
@@ -72,6 +72,9 @@ install:
 
 check: hrmtool
 	@cd tests && $(SHELL) runtests
+
+valgrind: hrmtool
+	@cd tests && $(SHELL) runtests valgrind
 
 -include .depend
 

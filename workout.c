@@ -96,10 +96,12 @@ workout_read(char *filename)
 	BUF *buf;
 
 	buf = buf_load(filename);
-	if (buf)
+	if (buf) {
 		w = workout_read_buf(buf);
-	else
+		buf_free(buf);
+	} else {
 		log_info("workout_read: load error");
+	}
 
 	return w;
 }

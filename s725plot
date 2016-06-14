@@ -88,13 +88,14 @@ def plotalt(data, filename, output):
 def plothist(data, filename, output):
     x = data['hr']
     y = data['time']
+    weight = [round(((y[1] - y[0]) * 60 * 24), 2) for i in x]
     fig, ax = plt.subplots(1)
     fig = plt.figure(figsize=(9.0, 5.0))
     fig.set_figwidth(9.0)
     fig.set_figheight(5.0)
     bins = [ 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205 ]
     ticks = [40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
-    n, bins, patches = plt.hist(x, bins, normed=False, facecolor='blue', alpha=0.5)
+    n, bins, patches = plt.hist(x, bins, weights=weight, normed=False, facecolor='blue', alpha=0.5)
     plt.xticks(ticks)
     plt.xlim([30,210])
     plt.title(os.path.basename(filename))

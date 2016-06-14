@@ -20,8 +20,9 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import numpy as np
 
-import sys
+import copy
 import os
+import sys
 
 def usage():
     print("usage: s725plot <input> <output directory>")
@@ -42,23 +43,30 @@ def read(filename):
     return data
     
 def plothr(data, filename, output):
-    x = data['time']
-    y = data['hr']
-    fig, ax = plt.subplots(1)
+    hr = data['hr']
+    x_data = data['time']
+    x_mean = copy.copy(x_data)
+    x_mean[0]  = min(x_data) - 15.0/(24*60)
+    x_mean[-1] = max(x_data) + 15.0/(24*60)
+    mean = [np.mean(hr) for i in x_mean]
+    fig, ax = plt.subplots()
     fig.set_figwidth(9.0)
     fig.set_figheight(5.0)
+    data_line, = ax.plot_date(x=x_data, y=hr, label='HR', fmt="r-")
+    data_line.set_color('#700000')
+    mean_line, = ax.plot(x_mean, mean, label='Mean: ' + str(mean[0]), linestyle='--')
+    mean_line.set_color('#505050')
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-    line, = plt.plot_date(x=x, y=y, fmt="r-")
-    line.set_color('#700000')
-    plt.title(os.path.basename(filename))
-    plt.xlabel("Time (h)")
-    plt.ylabel("Heart Rate (bpm)")
-    plt.xlim([min(x) - 15.0/(24*60), max(x) + 15.0/(24*60)])
-    plt.ylim([30,210])
-    plt.yticks([40,60,80,100,120,140,160,180,200])
-    plt.grid(True)
+    ax.set_title(os.path.basename(filename))
+    ax.set_xlabel("Time (h)")
+    ax.set_ylabel("Heart Rate (bpm)")
+    ax.set_xlim([min(x_data) - 15.0/(24*60), max(x_data) + 15.0/(24*60)])
+    ax.set_ylim([30,210])
+    ax.set_yticks([40,60,80,100,120,140,160,180,200])
+    ax.grid(True)
+    ax.legend(loc='upper right')
+    fig.savefig(output)
     print(output)
-    plt.savefig(output)
 
 def plotalt(data, filename, output):
     x = data['time']
@@ -67,16 +75,16 @@ def plotalt(data, filename, output):
     fig.set_figwidth(9.0)
     fig.set_figheight(5.0)
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-    line, = plt.plot_date(x=x, y=y, fmt="r-")
-    line.set_color('#007000')
+    data_line, = plt.plot_date(x=x, y=y, fmt="r-")
+    data_line.set_color('#007000')
     plt.title(os.path.basename(filename))
     plt.ylabel("Altitude (m)")
     plt.xlim([min(x) - 15.0/(24*60), max(x) + 15.0/(24*60)])
     plt.ylim([min(y) - 50, max(y) + 50])
     plt.xlabel("Time (h)")
     plt.grid(True)
-    print(output)
     plt.savefig(output)
+    print(output)
 
 def plothist(data, filename, output):
     x = data['hr']
@@ -94,14 +102,14 @@ def plothist(data, filename, output):
     plt.xlabel("Heart Rate (bpm)")
     plt.ylabel("Histogram (minutes)")
     plt.grid(True)
-    print(output)
     plt.savefig(output)
+    print(output)
     
 def main(argv):
     if len(argv) < 3:
         usage()
     filename = argv[1]
-    directory = argv[2]
+    directory = os.path.normpath(os.path.expanduser(argv[2])) + '/'
     data = read(filename)
     base = os.path.splitext(os.path.basename(filename))[0]
     print("input: " + filename)

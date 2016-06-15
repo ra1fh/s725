@@ -22,6 +22,7 @@ import numpy as np
 
 import copy
 import os
+import re
 import sys
 
 def usage():
@@ -35,12 +36,30 @@ def bytespdate2num(fmt, encoding='ascii'):
         return strconverter(s)
     return bytesconverter
     
-def read(filename):
+def read_txt(filename):
     ch = ['time', 'hr', 'alt', 'vam', 'spd', 'dist']
     dd = [(ch[0], 'object')] + [(a, 'f4') for a in ch[1:]]
     cf = bytespdate2num("%H:%M:%S")
     data = np.genfromtxt(filename, dtype=dd, names=ch, converters={'time': cf})
     return data
+
+def read_meta(filename):
+    regex = []
+    regex.append(('laps',   '^#\s+Lap cumulative:\s+([0-9:]+)'))
+    regex.append(('ascent', '^#\s+Ascent:\s+([0-9]+)'))
+    regex.append(('mintemp','^#\s+Minimum temperature:\s+([0-9]+)'))
+    regex.append(('avgtemp','^#\s+Average temperature:\s+([0-9]+)'))
+    regex.append(('maxtemp','^#\s+Maximum temperature:\s+([0-9]+)'))
+    regex.append(('avghr',  '^#\s+Average heart rate:\s+([0-9]+)'))
+    regex.append(('maxhr',  '^#\s+Maximum heart rate:\s+([0-9]+)'))
+    meta = dict()
+    with open(filename, 'r') as file:
+        data = file.read()
+        for k,r in regex:
+            for m in re.finditer(r, data, re.MULTILINE):
+                meta.setdefault(k, [])
+                meta[k].append(m.group(1))
+    return meta
 
 def xborder(x):
     diff = x[-1] - x[0]
@@ -119,11 +138,13 @@ def main(argv):
         usage()
     filename = argv[1]
     directory = os.path.normpath(os.path.expanduser(argv[2])) + '/'
-    data = read(filename)
+    data = read_txt(filename)
+    meta = read_meta(filename)
+    meta.setdefault('laps', [])
+    laps = list(map(mdates.strpdate2num("%H:%M:%S"), meta['laps'][0:-1]))
     base = os.path.splitext(os.path.basename(filename))[0]
-    print("input: " + filename)
-    plothr(data, filename, directory + base + "-hr.png")
-    plotalt(data, filename, directory + base + "-alt.png")
+    plothr(data, filename, directory + base + "-hr.png", laps=laps)
+    plotalt(data, filename, directory + base + "-alt.png", laps=laps)
     plothist(data, filename, directory + base + "-hist.png")
 
 main(sys.argv)

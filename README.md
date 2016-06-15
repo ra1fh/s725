@@ -136,9 +136,14 @@ requests, (like -t to query the time and date).
 
 ### s725plot
 
+Script to plot heart rate over time, altitude over time and heart rate
+histogram. Requires Python 2.7 or Python 3, matplotlib (tested
+with 1.4) and numpy. Input has to be in 'txt' format as written by
+s725get or hrmtool.
+
 #### Usage
 
-	usage: s725plot <path to txt file> <output directory>
+	Usage: s725plot <INPUT> <OUTPUT DIRECTORY>
 
 #### Examples
 

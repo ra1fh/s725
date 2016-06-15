@@ -9,7 +9,7 @@
 # Maximum heart rate:      63 bpm
 # Average speed:           0.0 kph
 # Maximum speed:           0.0 kph
-# Minumum temperature:     24 C
+# Minimum temperature:     24 C
 # Average temperature:     25 C
 # Maximum temperature:     28 C
 # Minimum altitude:        33 m

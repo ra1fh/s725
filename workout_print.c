@@ -122,7 +122,7 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
 
 		if (w->type != S725_HRM_S610) {
 			/* min, avg, max temperature */
-			fprintf(fp, "# Minumum temperature:     %d %s\n",
+			fprintf(fp, "# Minimum temperature:     %d %s\n",
 					w->min_temp, w->units.temperature);
 			fprintf(fp, "# Average temperature:     %d %s\n",
 					w->avg_temp, w->units.temperature);

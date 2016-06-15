@@ -42,67 +42,69 @@ def read(filename):
     data = np.genfromtxt(filename, dtype=dd, names=ch, converters={'time': cf})
     return data
     
-def plothr(data, filename, output):
+def plothr(data, filename, output, laps=[]):
     hr = data['hr']
-    x_data = data['time']
-    x_mean = copy.copy(x_data)
-    x_mean[0]  = min(x_data) - 15.0/(24*60)
-    x_mean[-1] = max(x_data) + 15.0/(24*60)
-    mean = [np.mean(hr) for i in x_mean]
+    time = data['time']
+    
     fig, ax = plt.subplots()
     fig.set_figwidth(9.0)
     fig.set_figheight(5.0)
-    data_line, = ax.plot_date(x=x_data, y=hr, label='HR', fmt="r-")
-    data_line.set_color('#700000')
-    mean_line, = ax.plot(x_mean, mean, label='Mean: ' + str(mean[0]), linestyle='--')
-    mean_line.set_color('#505050')
+    
+    ax.plot_date(x=time, y=hr, label='HR', fmt="r-", color='#700000')
+    ax.axhline(np.mean(hr), xmin=0, xmax=1, linestyle='--', color='#505050')
+    for lap in laps:
+        ax.axvline(lap, ymin=0, ymax=1, linestyle='--', color='#505050')
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
     ax.set_title(os.path.basename(filename))
     ax.set_xlabel("Time (h)")
     ax.set_ylabel("Heart Rate (bpm)")
-    ax.set_xlim([min(x_data) - 15.0/(24*60), max(x_data) + 15.0/(24*60)])
+    ax.set_xlim([min(time) - 15.0/(24*60), max(time) + 15.0/(24*60)])
     ax.set_ylim([30,210])
     ax.set_yticks([40,60,80,100,120,140,160,180,200])
     ax.grid(True)
     fig.savefig(output)
     print(output)
 
-def plotalt(data, filename, output):
-    x = data['time']
-    y = data['alt']
-    fig, ax = plt.subplots(1)
+def plotalt(data, filename, output, laps=[]):
+    time = data['time']
+    alt = data['alt']
+    
+    fig, ax = plt.subplots()
     fig.set_figwidth(9.0)
     fig.set_figheight(5.0)
+    
+    ax.plot_date(x=time, y=alt, fmt="r-", color='#007000')
+    for lap in laps:
+        ax.axvline(lap, ymin=0, ymax=1, linestyle='--', color='#505050')
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-    data_line, = plt.plot_date(x=x, y=y, fmt="r-")
-    data_line.set_color('#007000')
-    plt.title(os.path.basename(filename))
-    plt.ylabel("Altitude (m)")
-    plt.xlim([min(x) - 15.0/(24*60), max(x) + 15.0/(24*60)])
-    plt.ylim([min(y) - 50, max(y) + 50])
-    plt.xlabel("Time (h)")
-    plt.grid(True)
-    plt.savefig(output)
+    ax.set_title(os.path.basename(filename))
+    ax.set_ylabel("Altitude (m)")
+    ax.set_xlim([min(time) - 15.0/(24*60), max(time) + 15.0/(24*60)])
+    ax.set_ylim([min(alt) - 50, max(alt) + 50])
+    ax.set_xlabel("Time (h)")
+    ax.grid(True)
+    fig.savefig(output)
     print(output)
 
 def plothist(data, filename, output):
     x = data['hr']
     y = data['time']
-    weight = [round(((y[1] - y[0]) * 60 * 24), 2) for i in x]
-    fig, ax = plt.subplots(1)
-    fig = plt.figure(figsize=(9.0, 5.0))
-    fig.set_figwidth(9.0)
-    fig.set_figheight(5.0)
     bins = [ 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205 ]
     ticks = [40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
-    n, bins, patches = plt.hist(x, bins, weights=weight, normed=False, facecolor='blue', alpha=0.5)
-    plt.xticks(ticks)
-    plt.xlim([30,210])
-    plt.title(os.path.basename(filename))
-    plt.xlabel("Heart Rate (bpm)")
-    plt.ylabel("Histogram (minutes)")
-    plt.grid(True)
-    plt.savefig(output)
+    weight = [round(((y[1] - y[0]) * 60 * 24), 2) for i in x]
+    
+    fig, ax = plt.subplots()
+    fig.set_figwidth(9.0)
+    fig.set_figheight(5.0)
+    
+    n, bins, patches = ax.hist(x, bins, weights=weight, normed=False, facecolor='blue', alpha=0.5)
+    ax.set_xticks(ticks)
+    ax.set_xlim([30,210])
+    ax.set_title(os.path.basename(filename))
+    ax.set_xlabel("Heart Rate (bpm)")
+    ax.set_ylabel("Histogram (minutes)")
+    ax.grid(True)
+    fig.savefig(output)
     print(output)
     
 def main(argv):

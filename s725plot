@@ -21,13 +21,10 @@ import matplotlib.dates as mdates
 import numpy as np
 
 import copy
+import optparse
 import os
 import re
 import sys
-
-def usage():
-    print("usage: s725plot <input> <output directory>")
-    sys.exit()
 
 def bytespdate2num(fmt, encoding='ascii'):
     strconverter = mdates.strpdate2num(fmt)
@@ -132,12 +129,18 @@ def plothist(data, filename, output):
     ax.grid(True)
     fig.savefig(output)
     print(output)
+
+if __name__ == "__main__":
+    usage = "s725plot <INPUT> <OUTPUT DIRECTORY>"
+    parser = optparse.OptionParser(usage)
+    opts, args = parser.parse_args(sys.argv[1:])
     
-def main(argv):
-    if len(argv) < 3:
-        usage()
-    filename = argv[1]
-    directory = os.path.normpath(os.path.expanduser(argv[2])) + '/'
+    if len(args) < 2:
+        parser.print_help()
+        sys.exit(1)
+
+    filename = args[0]
+    directory = os.path.normpath(os.path.expanduser(args[1])) + '/'
     data = read_txt(filename)
     meta = read_meta(filename)
     meta.setdefault('laps', [])
@@ -146,5 +149,3 @@ def main(argv):
     plothr(data, filename, directory + base + "-hr.png", laps=laps)
     plotalt(data, filename, directory + base + "-alt.png", laps=laps)
     plothist(data, filename, directory + base + "-hist.png")
-
-main(sys.argv)

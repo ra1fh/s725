@@ -267,9 +267,9 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
 
 		if (S725_HAS_SPEED(w->mode)) {
 			fprintf(fp, "\t  Spd");
+			fprintf(fp, "\t  Dist");
 			if (S725_HAS_POWER(w->mode)) { fprintf(fp, "\tPower  LR Bal   PI"); }
 			if (S725_HAS_CADENCE(w->mode)) { fprintf(fp, "\tCad"); }
-			fprintf(fp, "\t  Dist");
 		}
 		fprintf(fp, "\n");
 
@@ -292,6 +292,7 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
 
 			if (S725_HAS_SPEED(w->mode)) {
 				fprintf(fp, "\t%5.1f", w->speed_data[i]/16.0);
+				fprintf(fp, "\t%6.2f", w->dist_data[i]);
 				if (S725_HAS_POWER(w->mode)) { fprintf(fp, "\t%5d\t%2d-%2d\t%2d",
 													   w->power_data[i].power,
 													   w->power_data[i].lr_balance >> 1,
@@ -302,7 +303,6 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
 				if (S725_HAS_CADENCE(w->mode)) {
 					fprintf(fp, "\t%3d", w->cad_data[i]);
 				}
-				fprintf(fp, "\t%6.2f", w->dist_data[i]);
 			}
 			fprintf(fp, "\n");
 

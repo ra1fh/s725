@@ -33,8 +33,18 @@ def bytespdate2num(fmt, encoding='ascii'):
         return strconverter(s)
     return bytesconverter
     
-def read_txt(filename):
-    ch = ['time', 'hr', 'alt', 'vam', 'spd', 'dist']
+def read_txt(filename, mode):
+    ch = ['time', 'hr']
+    if mode.get('altitude'):
+        ch.append('alt')
+        ch.append('vam')
+    if mode.get('speed'):
+        ch.append('speed')
+        ch.append('dist')
+        if mode.get('power'):
+            ch.append('power')
+        if mode.get('cadence'):
+            ch.append('cadence')
     dd = [(ch[0], 'object')] + [(a, 'f4') for a in ch[1:]]
     cf = bytespdate2num("%H:%M:%S")
     data = np.genfromtxt(filename, dtype=dd, names=ch, converters={'time': cf})
@@ -49,13 +59,34 @@ def read_meta(filename):
     regex.append(('maxtemp','^#\s+Maximum temperature:\s+([0-9]+)'))
     regex.append(('avghr',  '^#\s+Average heart rate:\s+([0-9]+)'))
     regex.append(('maxhr',  '^#\s+Maximum heart rate:\s+([0-9]+)'))
+    regex.append(('mode',   '^#\s+Mode:\s+(.+)'))
     meta = dict()
     with open(filename, 'r') as file:
         data = file.read()
         for k,r in regex:
             for m in re.finditer(r, data, re.MULTILINE):
-                meta.setdefault(k, [])
-                meta[k].append(m.group(1))
+                if meta.get(k):
+                    meta[k] = [meta[k]]
+                    meta[k].append(m.group(1))
+                else:
+                    meta[k] = m.group(1)
+    # mode postprocessing
+    mode = dict()
+    if meta.get('mode'):
+        if re.search('Altitude', meta['mode']):
+            mode['altitude'] = True
+        if re.search('Speed', meta['mode']):
+            mode['speed'] = True
+        if re.search('Power', meta['mode']):
+            mode['power'] = True
+        if re.search('Cadence', meta['mode']):
+            mode['cadence'] = True
+    meta['mode'] = mode
+    # laps postprocessing
+    if meta['laps'] and isinstance(meta['laps'], list):
+        meta['laps'] = meta['laps'][0:-1]
+    else:
+        meta['laps'] = []
     return meta
 
 def xborder(x):
@@ -141,11 +172,11 @@ if __name__ == "__main__":
 
     filename = args[0]
     directory = os.path.normpath(os.path.expanduser(args[1])) + '/'
-    data = read_txt(filename)
     meta = read_meta(filename)
-    meta.setdefault('laps', [])
-    laps = list(map(mdates.strpdate2num("%H:%M:%S"), meta['laps'][0:-1]))
+    data = read_txt(filename, meta['mode'])
+    laps = list(map(mdates.strpdate2num("%H:%M:%S"), meta['laps']))
     base = os.path.splitext(os.path.basename(filename))[0]
     plothr(data, filename, directory + base + "-hr.png", laps=laps)
-    plotalt(data, filename, directory + base + "-alt.png", laps=laps)
+    if meta['mode'].get('altitude'):
+        plotalt(data, filename, directory + base + "-alt.png", laps=laps)
     plothist(data, filename, directory + base + "-hist.png")

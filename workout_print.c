@@ -82,11 +82,18 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
 		/* workout mode */
 		fprintf(fp, "# Mode:                    HR");
 		if (S725_HAS_ALTITUDE(w->mode)) fprintf(fp, ", Altitude");
-		if (S725_HAS_SPEED(w->mode))
-			fprintf(fp, ", Bike %d (Speed%s%s)",
-					S725_HAS_BIKE1(w->mode) ? 1 : 2,
+		if (S725_HAS_SPEED(w->mode)) {
+			fprintf(fp, ", Speed ");
+			if (S725_HAS_SPEED1(w->mode) && S725_HAS_SPEED2(w->mode))
+				fprintf(fp, "(Bike 2)");
+			else if (S725_HAS_SPEED1(w->mode))
+				fprintf(fp, "(Run)");
+			else
+				fprintf(fp, "(Bike 1)");
+			fprintf(fp, "%s%s",
 					S725_HAS_POWER(w->mode) ? ", Power" : "",
 					S725_HAS_CADENCE(w->mode) ? ", Cadence" : "");
+		}
 		fprintf(fp, "\n");
 
 		/* exercise duration */

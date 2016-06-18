@@ -1,7 +1,7 @@
 # Workout date:            2015-06-08 20:39:12 (Mon, 08 Jun 2015)
 # HRM Type:                S625X
 # User ID:                 0
-# Mode:                    HR, Altitude, Bike 1 (Speed)
+# Mode:                    HR, Altitude, Speed (Bike 2)
 # Exercise duration:       00:03:00.6
 # Exercise distance:       0.0 km
 # Recording interval:      15 seconds

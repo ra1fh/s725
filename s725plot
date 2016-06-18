@@ -172,10 +172,16 @@ if __name__ == "__main__":
 
     filename = args[0]
     directory = os.path.normpath(os.path.expanduser(args[1])) + '/'
-    meta = read_meta(filename)
-    data = read_txt(filename, meta['mode'])
-    laps = list(map(mdates.strpdate2num("%H:%M:%S"), meta['laps']))
     base = os.path.splitext(os.path.basename(filename))[0]
+    
+    meta = read_meta(filename)
+    laps = list(map(mdates.strpdate2num("%H:%M:%S"), meta['laps']))
+    data = read_txt(filename, meta['mode'])
+
+    if data.size < 2:
+        print("error: data file contains less then two samples")
+        sys.exit(1)
+        
     plothr(data, filename, directory + base + "-hr.png", laps=laps)
     if meta['mode'].get('altitude'):
         plotalt(data, filename, directory + base + "-alt.png", laps=laps)

@@ -225,8 +225,7 @@ write_hrm_data(BUF *files, const char* directory, int format)
 		count++;
 		ft = files_timestamp(buf, 0);
 		strftime(tmbuf, sizeof(tmbuf), "%Y%m%dT%H%M%S", localtime(&ft));
-		snprintf(fnbuf, sizeof(fnbuf), "%s/%s.%05zd.%s",
-				 directory, tmbuf, buf_len(buf), suffix);
+		snprintf(fnbuf, sizeof(fnbuf), "%s/%s.%s", directory, tmbuf, suffix);
 
 		if (format == FORMAT_SRD) {
 			f = fopen(fnbuf, "w");

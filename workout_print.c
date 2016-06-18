@@ -156,7 +156,7 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
 			fprintf(fp, "# Average LR balance:      %d-%d\n",
 					w->avg_power.lr_balance >> 1,
 					100 - (w->avg_power.lr_balance >> 1));
-			fprintf(fp, "Average pedal index:     %d %%\n",
+			fprintf(fp, "# Average pedal index:     %d %%\n",
 					w->avg_power.pedal_index >> 1);
 			fprintf(fp, "# Maximum power:           %d W\n",
 					w->max_power.power);

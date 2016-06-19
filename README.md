@@ -147,8 +147,8 @@ s725get or hrmtool.
 
 #### Examples
 
-![Heart Rate Diagram](examples/20160522T114225.01469-hr.png)
+![Heart Rate Diagram](examples/20160522T114225-hr.png)
 
-![Altitude Diagram](examples/20160522T114225.01469-alt.png)
+![Altitude Diagram](examples/20160522T114225-alt.png)
 
-![Histogram](examples/20160522T114225.01469-hist.png)
+![Histogram](examples/20160522T114225-hist.png)

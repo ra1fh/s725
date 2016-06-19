@@ -4,8 +4,13 @@ s725
 
 ### About
 
-Communicate with Polar S725X heart rate monitor via IR interfaces.
-This project is based on s710 from http://code.google.com/p/s710/.
+Communicate with Polar S725X heart rate monitor watches via IR
+interfaces. This project is based on s710 from
+https://code.google.com/archive/p/s710/.
+
+Supported watches: S725X. The code for older models like S610, S710,
+S625X is still present in the code and might work, but due to lack of
+hardware is not tested.
 
 ### Building
 
@@ -35,10 +40,14 @@ s725 has been tested on the following systems:
 
 ### Usage
 
+The s725get utility downloads the data from the watch and writes it to
+disk in various selectable formats: srd, hrm, tcx, txt.
+
 The s725get utility takes a -d argument which specifies the driver
-type to be used to communicate with the device.  Valid values are
-"serial", "irda". A device filename is required for -d values
-of "serial", but not for "irda". The default is -d serial.
+type to be used to communicate with the watch.  Valid values are
+"serial" and "irda". The "serial" driver requires the device file to
+be specified with -D.  The default is -d serial. See the "Drivers"
+section for more details.
 
 Examples:
 
@@ -53,7 +62,7 @@ s725get:
 
 	s725get -f ~/workout/
 
-s725get reads the configuration file ~/.s725rc, which might contain
+s725get reads the configuration file ~/.s725rc which might contain
 the following settings:
 
 	#
@@ -89,8 +98,11 @@ and run s725get like this:
     Saved 8 files
 
 This way the IR interface sends a "get" command and then waits for
-data to arrive.  The second option is to run s725get in listen mode,
-put the S725X watch into connect mode and select the file to transfer:
+data to arrive. All training records will be downloaded.
+
+The second option is to run s725get in listen mode. Put the S725X
+watch into connect mode and select the file to transfer using the
+buttons on the watch:
 
     [user@host ~]$ s725get -d serial -D /dev/ttyUSB0 -f tmp -o txt -l
     Reading [456 bytes] [########################################] [  100%]
@@ -112,14 +124,14 @@ This driver is known to work with:
 
 This driver uses the Linux IrDA stack to talk to a Polar HRM.
 
-The S725X has two modes. The mode used by the serial driver
-respond to request frames containing a type field, len field and
-crc. In IrDA mode, the watch responds to discovery request from the
-IrDA host. The IrDA stack takes care of ensuring data transmissing,
-framing and checksums.
+The S725X has two modes. The basic IR mode used by the serial driver
+responds to raw request without IrDA protocol frames.
 
-After enabling the infrared interface on the Linux host and running
-irattach, the watch should appear in /proc/net/irda/discovery:
+In contrast, in IrDA mode the watch responds to discovery request from
+the IrDA host. The IrDA stack takes care of ensuring data
+transmission, framing and checksums. After enabling the infrared
+interface on the Linux host and running irattach, the watch should
+appear in /proc/net/irda/discovery:
 
 	$ cat /proc/net/irda/discovery 
 	IrLMP: Discovery log:

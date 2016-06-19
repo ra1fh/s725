@@ -32,22 +32,19 @@ def bytespdate2num(fmt, encoding='ascii'):
         s = b.decode(encoding)
         return strconverter(s)
     return bytesconverter
+
+def col2type(name):
+    if name == 'Time':
+        return (name, 'object')
+    elif name == 'LR':
+        return (name, '|S7')
+    else:
+        return (name, 'f4')
     
-def read_txt(filename, mode):
-    ch = ['time', 'hr']
-    if mode.get('altitude'):
-        ch.append('alt')
-        ch.append('vam')
-    if mode.get('speed'):
-        ch.append('speed')
-        ch.append('dist')
-        if mode.get('power'):
-            ch.append('power')
-        if mode.get('cadence'):
-            ch.append('cadence')
-    dd = [(ch[0], 'object')] + [(a, 'f4') for a in ch[1:]]
+def read_txt(filename, header):
+    dd = list(map(col2type, header))
     cf = bytespdate2num("%H:%M:%S")
-    data = np.genfromtxt(filename, dtype=dd, names=ch, converters={'time': cf})
+    data = np.genfromtxt(filename, dtype=dd, names=header, converters={'Time': cf})
     return data
 
 def read_meta(filename):
@@ -60,6 +57,7 @@ def read_meta(filename):
     regex.append(('avghr',  '^#\s+Average heart rate:\s+([0-9]+)'))
     regex.append(('maxhr',  '^#\s+Maximum heart rate:\s+([0-9]+)'))
     regex.append(('mode',   '^#\s+Mode:\s+(.+)'))
+    regex.append(('header', '^#   (Time.+)'))
     meta = dict()
     with open(filename, 'r') as file:
         data = file.read()
@@ -70,23 +68,16 @@ def read_meta(filename):
                     meta[k].append(m.group(1))
                 else:
                     meta[k] = m.group(1)
-    # mode postprocessing
-    mode = dict()
-    if meta.get('mode'):
-        if re.search('Altitude', meta['mode']):
-            mode['altitude'] = True
-        if re.search('Speed', meta['mode']):
-            mode['speed'] = True
-        if re.search('Power', meta['mode']):
-            mode['power'] = True
-        if re.search('Cadence', meta['mode']):
-            mode['cadence'] = True
-    meta['mode'] = mode
     # laps postprocessing
-    if meta['laps'] and isinstance(meta['laps'], list):
+    if meta.get('laps') and isinstance(meta['laps'], list):
         meta['laps'] = meta['laps'][0:-1]
     else:
         meta['laps'] = []
+    # header postprocessing
+    if meta.get('header'):
+        meta['header'] = re.split('\s+', meta['header'])
+    else:
+        meta['header'] = []
     return meta
 
 def xborder(x):
@@ -95,8 +86,8 @@ def xborder(x):
     return (x[0] - diff * border, x[-1] + diff * border)
 
 def plothr(data, filename, output, laps=[]):
-    time = data['time']
-    hr = data['hr']
+    time = data['Time']
+    hr = data['HR']
     xmin, xmax = xborder(time)
     
     fig, ax = plt.subplots()
@@ -119,8 +110,8 @@ def plothr(data, filename, output, laps=[]):
     print(output)
 
 def plotalt(data, filename, output, laps=[]):
-    time = data['time']
-    alt = data['alt']
+    time = data['Time']
+    alt = data['Alt']
     xmin, xmax = xborder(time)
     
     fig, ax = plt.subplots()
@@ -141,8 +132,8 @@ def plotalt(data, filename, output, laps=[]):
     print(output)
 
 def plothist(data, filename, output):
-    x = data['hr']
-    y = data['time']
+    x = data['HR']
+    y = data['Time']
     bins = [ 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205 ]
     ticks = [40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
     weight = [round(((y[1] - y[0]) * 60 * 24), 2) for i in x]
@@ -173,16 +164,24 @@ if __name__ == "__main__":
     filename = args[0]
     directory = os.path.normpath(os.path.expanduser(args[1])) + '/'
     base = os.path.splitext(os.path.basename(filename))[0]
-    
+
     meta = read_meta(filename)
     laps = list(map(mdates.strpdate2num("%H:%M:%S"), meta['laps']))
-    data = read_txt(filename, meta['mode'])
+    header = meta['header']
+    if len(header) < 2:
+        print("error: invalid header line: \"" + " ".join(header) + "\"")
+        sys.exit(1)
+    if not 'Time' in header:
+        print("error: data file does not contain time column")
+        sys.exit(1)
 
+    data = read_txt(filename, header)
     if data.size < 2:
         print("error: data file contains less then two samples")
         sys.exit(1)
-        
-    plothr(data, filename, directory + base + "-hr.png", laps=laps)
-    if meta['mode'].get('altitude'):
+
+    if 'HR' in header:
+        plothr(data, filename, directory + base + "-hr.png", laps=laps)
+        plothist(data, filename, directory + base + "-hist.png")
+    if 'Alt' in header:
         plotalt(data, filename, directory + base + "-alt.png", laps=laps)
-    plothist(data, filename, directory + base + "-hist.png")

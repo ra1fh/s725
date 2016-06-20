@@ -30,8 +30,8 @@ S725GET_OBJS= $(S725GET_SRCS:.c=.o)
 HRMTOOL_OBJS= $(HRMTOOL_SRCS:.c=.o)
 PROG_OBJS= $(PROGS:=.o)
 
-CPPFLAGS+= $(DEFS) -I. $(INCDIRS)
-CFLAGS+= -g -Wall -D_GNU_SOURCE
+CPPFLAGS+= -D_GNU_SOURCE -I. $(INCDIRS)
+CFLAGS+= -g -pedantic -std=c99 -Wall
 
 CONF_OBJS= conf.tab.o lex.yy.o
 

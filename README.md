@@ -96,7 +96,6 @@ and run s725get like this:
     File 06: Saved as /home/user/tmp/20151103T140918.01129.txt
     File 07: Saved as /home/user/tmp/20150829T093131.03392.txt
     File 08: Saved as /home/user/tmp/20150813T180106.00149.txt
-    Saved 8 files
 
 This way the IR interface sends a "get" command and then waits for
 data to arrive. All training records will be downloaded.
@@ -108,7 +107,6 @@ buttons on the watch:
     [user@host ~]$ s725get -d serial -D /dev/ttyUSB0 -f tmp -o txt -l
     Reading [456 bytes] [########################################] [  100%]
     File 01: Saved as /home/user/tmp/20160501T215815.00149.txt
-    Saved 1 files
 
 ### Drivers
 

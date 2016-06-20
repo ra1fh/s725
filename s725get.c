@@ -50,6 +50,7 @@ usage(void) {
 	printf("                       default: current working directory\n");
 	printf("        -l             listen for incoming data\n");
 	printf("        -o format      output format: hrm, srd, tcx, txt\n");
+	printf("                       (can be used multiple times)n");
 	printf("        -t             get time\n");
 	printf("        -u             get user data\n");
 	printf("        -v             verbose output\n");
@@ -65,25 +66,30 @@ main(int argc, char **argv)
 	const char		 *opt_driver_name = NULL;
 	int				  opt_driver_type = DRIVER_SERIAL;
 	const char		 *opt_device_name = NULL;
-	int				  opt_format = FORMAT_UNKNOWN;
+	int				  opt_format_list[5] = { 0 /* FORMAT_UNKNOWN */ };
+	int				  opt_format_index = 0;
 	BUF				 *files;
 	int				  opt_time = 0;
 	int				  opt_user = 0;
 	int				  opt_listen = 0;
 	int				  ch;
 	int				  ok;
+	char			 *ap;
+	int				  format;
+	int				  ret;
+	int				  i;
 
 	snprintf(inipath, PATH_MAX, "%s/.s725rc", getenv("HOME"));
 	yyin = fopen(inipath, "r");
 	if (yyin != NULL) {
 		conf_filename = inipath;
-		int ret = yyparse();
+		ret = yyparse();
 		if (ret != 0)
 			exit(1);
 		if (conf_driver_type != DRIVER_UNKNOWN)
 			opt_driver_type = conf_driver_type;
 		if (conf_format_type != FORMAT_UNKNOWN)
-			opt_format = conf_format_type;
+			opt_format_list[opt_format_index] = conf_format_type;
 		if (conf_device_name != NULL)
 			opt_device_name = conf_device_name;
 		if (conf_directory_name != NULL)
@@ -108,9 +114,14 @@ main(int argc, char **argv)
 			opt_listen = 1;
 			break;
 		case 'o':
-			opt_format = format_from_str(optarg);
-			if (opt_format == FORMAT_UNKNOWN)
-				fatalx("unknown output format: %s", optarg);
+			ap = optarg;
+			if (opt_format_index < (sizeof(opt_format_list) /
+									sizeof(opt_format_list[0]))) {
+				if ((format = format_from_str(ap)) != FORMAT_UNKNOWN)
+					opt_format_list[opt_format_index++] = format;
+				else
+					fatalx("unknown output format: %s", ap);
+			}
 			break;
 		case 't':
 			opt_time = 1;
@@ -138,8 +149,12 @@ main(int argc, char **argv)
 	}
 
 	if (! (opt_time || opt_user)) {
-		if (opt_format == FORMAT_UNKNOWN)
+		if (opt_format_list[0] == FORMAT_UNKNOWN)
 			fatalx("no output format specified");
+	}
+
+	for (i = 0; i < sizeof(opt_format_list) / sizeof(opt_format_list[0]); ++i) {
+		log_info("format: %s", format_to_str(opt_format_list[i]));
 	}
 
 	log_info("driver name: %s", driver_type_to_name(opt_driver_type));
@@ -188,12 +203,16 @@ main(int argc, char **argv)
 	files = buf_alloc(0);
 
 	if (opt_listen) {
-		if (files_listen(files)) {
-			write_hrm_data(files, opt_directory_name, opt_format);
-		}
+		ret = files_listen(files);
 	} else {
-		if (files_get(files)) {
-			write_hrm_data(files, opt_directory_name, opt_format);
+		ret = files_get(files);
+	}
+
+	if (ret) {
+		for (i = 0; i < sizeof(opt_format_list) / sizeof(opt_format_list[0]); ++i) {
+			if (opt_format_list[i] != FORMAT_UNKNOWN) {
+				write_hrm_data(files, opt_directory_name, opt_format_list[i]);
+			}
 		}
 	}
 
@@ -262,5 +281,4 @@ write_hrm_data(BUF *files, const char* directory, int format)
 		}
 	}
 	buf_free(buf);
-	log_writeln("Saved %d file%s", count, (count==1) ? "" : "s");
 }

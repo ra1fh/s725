@@ -63,7 +63,9 @@ def read_meta(filename):
         data = file.read()
         for k,r in regex:
             for m in re.finditer(r, data, re.MULTILINE):
-                if meta.get(k):
+                if meta.get(k) and isinstance(meta[k], list):
+                    meta[k].append(m.group(1))
+                elif meta.get(k):
                     meta[k] = [meta[k]]
                     meta[k].append(m.group(1))
                 else:

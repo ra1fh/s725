@@ -22,11 +22,11 @@
 #define FORMAT_H
 
 enum {
+	FORMAT_UNKNOWN = 0,
 	FORMAT_HRM,
 	FORMAT_SRD,
 	FORMAT_TCX,
 	FORMAT_TXT,
-	FORMAT_UNKNOWN
 };
 
 int format_from_str(const char *format);

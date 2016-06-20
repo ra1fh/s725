@@ -57,7 +57,7 @@ def read_meta(filename):
     regex.append(('avghr',  '^#\s+Average heart rate:\s+([0-9]+)'))
     regex.append(('maxhr',  '^#\s+Maximum heart rate:\s+([0-9]+)'))
     regex.append(('mode',   '^#\s+Mode:\s+(.+)'))
-    regex.append(('header', '^#   (Time.+)'))
+    regex.append(('header', '^#\s+(Time\s+HR.+)'))
     meta = dict()
     with open(filename, 'r') as file:
         data = file.read()
@@ -133,6 +133,47 @@ def plotalt(data, filename, output, laps=[]):
     fig.savefig(output, dpi=90)
     print(output)
 
+def plotspd(data, filename, output, laps=[]):
+    time = data['Time']
+    spd = data['Spd']
+    xmin, xmax = xborder(time)
+    
+    fig, ax = plt.subplots()
+    fig.set_figwidth(8.0)
+    fig.set_figheight(5.0)
+    
+    ax.plot_date(x=time, y=spd, fmt="r-", color='#007000')
+    for lap in laps:
+        ax.axvline(lap, ymin=0, ymax=1, linestyle='--', color='#505050')
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+    ax.set_title(os.path.basename(filename))
+    ax.set_ylabel("Speed (km/h)")
+    ax.set_xlim([xmin, xmax])
+    ax.set_xlabel("Time (h)")
+    ax.grid(True)
+    fig.savefig(output, dpi=90)
+    print(output)
+
+    
+def plotaltdist(data, filename, output, laps=[]):
+    dist = data['Dist']
+    alt = data['Alt']
+    xmin, xmax = xborder(dist)
+    
+    fig, ax = plt.subplots()
+    fig.set_figwidth(8.0)
+    fig.set_figheight(5.0)
+
+    ax.plot(dist, alt, label='Alt', color='#007000')
+    ax.set_title(os.path.basename(filename))
+    ax.set_ylabel("Altitude (m)")
+    ax.set_xlim([xmin, xmax])
+    ax.set_ylim([min(alt) - 50, max(alt) + 50])
+    ax.set_xlabel("Dist (km)")
+    ax.grid(True)
+    fig.savefig(output, dpi=90)
+    print(output)
+    
 def plothist(data, filename, output):
     x = data['HR']
     y = data['Time']
@@ -187,3 +228,7 @@ if __name__ == "__main__":
         plothist(data, filename, directory + base + "-hist.png")
     if 'Alt' in header:
         plotalt(data, filename, directory + base + "-alt.png", laps=laps)
+    if 'Spd' in header:
+        plotspd(data, filename, directory + base + "-spd.png", laps=laps)
+    if 'Alt' in header and 'Dist' in header:
+        plotaltdist(data, filename, directory + base + "-alt-dist.png", laps=laps)

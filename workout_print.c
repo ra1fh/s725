@@ -2,7 +2,7 @@
 
 /*
  * Copyright (C) 2016  Ralf Horstmann
- * Copyright (C) 2007  Dave Bailey  
+ * Copyright (C) 2007  Dave Bailey
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,9 +27,9 @@
 #include "workout_time.h"
 
 /*
- * Print workout in non-standard plain text format for 
+ * Print workout in non-standard plain text format for
  * easy processing with gnuplot
- * 
+ *
  * "what" is the bitwise or of at least one of:
  * S725_WORKOUT_HEADER
  * S725_WORKOUT_LAPS
@@ -51,7 +51,7 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
 		/* exercise date */
 		strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S (%a, %d %b %Y)",
 				 localtime(&w->unixtime));
-		fprintf(fp, "# Workout date:            %s\n", buf);
+		fprintf(fp, "# Workout date:          %s\n", buf);
 
 		/* HRM type */
 		switch (w->type) {
@@ -67,20 +67,20 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
 		default:
 			break;
 		}
-		fprintf(fp, "# HRM Type:                %s\n", hrm_type);
+		fprintf(fp, "# HRM Type:              %s\n", hrm_type);
 
 		/* user id */
-		fprintf(fp, "# User ID:                 %d\n", w->user_id);
+		fprintf(fp, "# User ID:               %d\n", w->user_id);
 
 		/* exercise number and label */
 		if (w->exercise_number > 0 && w->exercise_number <= 5) {
-			fprintf(fp, "# Exercise:                %d (%s)\n",
+			fprintf(fp, "# Exercise:              %d (%s)\n",
 					w->exercise_number,
 					w->exercise_label);
 		}
 
 		/* workout mode */
-		fprintf(fp, "# Mode:                    HR");
+		fprintf(fp, "# Mode:                  HR");
 		if (S725_HAS_ALTITUDE(w->mode)) fprintf(fp, ", Altitude");
 		if (S725_HAS_SPEED(w->mode)) {
 			fprintf(fp, ", Speed ");
@@ -97,175 +97,178 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
 		fprintf(fp, "\n");
 
 		/* exercise duration */
-		fprintf(fp, "# Exercise duration:       ");
+		fprintf(fp, "# Exercise duration:     ");
 		workout_time_print(&w->duration, "hmst", fp);
 		fprintf(fp, "\n");
 
 		if (S725_HAS_SPEED(w->mode))
-			fprintf(fp, "# Exercise distance:       %.1f %s\n",
+			fprintf(fp, "# Exercise distance:     %.1f %s\n",
 					w->exercise_distance/10.0, w->units.distance);
 
 		/* recording interval */
-		fprintf(fp, "# Recording interval:      %d seconds\n",
+		fprintf(fp, "# Recording interval:    %d seconds\n",
 				w->recording_interval);
 
 		/* average, maximum heart rate */
-		fprintf(fp, "# Average heart rate:      %d bpm\n", w->avg_hr);
-		fprintf(fp, "# Maximum heart rate:      %d bpm\n", w->max_hr);
+		fprintf(fp, "# Average heart rate:    %d bpm\n", w->avg_hr);
+		fprintf(fp, "# Maximum heart rate:    %d bpm\n", w->max_hr);
 
 		/* average, maximum cadence */
 		if (S725_HAS_CADENCE(w->mode)) {
-			fprintf(fp, "# Average cadence:         %d rpm\n", w->avg_cad);
-			fprintf(fp, "# Maximum cadence:         %d rpm\n", w->max_cad);
+			fprintf(fp, "# Average cadence:       %d rpm\n", w->avg_cad);
+			fprintf(fp, "# Maximum cadence:       %d rpm\n", w->max_cad);
 		}
 
 		/* average, maximum speed */
 		if (S725_HAS_SPEED(w->mode)) {
-			fprintf(fp, "# Average speed:           %.1f %s\n",
+			fprintf(fp, "# Average speed:         %.1f %s\n",
 					w->avg_speed/16.0, w->units.speed);
-			fprintf(fp, "# Maximum speed:           %.1f %s\n",
+			fprintf(fp, "# Maximum speed:         %.1f %s\n",
 					w->max_speed/16.0, w->units.speed);
 		}
 
 		if (w->type != S725_HRM_S610) {
 			/* min, avg, max temperature */
-			fprintf(fp, "# Minimum temperature:     %d %s\n",
+			fprintf(fp, "# Minimum temperature:   %d %s\n",
 					w->min_temp, w->units.temperature);
-			fprintf(fp, "# Average temperature:     %d %s\n",
+			fprintf(fp, "# Average temperature:   %d %s\n",
 					w->avg_temp, w->units.temperature);
-			fprintf(fp, "# Maximum temperature:     %d %s\n",
+			fprintf(fp, "# Maximum temperature:   %d %s\n",
 					w->max_temp, w->units.temperature);
 		}
 
 		/* altitude, ascent */
 		if (S725_HAS_ALTITUDE(w->mode)) {
-			fprintf(fp, "# Minimum altitude:        %d %s\n",
+			fprintf(fp, "# Minimum altitude:      %d %s\n",
 					w->min_alt, w->units.altitude);
-			fprintf(fp, "# Average altitude:        %d %s\n",
+			fprintf(fp, "# Average altitude:      %d %s\n",
 					w->avg_alt, w->units.altitude);
-			fprintf(fp, "# Maximum altitude:        %d %s\n",
+			fprintf(fp, "# Maximum altitude:      %d %s\n",
 					w->max_alt, w->units.altitude);
-			fprintf(fp, "# Ascent:                  %d %s\n",
+			fprintf(fp, "# Ascent:                %d %s\n",
 					w->ascent, w->units.altitude);
 		}
 
 		/* power data */
 		if (S725_HAS_POWER(w->mode)) {
-			fprintf(fp, "# Average power:           %d W\n",
+			fprintf(fp, "# Average power:         %d W\n",
 					w->avg_power.power);
-			fprintf(fp, "# Average LR balance:      %d-%d\n",
+			fprintf(fp, "# Average LR balance:    %d-%d\n",
 					w->avg_power.lr_balance >> 1,
 					100 - (w->avg_power.lr_balance >> 1));
-			fprintf(fp, "# Average pedal index:     %d %%\n",
+			fprintf(fp, "# Average pedal index:   %d %%\n",
 					w->avg_power.pedal_index >> 1);
-			fprintf(fp, "# Maximum power:           %d W\n",
+			fprintf(fp, "# Maximum power:         %d W\n",
 					w->max_power.power);
-			fprintf(fp, "# Maximum pedal index:     %d %%\n",
+			fprintf(fp, "# Maximum pedal index:   %d %%\n",
 					w->max_power.pedal_index >> 1);
 		}
 
-		/* HR limits */
-		for (i = 0; i < 3; i++) {
-			fprintf(fp, "# HR Limit %d:              %d to %3d\n",
-					i+1,w->hr_limit[i].lower,w->hr_limit[i].upper);
-			fprintf(fp, "# \tTime below:      ");
-			workout_time_print(&w->hr_zone[i][0],"hms", fp);
-			fprintf(fp, "\n");
-			fprintf(fp, "# \tTime within:     ");
-			workout_time_print(&w->hr_zone[i][1],"hms", fp);
-			fprintf(fp, "\n");
-			fprintf(fp, "# \tTime above:      ");
-			workout_time_print(&w->hr_zone[i][2],"hms", fp);
-			fprintf(fp, "\n");
-		}
-
 		/* energy, total energy (units??) */
-		fprintf(fp, "# Energy:                  %d\n", w->energy);
-		fprintf(fp, "# Total energy:            %d\n", w->total_energy);
+		fprintf(fp, "# Energy:                %d\n", w->energy);
+		fprintf(fp, "# Total energy:          %d\n", w->total_energy);
 
 		/* cumulative counters */
-		fprintf(fp, "# Cumulative exercise:     ");
+		fprintf(fp, "# Cumulative exercise:   ");
 		workout_time_print(&w->cumulative_exercise, "hm", fp);
 		fprintf(fp, "\n");
 
 		if (S725_HAS_SPEED(w->mode)) {
-			fprintf(fp, "# Cumulative ride time:    ");
+			fprintf(fp, "# Cumulative ride time:  ");
 			workout_time_print(&w->cumulative_ride,"hm", fp);
 			fprintf(fp, "\n");
-			fprintf(fp, "# Odometer:                %d %s\n",
+			fprintf(fp, "# Odometer:              %d %s\n",
 					w->odometer, w->units.distance);
 		}
-
 		/* laps */
-		fprintf(fp, "# Laps:                    %d\n", w->laps);
-		fprintf(fp, "# \n# \n");
+		fprintf(fp, "# Laps:                  %d\n", w->laps);
+
+		fprintf(fp, "#\n");
+
+		/* HR limits */
+		for (i = 0; i < 3; i++) {
+			fprintf(fp, "#\n");
+			fprintf(fp, "# HR Limit %d:            %d to %3d\n",
+					i+1,w->hr_limit[i].lower,w->hr_limit[i].upper);
+			fprintf(fp, "#   Time below:          ");
+			workout_time_print(&w->hr_zone[i][0],"hms", fp);
+			fprintf(fp, "\n");
+			fprintf(fp, "#   Time within:         ");
+			workout_time_print(&w->hr_zone[i][1],"hms", fp);
+			fprintf(fp, "\n");
+			fprintf(fp, "#   Time above:          ");
+			workout_time_print(&w->hr_zone[i][2],"hms", fp);
+			fprintf(fp, "\n");
+		}
+
 	}
+	fprintf(fp, "#\n#\n");
 
 	if (what & S725_WORKOUT_LAPS) {
 		/* lap data */
 		for (i = 0; i < w->laps; i++) {
 			l = &w->lap_data[i];
 			fprintf(fp, "# Lap %d:\n", i+1);
-			fprintf(fp, "# \tLap split:          ");
+			fprintf(fp, "#   Lap split:           ");
 			workout_time_print(&l->split, "hmst", fp);
 			fprintf(fp, "\n");
-			fprintf(fp, "# \tLap cumulative:     ");
+			fprintf(fp, "#   Lap cumulative:      ");
 			workout_time_print(&l->cumulative, "hmst", fp);
 			fprintf(fp, "\n");
-			fprintf(fp, "# \tLap HR:             %d bpm\n", l->lap_hr);
-			fprintf(fp, "# \tAverage HR:         %d bpm\n", l->avg_hr);
-			fprintf(fp, "# \tMaximum HR:         %d bpm\n", l->max_hr);
+			fprintf(fp, "#   Lap HR:              %d bpm\n", l->lap_hr);
+			fprintf(fp, "#   Average HR:          %d bpm\n", l->avg_hr);
+			fprintf(fp, "#   Maximum HR:          %d bpm\n", l->max_hr);
 
 			if (S725_HAS_ALTITUDE(w->mode)) {
-				fprintf(fp, "# \tLap altitude:       %d %s\n",
+				fprintf(fp, "#   Lap altitude:        %d %s\n",
 						l->alt, w->units.altitude);
-				fprintf(fp, "# \tLap ascent:         %d %s\n",
+				fprintf(fp, "#   Lap ascent:          %d %s\n",
 						l->ascent, w->units.altitude);
-				fprintf(fp, "# \tLap cumulat. asc:   %d %s\n",
+				fprintf(fp, "#   Lap cumulat. asc:    %d %s\n",
 						l->cumul_ascent, w->units.altitude);
-				fprintf(fp, "# \tLap temperature:    %d %s\n",
+				fprintf(fp, "#   Lap temperature:     %d %s\n",
 						l->temp, w->units.temperature);
 			}
 
 			if (S725_HAS_CADENCE(w->mode))
-				fprintf(fp, "# \tLap cadence:        %d rpm\n", l->cad);
+				fprintf(fp, "#   Lap cadence:         %d rpm\n", l->cad);
 
 			if (S725_HAS_SPEED(w->mode)) {
 				float  lap_speed = 0;
 				time_t tenths;
 
-				fprintf(fp, "# \tLap distance:       %.1f %s\n",
+				fprintf(fp, "#   Lap distance:        %.1f %s\n",
 						l->distance/10.0, w->units.distance);
-				fprintf(fp, "# \tLap cumulat. dist:  %.1f %s\n",
+				fprintf(fp, "#   Lap cumulat. dist:   %.1f %s\n",
 						l->cumul_distance/10.0, w->units.distance);
-				fprintf(fp, "# \tLap speed at end:   %.1f %s\n",
+				fprintf(fp, "#   Lap speed at end:    %.1f %s\n",
 						l->speed/16.0, w->units.speed);
 				tenths = workout_time_to_tenths(&l->split);
 				if (tenths > 0) {
 					/* note the cancelling factors of 10 */
 					lap_speed = l->distance / ((float)tenths/3600.0);
 				}
-				fprintf(fp, "# \tLap speed ave:      %.1f %s\n",
+				fprintf(fp, "#   Lap speed ave:       %.1f %s\n",
 						lap_speed, w->units.speed);
 			}
 
 			if (S725_HAS_POWER(w->mode)) {
-				fprintf(fp, "# \tLap power:          %d W\n",
+				fprintf(fp, "#   Lap power:           %d W\n",
 						l->power.power);
-				fprintf(fp, "# \tLap LR balance:     %d-%d\n",
+				fprintf(fp, "#   Lap LR balance:      %d-%d\n",
 						l->power.lr_balance >> 1,
 						100 - (l->power.lr_balance >> 1));
-				fprintf(fp, "# \tLap pedal index:    %d%%\n",
+				fprintf(fp, "#   Lap pedal index:     %d%%\n",
 						l->power.pedal_index >> 1);
 			}
 
-			fprintf(fp, "# \n");
+			fprintf(fp, "#\n");
 		}
 	}
 
 	if (what & S725_WORKOUT_SAMPLES) {
 		/* sample data */
-		fprintf(fp, "# \n# Recorded data:\n# \n");
+		fprintf(fp, "#\n# Recorded data:\n#\n");
 		fprintf(fp, "#   Time\t HR");
 
 		if (S725_HAS_ALTITUDE(w->mode)) {
@@ -325,10 +328,10 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
 	}
 }
 
-/* 
+/*
  * This function takes a workout_t *w and dumps it to FILE *fp in HRM
  * format.
- * 
+ *
  * For a description of the HRM file format, see:
  * http://developer.polar.fi/developer.nsf/main
  * The HRM file format version produced is version 1.06.
@@ -367,11 +370,11 @@ workout_print_hrm(workout_t *w, FILE *fp)
 		return;
 	}
 
-	/* 
+	/*
 	 * Sometimes users leave the watch in cycling mode when they don't
 	 * mean to.  Either they forget to change modes, or they just don't
 	 * feel like it.  The Polar software seems to "correct" for this by
-	 * detecting if the user actually recorded any meaningful speed, 
+	 * detecting if the user actually recorded any meaningful speed,
 	 * power and/or cadence data.  If they didn't, then the corresponding
 	 * flag is turned off, regardless of whether it was actually set in
 	 * the watch.  Seems like a reasonable idea, so let's do the same.
@@ -383,7 +386,7 @@ workout_print_hrm(workout_t *w, FILE *fp)
 	sum_power    = 0;
 	mode         = w->mode;
 
-	if ( w->alt_data != NULL ) 
+	if ( w->alt_data != NULL )
 		for ( i = 0; i < w->samples; i++ ) sum_altitude += w->alt_data[i];
 	if ( w->cad_data != NULL )
 		for ( i = 0; i < w->samples; i++ ) sum_cadence  += w->cad_data[i];
@@ -414,7 +417,7 @@ workout_print_hrm(workout_t *w, FILE *fp)
 			( S725_HAS_POWER(mode) )    ? 1 : 0, /* FIX ME SOMEDAY */
 			( S725_HAS_SPEED(mode) )    ? 1 : 0,
 			(w->units.system == S725_UNITS_ENGLISH) ? 1 : 0);
-  
+
 	/* Date, StartTime, Length, Interval */
 
 	fprintf(fp,"Date=%4d%02d%02d\r\n",
@@ -434,7 +437,7 @@ workout_print_hrm(workout_t *w, FILE *fp)
 			w->duration.tenths);
 
 	fprintf(fp,"Interval=%d\r\n",w->recording_interval);
-	  
+
 	/* Limits 1, 2 and 3 */
 
 	fprintf(fp,
@@ -459,7 +462,7 @@ workout_print_hrm(workout_t *w, FILE *fp)
 
 	fprintf(fp,"ActiveLimit=0\r\n");
 
-	/* 
+	/*
 	   MaxHR, RestHR are not recorded in the file.  They're recorded in
 	   the user settings, but instead of downloading them from the watch,
 	   we just put default values here.  Someday we may revisit this and
@@ -485,11 +488,11 @@ workout_print_hrm(workout_t *w, FILE *fp)
 	/* IntTimes */
 
 	fprintf(fp,"\r\n[IntTimes]\r\n");
-  
+
 	for ( i = 0; i < w->laps; i++ ) {
 
-		/* 
-		   This is really annoying, but we actually have to compute the 
+		/*
+		   This is really annoying, but we actually have to compute the
 		   value of the minimum heart rate for each lap.  We can only do
 		   this if we know the recording interval (which we should always
 		   know).
@@ -499,10 +502,10 @@ workout_print_hrm(workout_t *w, FILE *fp)
 
 		if ( w->recording_interval != 0 ) {
 			lap_start_sample = w->lap_data[i].split.seconds +
-				60 * (w->lap_data[i].split.minutes + 
+				60 * (w->lap_data[i].split.minutes +
 					  60 * w->lap_data[i].split.hours);
 			lap_end_sample = w->lap_data[i].cumulative.seconds +
-				60 * (w->lap_data[i].cumulative.minutes + 
+				60 * (w->lap_data[i].cumulative.minutes +
 					  60 * w->lap_data[i].cumulative.hours);
 
 			lap_start_sample /= w->recording_interval;
@@ -560,10 +563,10 @@ workout_print_hrm(workout_t *w, FILE *fp)
 	sampled_seconds = (w->samples - 1) * w->recording_interval;
 
 	for ( i = 0; i < 3; i++ ) {
-    
-		/* 
+
+		/*
 		   We actually have to compute these values.  Actually, one of them
-		   shouldn't need to be computed, but while we're at it, why not. 
+		   shouldn't need to be computed, but while we're at it, why not.
 		*/
 
 		above_max      = 0;
@@ -573,8 +576,8 @@ workout_print_hrm(workout_t *w, FILE *fp)
 		below_rest     = 0;
 
 		/* We'll need this a few times. */
-    
-		/* 
+
+		/*
 		   We start at sample 1.  Each sample covers the preceding five
 		   seconds.
 		*/
@@ -611,7 +614,7 @@ workout_print_hrm(workout_t *w, FILE *fp)
 	fprintf(fp,"%d\t0\t0\t%d\r\n",S725_HRM_MAX_HR,S725_HRM_REST_HR);
 	fprintf(fp,"0\t%d\r\n",w->samples-1);
 
-	/* 
+	/*
 	   HRZones - these quantities are set by the user in the Polar software.
 	   Fill in with an "empty" set of values.
 	*/
@@ -625,7 +628,7 @@ workout_print_hrm(workout_t *w, FILE *fp)
 	fprintf(fp,"%d\r\n%d\r\n%d\r\n%d\r\n%d\r\n%d\r\n%d\r\n%d\r\n",
 			w->exercise_distance,
 			w->ascent,
-			w->duration.seconds + 
+			w->duration.seconds +
 			60 * (w->duration.minutes + 60 * w->duration.hours),
 			w->avg_alt,
 			w->max_alt,
@@ -639,19 +642,19 @@ workout_print_hrm(workout_t *w, FILE *fp)
 
 	for ( i = 0; i < w->samples; i++ ) {
 		fprintf(fp,"%d",w->hr_data[i]);
-		if ( S725_HAS_SPEED(mode) ) { 
-			fprintf(fp,"\t%d",(int)(w->speed_data[i] * 10.0 / 16.0 + 0.5)); 
+		if ( S725_HAS_SPEED(mode) ) {
+			fprintf(fp,"\t%d",(int)(w->speed_data[i] * 10.0 / 16.0 + 0.5));
 		}
-		if ( S725_HAS_CADENCE(mode) ) { 
-			fprintf(fp,"\t%d",w->cad_data[i]); 
+		if ( S725_HAS_CADENCE(mode) ) {
+			fprintf(fp,"\t%d",w->cad_data[i]);
 		}
-		if ( S725_HAS_ALTITUDE(mode) ) { 
-			fprintf(fp,"\t%d",w->alt_data[i]); 
+		if ( S725_HAS_ALTITUDE(mode) ) {
+			fprintf(fp,"\t%d",w->alt_data[i]);
 		}
-		if ( S725_HAS_POWER(mode) ) { 
+		if ( S725_HAS_POWER(mode) ) {
 			fprintf(fp,"\t%d\t%d",
 					w->power_data[i].power,
-					(w->power_data[i].pedal_index << 7) + 
+					(w->power_data[i].pedal_index << 7) +
 					(w->power_data[i].lr_balance >> 1));
 		}
 		fprintf(fp,"\r\n");
@@ -662,12 +665,12 @@ workout_print_hrm(workout_t *w, FILE *fp)
 	fflush(fp);
 }
 
-/* 
+/*
  * Print workout in TCX format
  *
  * For a specification, see:
  * https://www8.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd
- * 
+ *
  */
 void
 workout_print_tcx(workout_t *w, FILE *fp)
@@ -696,7 +699,7 @@ workout_print_tcx(workout_t *w, FILE *fp)
 	sum_speed    = 0;
 	sum_power    = 0;
 
-	if ( w->alt_data != NULL ) 
+	if ( w->alt_data != NULL )
 		for ( i = 0; i < w->samples; i++ ) sum_altitude += w->alt_data[i];
 	if ( w->cad_data != NULL )
 		for ( i = 0; i < w->samples; i++ ) sum_cadence  += w->cad_data[i];
@@ -704,7 +707,7 @@ workout_print_tcx(workout_t *w, FILE *fp)
 		for ( i = 0; i < w->samples; i++ ) sum_speed    += w->speed_data[i];
 	if ( w->power_data != NULL )
 		for ( i = 0; i < w->samples; i++ ) sum_power    += w->power_data[i].power;
-	
+
 	fprintf(fp, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n");
 	fprintf(fp, "<TrainingCenterDatabase\n"
 			"    xmlns=\"http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2\"\n"
@@ -743,12 +746,12 @@ workout_print_tcx(workout_t *w, FILE *fp)
 			+ w->lap_data[i].cumulative.minutes * 60
 			+ w->lap_data[i].cumulative.seconds;
 		int cumulative_seconds_prev = 0;
-		
+
 		if (i > 0)
 			cumulative_seconds_prev = w->lap_data[i-1].cumulative.hours * 3600
 			+ w->lap_data[i-1].cumulative.minutes * 60
 			+ w->lap_data[i-1].cumulative.seconds;
-		
+
 		for (j = 0; j < w->samples; j++) {
 			if (i == w->laps - 1)
 				if (j * w->recording_interval >= cumulative_seconds)
@@ -758,7 +761,7 @@ workout_print_tcx(workout_t *w, FILE *fp)
 			if (i < w->laps -1)
 				if (j * w->recording_interval >= cumulative_seconds)
 					continue;
-			
+
 			/* except first lap, skip samples before end of last lap */
 			if (i > 0 && j * w->recording_interval < cumulative_seconds_prev)
 				continue;
@@ -770,35 +773,35 @@ workout_print_tcx(workout_t *w, FILE *fp)
 			strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ",
 					 localtime(&stamp));
 			fprintf(fp, "          <Time>%s</Time>\n", buf);
-			
-			if ( w->alt_data != NULL ) 
+
+			if ( w->alt_data != NULL )
 				fprintf(fp, "          <AltitudeMeters>%lf</AltitudeMeters>\n", w->alt_data[j] * 1.0);
-			
-			if ( w->dist_data != NULL ) 
+
+			if ( w->dist_data != NULL )
 				fprintf(fp, "          <DistanceMeters>%lf</DistanceMeters>\n", w->dist_data[j] * 1.0);
-			
-			if ( w->hr_data != NULL ) 
+
+			if ( w->hr_data != NULL )
 				fprintf(fp, "          <HeartRateBpm><Value>%hhu</Value></HeartRateBpm>\n", w->hr_data[j]);
-			
-			if ( w->cad_data != NULL ) 
+
+			if ( w->cad_data != NULL )
 				fprintf(fp, "          <Cadence>%lf</Cadence>\n", w->cad_data[j] * 1.0);
-			
+
 			fprintf(fp, "        </Trackpoint>\n");
 		}
-		
+
 		fprintf(fp, "      </Track>\n");
 		fprintf(fp, "    </Lap>\n");
 	}
 	fprintf(fp, "  </Activity>\n");
 	fprintf(fp, "</Activities>\n");
 	fprintf(fp, "</TrainingCenterDatabase>\n");
-	
+
 	if (count != w->samples)
 		fprintf(fp, "<!-- #samples does not match: %d != %d -->\n", count, w->samples);
 
 	fprintf(fp, "<!-- output count: %3d -->\n", count);
 	fprintf(fp, "<!-- data samples: %3d -->\n", w->samples);
 	fprintf(fp, "<!-- after end:    %3d -->\n", count_after_end);
-	
+
 	fflush(fp);
 }

@@ -1,70 +1,74 @@
-# Workout date:            2016-06-18 22:46:17 (Sat, 18 Jun 2016)
-# HRM Type:                S625X
-# User ID:                 0
-# Mode:                    HR, Altitude, Speed (Bike 1), Power, Cadence
-# Exercise duration:       00:00:20.3
-# Exercise distance:       0.0 km
-# Recording interval:      15 seconds
-# Average heart rate:      0 bpm
-# Maximum heart rate:      0 bpm
-# Average cadence:         0 rpm
-# Maximum cadence:         0 rpm
-# Average speed:           0.0 kph
-# Maximum speed:           0.0 kph
-# Minimum temperature:     27 C
-# Average temperature:     27 C
-# Maximum temperature:     28 C
-# Minimum altitude:        102 m
-# Average altitude:        102 m
-# Maximum altitude:        102 m
-# Ascent:                  0 m
-# Average power:           0 W
-# Average LR balance:      50-50
-# Average pedal index:     0 %
-# Maximum power:           0 W
-# Maximum pedal index:     0 %
-# HR Limit 1:              80 to 160
-# 	Time below:      00:00:00
-# 	Time within:     00:00:00
-# 	Time above:      00:00:00
-# HR Limit 2:              80 to 160
-# 	Time below:      00:00:00
-# 	Time within:     00:00:00
-# 	Time above:      00:00:00
-# HR Limit 3:              80 to 160
-# 	Time below:      00:00:00
-# 	Time within:     00:00:00
-# 	Time above:      00:00:00
-# Energy:                  0
-# Total energy:            19287
-# Cumulative exercise:     1351:37
-# Cumulative ride time:    446:42
-# Odometer:                8100 km
-# Laps:                    1
-# 
-# 
+# Workout date:          2016-06-18 22:46:17 (Sat, 18 Jun 2016)
+# HRM Type:              S625X
+# User ID:               0
+# Mode:                  HR, Altitude, Speed (Bike 1), Power, Cadence
+# Exercise duration:     00:00:20.3
+# Exercise distance:     0.0 km
+# Recording interval:    15 seconds
+# Average heart rate:    0 bpm
+# Maximum heart rate:    0 bpm
+# Average cadence:       0 rpm
+# Maximum cadence:       0 rpm
+# Average speed:         0.0 kph
+# Maximum speed:         0.0 kph
+# Minimum temperature:   27 C
+# Average temperature:   27 C
+# Maximum temperature:   28 C
+# Minimum altitude:      102 m
+# Average altitude:      102 m
+# Maximum altitude:      102 m
+# Ascent:                0 m
+# Average power:         0 W
+# Average LR balance:    50-50
+# Average pedal index:   0 %
+# Maximum power:         0 W
+# Maximum pedal index:   0 %
+# Energy:                0
+# Total energy:          19287
+# Cumulative exercise:   1351:37
+# Cumulative ride time:  446:42
+# Odometer:              8100 km
+# Laps:                  1
+#
+#
+# HR Limit 1:            80 to 160
+#   Time below:          00:00:00
+#   Time within:         00:00:00
+#   Time above:          00:00:00
+#
+# HR Limit 2:            80 to 160
+#   Time below:          00:00:00
+#   Time within:         00:00:00
+#   Time above:          00:00:00
+#
+# HR Limit 3:            80 to 160
+#   Time below:          00:00:00
+#   Time within:         00:00:00
+#   Time above:          00:00:00
+#
+#
 # Lap 1:
-# 	Lap split:          00:00:20.3
-# 	Lap cumulative:     00:00:20.3
-# 	Lap HR:             0 bpm
-# 	Average HR:         0 bpm
-# 	Maximum HR:         0 bpm
-# 	Lap altitude:       102 m
-# 	Lap ascent:         0 m
-# 	Lap cumulat. asc:   0 m
-# 	Lap temperature:    28 C
-# 	Lap cadence:        0 rpm
-# 	Lap distance:       0.0 km
-# 	Lap cumulat. dist:  0.0 km
-# 	Lap speed at end:   0.0 kph
-# 	Lap speed ave:      0.0 kph
-# 	Lap power:          0 W
-# 	Lap LR balance:     50-50
-# 	Lap pedal index:    0%
-# 
-# 
+#   Lap split:           00:00:20.3
+#   Lap cumulative:      00:00:20.3
+#   Lap HR:              0 bpm
+#   Average HR:          0 bpm
+#   Maximum HR:          0 bpm
+#   Lap altitude:        102 m
+#   Lap ascent:          0 m
+#   Lap cumulat. asc:    0 m
+#   Lap temperature:     28 C
+#   Lap cadence:         0 rpm
+#   Lap distance:        0.0 km
+#   Lap cumulat. dist:   0.0 km
+#   Lap speed at end:    0.0 kph
+#   Lap speed ave:       0.0 kph
+#   Lap power:           0 W
+#   Lap LR balance:      50-50
+#   Lap pedal index:     0%
+#
+#
 # Recorded data:
-# 
+#
 #   Time	 HR	 Alt	    VAM	  Spd	  Dist	Power	   LR	PI	Cad
 00:00:00	  0	 103	    0.0	  0.0	  0.00	    0	50-50	 0	  0
 00:00:15	  0	 102	 -240.0	  0.0	  0.00	    0	50-50	 0	  0

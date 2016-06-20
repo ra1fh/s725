@@ -1,59 +1,63 @@
-# Workout date:            2016-05-22 11:42:25 (Sun, 22 May 2016)
-# HRM Type:                S625X
-# User ID:                 0
-# Mode:                    HR, Altitude, Speed (Bike 2)
-# Exercise duration:       05:30:21.2
-# Exercise distance:       0.0 km
-# Recording interval:      60 seconds
-# Average heart rate:      132 bpm
-# Maximum heart rate:      178 bpm
-# Average speed:           0.0 kph
-# Maximum speed:           0.0 kph
-# Minimum temperature:     23 C
-# Average temperature:     27 C
-# Maximum temperature:     31 C
-# Minimum altitude:        181 m
-# Average altitude:        319 m
-# Maximum altitude:        482 m
-# Ascent:                  1750 m
-# HR Limit 1:              0 to   0
-# 	Time below:      00:00:00
-# 	Time within:     00:00:00
-# 	Time above:      00:00:00
-# HR Limit 2:              0 to   0
-# 	Time below:      00:00:00
-# 	Time within:     00:00:00
-# 	Time above:      00:00:00
-# HR Limit 3:              0 to   0
-# 	Time below:      00:00:00
-# 	Time within:     00:00:00
-# 	Time above:      00:00:00
-# Energy:                  1871
-# Total energy:            10255
-# Cumulative exercise:     1327:29
-# Cumulative ride time:    446:42
-# Odometer:                8100 km
-# Laps:                    1
-# 
-# 
+# Workout date:          2016-05-22 11:42:25 (Sun, 22 May 2016)
+# HRM Type:              S625X
+# User ID:               0
+# Mode:                  HR, Altitude, Speed (Bike 2)
+# Exercise duration:     05:30:21.2
+# Exercise distance:     0.0 km
+# Recording interval:    60 seconds
+# Average heart rate:    132 bpm
+# Maximum heart rate:    178 bpm
+# Average speed:         0.0 kph
+# Maximum speed:         0.0 kph
+# Minimum temperature:   23 C
+# Average temperature:   27 C
+# Maximum temperature:   31 C
+# Minimum altitude:      181 m
+# Average altitude:      319 m
+# Maximum altitude:      482 m
+# Ascent:                1750 m
+# Energy:                1871
+# Total energy:          10255
+# Cumulative exercise:   1327:29
+# Cumulative ride time:  446:42
+# Odometer:              8100 km
+# Laps:                  1
+#
+#
+# HR Limit 1:            0 to   0
+#   Time below:          00:00:00
+#   Time within:         00:00:00
+#   Time above:          00:00:00
+#
+# HR Limit 2:            0 to   0
+#   Time below:          00:00:00
+#   Time within:         00:00:00
+#   Time above:          00:00:00
+#
+# HR Limit 3:            0 to   0
+#   Time below:          00:00:00
+#   Time within:         00:00:00
+#   Time above:          00:00:00
+#
+#
 # Lap 1:
-# 	Lap split:          05:30:21.2
-# 	Lap cumulative:     05:30:21.2
-# 	Lap HR:             121 bpm
-# 	Average HR:         132 bpm
-# 	Maximum HR:         178 bpm
-# 	Lap altitude:       185 m
-# 	Lap ascent:         1750 m
-# 	Lap cumulat. asc:   1750 m
-# 	Lap temperature:    26 C
-# 	Lap distance:       0.0 km
-# 	Lap cumulat. dist:  0.0 km
-# 	Lap speed at end:   0.0 kph
-# 	Lap speed ave:      0.0 kph
-# 
-# 
+#   Lap split:           05:30:21.2
+#   Lap cumulative:      05:30:21.2
+#   Lap HR:              121 bpm
+#   Average HR:          132 bpm
+#   Maximum HR:          178 bpm
+#   Lap altitude:        185 m
+#   Lap ascent:          1750 m
+#   Lap cumulat. asc:    1750 m
+#   Lap temperature:     26 C
+#   Lap distance:        0.0 km
+#   Lap cumulat. dist:   0.0 km
+#   Lap speed at end:    0.0 kph
+#   Lap speed ave:       0.0 kph
+#
+#
 # Recorded data:
-# 
+#
 #   Time	 HR	 Alt	    VAM	  Spd	  Dist
 00:00:00	 67	 185	    0.0	  0.0	  0.00
 00:01:00	102	 186	   60.0	  0.0	  0.00

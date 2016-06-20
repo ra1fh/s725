@@ -25,7 +25,7 @@
 #include "conf.tab.h"
 
 %}
-						
+
 %%
 
 #[^\n]*\n { /* ignore */         }

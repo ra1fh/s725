@@ -14,7 +14,7 @@ addons:
       - flex
       - bison
       - valgrind
-  
+
 script:
   - make
   - make check

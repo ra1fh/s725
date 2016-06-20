@@ -90,7 +90,7 @@ log_vwrite(int newline, const char *msg, va_list ap)
 		if (fprintf(stderr, "%s%s", fmt, newline ? "\n" : "") == -1)
 			exit(1);
 	}
-	
+
 	free(fmt);
 }
 
@@ -169,7 +169,7 @@ log_info(const char *msg, ...)
 
 	if (log_level < 1)
 		return;
-	   
+
 	va_start(ap, msg);
 	log_vwrite(1, msg, ap);
 	va_end(ap);
@@ -183,7 +183,7 @@ log_debug(const char *msg, ...)
 
 	if (log_level < 2)
 		return;
-	   
+
 	va_start(ap, msg);
 	log_vwrite(1, msg, ap);
 	va_end(ap);
@@ -239,7 +239,7 @@ log_print_hash_marks(int pct, int bytes)
 
 	if (log_level != 0 || log_file != NULL)
 		return;
-	
+
 	for (i = 0; i < HASH_MARKS+25; i++)
 		log_write("\b");
 	log_write("[%5d bytes] [", bytes);

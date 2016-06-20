@@ -67,12 +67,12 @@ irda_discover(int fd, uint32_t *daddr)
     len = sizeof(struct irda_device_list) * (IRDA_DEVICES + 1);
 
 	log_info("len=%d, sizeof(buf)=%d", len, sizeof(buf));
-	
+
     list = (struct irda_device_list *) buf;
-        
+
 	log_info("irda_discover: starting discovery on fd=%d", fd);
-	
-	
+
+
 	if (getsockopt(fd, SOL_IRLMP, IRLMP_ENUMDEVICES, buf, &len) != 0) {
 		log_error("irda_discover: getsockopt failed (%s)", strerror(errno));
 		return 0;
@@ -82,21 +82,21 @@ irda_discover(int fd, uint32_t *daddr)
 		log_error("irda_discover: no devices found");
 		return 0;
 	}
-		
+
 	log_info("irda_discover: len=%d", list->len);
 	log_info("irda_discover: name=%s", list->dev[0].info);
 	log_info("irda_discover: daddr=%08x", list->dev[0].daddr);
 	log_info("irda_discover: saddr=%08x", list->dev[0].saddr);
 
 	*daddr = list->dev[0].daddr;
-	
+
     return 1;
 }
 
-/* 
+/*
  * initialize the irda port
  */
-static int  
+static int
 irda_init(struct s725_driver *d)
 {
 	struct sockaddr_irda peer;
@@ -104,7 +104,7 @@ irda_init(struct s725_driver *d)
 	int fd;
 
 	memset(&peer, 0, sizeof(peer));
-	
+
 	fd = socket(AF_IRDA, SOCK_STREAM, 0);
 	if (! irda_discover(fd, &daddr)) {
 		close(fd);
@@ -112,12 +112,12 @@ irda_init(struct s725_driver *d)
 	}
 
 	log_info("irda_init: connecting to %x08x", daddr);
-	
+
 	peer.sir_family = AF_IRDA;
 	peer.sir_lsap_sel = LSAP_ANY;
 	peer.sir_addr = daddr;
 	strcpy(peer.sir_name, "HRM");
-	
+
 	if (connect(fd, (struct sockaddr*) &peer, sizeof(struct sockaddr_irda)) == -1) {
 		log_error("irda_init: connect failed");
 		close(fd);
@@ -196,12 +196,12 @@ static int
 irda_write(struct s725_driver *d, BUF *buf)
 {
 	int ret = 0;
-	
+
 	log_info("irda_write: len=%zu", buf_len(buf));
 
 	if (log_get_level() >= 2)
 		log_hexdump(buf_get(buf), buf_len(buf));
-	
+
 	if ((write(DP(d)->fd, buf_get(buf), buf_len(buf)) < 0))
 		ret = -1;
 
@@ -223,7 +223,7 @@ irda_close(struct s725_driver *d)
 	fatalx("irda driver not supported");
 	return -1;
 }
-	
+
 static int
 irda_read(struct s725_driver *d, BUF *buf)
 {

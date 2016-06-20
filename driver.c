@@ -37,7 +37,7 @@ driver_init(const int driver_type, const char *device)
 {
 	if (driver)
 		return 0;
-	
+
 	driver = malloc(sizeof(struct s725_driver));
 	if (!driver)
 		return 0;
@@ -59,7 +59,7 @@ driver_init(const int driver_type, const char *device)
 		return 1;
 		break;
 	}
-	
+
 	free(driver);
 	driver = NULL;
 	return 0;
@@ -133,7 +133,7 @@ driver_name_to_type(const char *driver_name)
 		return DRIVER_UNKNOWN;
 	}
 }
-	   
+
 const char*
 driver_type_to_name(int driver_type)
 {

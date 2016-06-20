@@ -38,7 +38,7 @@
 	char *sval;
 	int   ival;
 }
-	
+
 %{
 
 #include <stdio.h>
@@ -56,7 +56,7 @@ int conf_format_type = FORMAT_UNKNOWN;
 char *conf_device_name = NULL;
 char *conf_directory_name = NULL;
 const char *conf_filename = NULL;
-	
+
 %}
 
 %%

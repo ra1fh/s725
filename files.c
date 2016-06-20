@@ -2,7 +2,7 @@
 
 /*
  * Copyright (C) 2016  Ralf Horstmann
- * Copyright (C) 2007  Dave Bailey  
+ * Copyright (C) 2007  Dave Bailey
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@
 
 static int files_transfer(BUF *files, int packet_type);
 
-/* 
+/*
  * Send read request and receive training data. Each packet contains
  * the number of remaining packets.  To proceed with transfer, a
  * continue request has to be sent.
@@ -49,7 +49,7 @@ files_get(BUF *files)
 	return files_transfer(files, S725_GET_FILES);
 }
 
-/* 
+/*
  * Listen for incoming training data. The send operation has to be
  * initiated from the watch
  */
@@ -97,7 +97,7 @@ files_timestamp (BUF *f, size_t offset)
 	t.tm_year  = 100 + buf_getbcd(f, offset + 14);
 	t.tm_isdst = -1;
 	ft         = mktime(&t);
-  
+
 	return ft;
 }
 
@@ -138,7 +138,7 @@ files_transfer(BUF *files, int packet_type)
 		int len = packet_len(p);
 		buf_append(files, &pd[start], len - start);
 
-		if (p_bytes > 0) 
+		if (p_bytes > 0)
 			log_print_hash_marks(buf_len(files) * 100 / p_bytes, p_bytes);
 
 		if (packet_type == S725_GET_FILES)

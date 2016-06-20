@@ -6,7 +6,7 @@ Original Author:
 
 Dave Bailey <dave <at> daveb <dot> net>
 
-Numerous bugfixes, protocol/file format information and feature enhancements 
+Numerous bugfixes, protocol/file format information and feature enhancements
 have been contributed by (in alphabetical order by last name):
 
 Bjorn Andersson    <bjorn <at> iki <dot> fi>
@@ -20,4 +20,3 @@ Berend Ozceri      <berend <at> alumni <dot> cmu <dot> edu>
 Matti Tahvonen     <matti <at> tahvonen <dot> com>
 Frank Vercruesse   <frank <at> vercruesse <dot> de>
 Aldy Hernandez	   <aldyh <at> redhat <dot> com>
-

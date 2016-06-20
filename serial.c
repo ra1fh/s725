@@ -63,7 +63,7 @@ serial_print_bits(unsigned int out)
 
 	if (log_get_level() < 1)
 		return;
-	
+
 	for (; mask; mask >>=1) {
 		if ((mask & 0x08888888))
 			log_write(" ");
@@ -79,11 +79,11 @@ serial_print_termios(struct termios *tio, char *label)
 
 	if (log_get_level() < 1)
 		return;
-	
+
 	if (label) {
 		log_write("termios state: %s\n", label);
 	}
-	
+
 	log_write("c_iflag: 0x%08x ", tio->c_iflag);
 	serial_print_bits(tio->c_iflag);
 	log_write("\nc_oflag: 0x%08x ", tio->c_oflag);
@@ -113,28 +113,28 @@ serial_print_termios(struct termios *tio, char *label)
 	}
 }
 
-/* 
+/*
  * initialize the serial port
  */
-static int  
+static int
 serial_init(struct s725_driver *d)
 {
 	struct termios t;
 	int fd;
 
-	fd = open(d->path, O_RDWR | O_NOCTTY | O_NDELAY); 
-	if (fd < 0) { 
-		log_error("%s: %s", d->path, strerror(errno)); 
-		return -1; 
+	fd = open(d->path, O_RDWR | O_NOCTTY | O_NDELAY);
+	if (fd < 0) {
+		log_error("%s: %s", d->path, strerror(errno));
+		return -1;
 	}
 
 	if (tcgetattr(fd, &t) == -1) {
-		log_error("%s: %s", d->path, strerror(errno)); 
-		return -1; 
+		log_error("%s: %s", d->path, strerror(errno));
+		return -1;
 	}
 
 	serial_print_termios(&t, "inital state");
-	
+
 	d->data = xmalloc(sizeof(struct driver_private));
 	DP(d)->fd = fd;
 	DP(d)->tio = t;
@@ -163,23 +163,23 @@ serial_init(struct s725_driver *d)
 	t.c_iflag &= ~(IXON | IXOFF | IXANY);;
 
 	if (cfsetispeed(&t, B9600) < 0) {
-		log_error("%s: %s", d->path, strerror(errno)); 
+		log_error("%s: %s", d->path, strerror(errno));
 		return -1;
 	}
-		
+
 	if ((cfsetospeed(&t, B9600)) < 0) {
-		log_error("%s: %s", d->path, strerror(errno)); 
+		log_error("%s: %s", d->path, strerror(errno));
 		return -1;
 	}
-		
+
 	t.c_cc[VMIN] = 0;
 	t.c_cc[VTIME] = 1;
-	
+
 	serial_print_termios(&t, "modified state");
-	
+
 	if (tcsetattr(fd, TCSANOW, &t) == -1) {
-		log_error("%s: %s", d->path, strerror(errno)); 
-		return -1; 
+		log_error("%s: %s", d->path, strerror(errno));
+		return -1;
 	}
 
 	/*
@@ -189,7 +189,7 @@ serial_init(struct s725_driver *d)
 	 * so wait some millisecond, 50ms seems a good value.
 	 */
  	usleep(50000);
-	
+
 	return fd;
 }
 
@@ -206,7 +206,7 @@ serial_close(struct s725_driver *d)
 	xfree(DP(d));
 	return 0;
 }
-	
+
 static int
 serial_read_byte(struct s725_driver *d, unsigned char *byte)
 {
@@ -258,7 +258,7 @@ serial_write(struct s725_driver *d, BUF *buf)
 	log_info("serial_write: len=%zu", buf_len(buf));
 	if (log_get_level() >= 2)
 		log_hexdump(buf_get(buf), buf_len(buf));
-	
+
 	if (write_single_chunk) {
 		if ((write(DP(d)->fd, buf_get(buf), buf_len(buf)) < 0))
 			ret = -1;
@@ -273,4 +273,3 @@ serial_write(struct s725_driver *d, BUF *buf)
 	tcdrain(DP(d)->fd);
 	return ret;
 }
-

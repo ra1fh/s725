@@ -2,7 +2,7 @@
 
 /*
  * Copyright (C) 2016  Ralf Horstmann
- * Copyright (C) 2007  Dave Bailey  
+ * Copyright (C) 2007  Dave Bailey
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ workout_read_buf(BUF *buf)
 	}
 
 	size = buf_getshort(buf, 0);
-	
+
 	if (size != buf_len(buf)) {
 		log_info("workout_read_buf: len does not match buffer len");
 		return NULL;
@@ -123,7 +123,7 @@ workout_free (workout_t *w)
 
 /**********************************************************************/
 
-/* 
+/*
  * Attempt to auto-detect the HRM type based on some information in the file.
  * This may not always succeed, but it seems to work relatively well.
  */
@@ -142,11 +142,11 @@ workout_detect_hrm_type(BUF *buf)
 		log_error("workout_detect_hrm_type: buffer size too small");
 		return S725_HRM_UNKNOWN;
 	}
-	
-	if (buf_getc(buf, 34) == 0 && buf_getc(buf, 36) == 251) { 
+
+	if (buf_getc(buf, 34) == 0 && buf_getc(buf, 36) == 251) {
 		return S725_HRM_S610;
 	}
-	
+
 	if (buf_getc(buf, 37) == 251 &&
 		(buf_getc(buf, 35) == 0 || buf_getc(buf, 35) == 48)) {
 		/* this is either an s725 or s625x or...? */
@@ -156,16 +156,16 @@ workout_detect_hrm_type(BUF *buf)
 			bps = workout_bytes_per_sample(buf_getc(buf, 26));
 			bpl = workout_bytes_per_lap(S725_HRM_UNKNOWN, buf_getc(buf, 26),
 										buf_getc(buf, 23));
-      
+
 			/* obtain the number of laps and samples in the file */
 			duration = buf_getbcd(buf, 16)
 				+ 60 * (buf_getbcd(buf, 17) + 60 * buf_getbcd(buf, 18));
 			samples = duration / ri + 1;
 			laps = buf_getbcd(buf, 21);
-      
+
 			/* now compute the size of the file header */
 			header = buf_len(buf) - samples * bps - laps * bpl;
-      
+
 			/*
 			 * based on the header size, we can make a guess at the
 			 * HRM type. note that this will NOT work if the file was
@@ -176,13 +176,13 @@ workout_detect_hrm_type(BUF *buf)
 			 * the S625x header size.
 			 */
 			if (header == S725_HEADER_SIZE_S625X) {
-				return S725_HRM_S625X; 
+				return S725_HRM_S625X;
 			} else {
 				return S725_HRM_S725;
 			}
 		}
 	}
-	
+
 	return S725_HRM_UNKNOWN;
 }
 
@@ -191,7 +191,7 @@ workout_extract(BUF *buf, S725_HRM_Type type)
 {
 	workout_t *w = NULL;
 	int ok = 1;
-	
+
 	if ((w = calloc(1, sizeof(workout_t))) == NULL) {
 		log_info("workout_extract: calloc: %s", strerror(errno));
 		return NULL;
@@ -211,7 +211,7 @@ workout_extract(BUF *buf, S725_HRM_Type type)
 		workout_free(w);
 		return NULL;
 	}
-	
+
 	w->avg_hr        = buf_getc(buf, 19);
 	w->max_hr        = buf_getc(buf, 20);
 	w->laps          = buf_getbcd(buf, 21);
@@ -252,7 +252,7 @@ workout_extract(BUF *buf, S725_HRM_Type type)
 		workout_free(w);
 		return NULL;
 	}
-	
+
 	ok = workout_read_laps(w, buf);
 	if (buf_get_readerr(buf)) {
 		log_info("workout_extract: readerr after read laps (%d > %d)",
@@ -264,7 +264,7 @@ workout_extract(BUF *buf, S725_HRM_Type type)
 		workout_free(w);
 		return NULL;
 	}
-	
+
 	ok = workout_read_samples(w, buf);
 	if (buf_get_readerr(buf)) {
 		log_info("workout_extract: readerr after read samples (%d > %d)",
@@ -289,7 +289,7 @@ workout_read_preamble(workout_t *w, BUF *buf)
 		log_error("workout_read_preamble: buffer too small");
 		return /* TODO: ERROR */;
 	}
-	
+
 	/* number of bytes in the buffer (including these two) */
 	w->bytes = buf_getc(buf, 0) + (buf_getc(buf, 1) << 8);
 
@@ -309,17 +309,17 @@ workout_read_date(workout_t *w, BUF *buf)
 	w->date.tm_sec   = buf_getbcd(buf, 10);
 	w->date.tm_min   = buf_getbcd(buf, 11);
 	w->date.tm_hour  = buf_getbcd(buf, 12) & 0x7f;
-  
+
 	/* PATCH for AM/PM mode detection from Berend Ozceri */
 	w->ampm = S725_AM_PM_MODE_UNSET;
 	if (buf_getc(buf, 13) & 0x80) w->ampm |= S725_AM_PM_MODE_SET;
 	if (buf_getc(buf, 12) & 0x80) w->ampm |= S725_AM_PM_MODE_PM;
-  
+
 	w->date.tm_hour += (buf_getc(buf, 13) & 0x80) ?                       /* am/pm mode?   */
 		((buf_getc(buf, 12) & 0x80) ? ((w->date.tm_hour < 12) ? 12 : 0) : /* yes, pm set   */
 		 ((w->date.tm_hour >= 12) ? -12 : 0)) :                           /* yes, pm unset */
 		0;                                                                /* no            */
-  
+
 	w->date.tm_mon   = (buf_getc(buf, 15) & 0x0f) - 1;
 	w->date.tm_mday  = buf_getbcd(buf, 13) & 0x7f;
 	w->date.tm_year  = 100 + buf_getbcd(buf, 14);
@@ -472,7 +472,7 @@ workout_read_ride_info(workout_t *w, BUF *buf, size_t offset)
 		+ buf_getbcd(buf, offset + 4) * 100
 		+ buf_getbcd(buf, offset + 3);
 
-	
+
 	/* exercise distance */
 	w->exercise_distance = buf_getc(buf, offset + 6) + (buf_getc(buf, offset + 7) << 8);
 
@@ -495,10 +495,10 @@ workout_read_ride_info(workout_t *w, BUF *buf, size_t offset)
 		/* Metric units */
 		w->min_temp = buf_getc(buf, offset + 19) & 0x7f;
 		w->min_temp = (buf_getc(buf, offset + 19) & 0x80) ? w->min_temp : - w->min_temp;
-    
+
 		w->avg_temp = buf_getc(buf, offset + 20) & 0x7f;
 		w->avg_temp = (buf_getc(buf, offset + 20) & 0x80) ? w->avg_temp : - w->avg_temp;
-    
+
 		w->max_temp = buf_getc(buf, offset + 21) & 0x7f;
 		w->max_temp = (buf_getc(buf, offset + 21) & 0x80) ? w->max_temp : - w->max_temp;
 	}
@@ -512,7 +512,7 @@ workout_read_ride_info(workout_t *w, BUF *buf, size_t offset)
 
 	w->max_alt  = buf_getc(buf, offset + 17) + ((buf_getc(buf, offset + 18) & 0x7f)<<8);
 	w->max_alt  = (buf_getc(buf, offset + 18) & 0x80) ? w->max_alt : - w->max_alt;
-  
+
 	w->ascent   = (buf_getc(buf, offset + 23) << 8) + buf_getc(buf, offset + 22);
 
 	/* avg, max power data */
@@ -526,7 +526,7 @@ workout_read_ride_info(workout_t *w, BUF *buf, size_t offset)
 }
 
 /*
- * Extract the lap data. 
+ * Extract the lap data.
  */
 static int
 workout_read_laps(workout_t *w, BUF *buf)
@@ -548,7 +548,7 @@ workout_read_laps(workout_t *w, BUF *buf)
 		log_info("workout_read_laps: invalid number of laps (%d)", w->laps);
 		return 0;
 	}
-		
+
 	w->lap_data = calloc(w->laps, sizeof(lap_data_t));
 
 	if (w->lap_data == NULL) {
@@ -565,10 +565,10 @@ workout_read_laps(workout_t *w, BUF *buf)
 		l->cumulative.hours   = buf_getc(buf, offset + 2);
 		l->cumulative.minutes = buf_getc(buf, offset + 1) & 0x3f;
 		l->cumulative.seconds = buf_getc(buf, offset + 0) & 0x3f;
-		l->cumulative.tenths  = ((buf_getc(buf, offset + 1) & 0xc0)>>4) | 
+		l->cumulative.tenths  = ((buf_getc(buf, offset + 1) & 0xc0)>>4) |
 			((buf_getc(buf, offset) & 0xc0)>>6);
 
-		if (i == 0) 
+		if (i == 0)
 			memcpy(&l->split, &l->cumulative, sizeof(S725_Time));
 		else
 			workout_time_diff(&w->lap_data[i-1].cumulative, &l->cumulative, &l->split);
@@ -600,20 +600,20 @@ workout_read_laps(workout_t *w, BUF *buf)
 		/* bike data */
 		if (S725_HAS_SPEED(w->mode)) {
 			/* cadence data */
-			if (S725_HAS_CADENCE(w->mode)) { 
-				l->cad  = buf_getc(buf, offset); 
-				offset += 1; 
+			if (S725_HAS_CADENCE(w->mode)) {
+				l->cad  = buf_getc(buf, offset);
+				offset += 1;
 			}
 
 			/* next 4 bytes are power data */
-			if (S725_HAS_POWER(w->mode)) { 
+			if (S725_HAS_POWER(w->mode)) {
 				l->power.power = buf_getc(buf, offset) + (buf_getc(buf, offset + 1) << 8);
 				l->power.lr_balance  = buf_getc(buf, offset + 3);   /* ??? switched  ??? */
 				l->power.pedal_index = buf_getc(buf, offset + 2);   /* ??? with this ??? */
 				offset += 4;
 			}
 
-			/* 
+			/*
 			 * next 4 bytes are distance/speed data
 			 * this is cumulative distance from start (at least with S720i)
 			 */
@@ -621,7 +621,7 @@ workout_read_laps(workout_t *w, BUF *buf)
 			l->distance = l->cumul_distance - prev_lap_dist;
 			prev_lap_dist = l->cumul_distance;
 
-			/* 
+			/*
 			 * The offset + 2 appears to be 4b.4b, where the upper 4b is the
 			 * integer portion of the speed and the lower 4b is the fractional
 			 * portion in sixteenths.  I'm not sure where the most significant
@@ -670,7 +670,7 @@ workout_read_samples(workout_t *w, BUF *buf)
 				x = w->samples - 1 - i;
 				w->hr_data[x] = buf_getc(buf, s);
 				s++;
-	
+
 				if (S725_HAS_ALTITUDE(w->mode)) {
 					w->alt_data[x] = buf_getc(buf, s) + ((buf_getc(buf, s + 1) & 0x1f) << 8) - 512;
 					if (w->units.system == S725_UNITS_ENGLISH) {
@@ -678,12 +678,12 @@ workout_read_samples(workout_t *w, BUF *buf)
 					}
 					s += 2;
 				}
-	
+
 				if (S725_HAS_SPEED(w->mode)) {
 					if (S725_HAS_ALTITUDE(w->mode)) s -= 1;
 					w->speed_data[x] = ((buf_getc(buf, s) & 0xe0) << 3) + buf_getc(buf, s + 1);
 					s += 2;
-					if (S725_HAS_POWER(w->mode)) { 
+					if (S725_HAS_POWER(w->mode)) {
 						w->power_data[x].power = buf_getc(buf, s) + (buf_getc(buf, s + 1) << 8);
 						w->power_data[x].lr_balance = buf_getc(buf, s + 2);
 						w->power_data[x].pedal_index = buf_getc(buf, s + 3);
@@ -692,7 +692,7 @@ workout_read_samples(workout_t *w, BUF *buf)
 					if (S725_HAS_CADENCE(w->mode)) w->cad_data[x] = buf_getc(buf, s);
 				}
 			}
-      
+
 			if (S725_HAS_SPEED(w->mode)) {
 				accum = 0;
 				for (i = 0; i < w->samples; i++) {
@@ -723,7 +723,7 @@ workout_compute_speed_info(workout_t *w)
 		w->highest_speed = 0;
 		j = 0;
 		for (i = 0; i < w->samples; i++) {
-			if (w->speed_data[i] > w->highest_speed) 
+			if (w->speed_data[i] > w->highest_speed)
 				w->highest_speed = w->speed_data[i];
 			if (w->speed_data[i] > 0) {
 				avg = (float)(avg * j + w->speed_data[i])/(j+1);
@@ -771,8 +771,8 @@ workout_bytes_per_lap(S725_HRM_Type type, unsigned char bt, unsigned char bi)
 			lap_size += 4;
 		lap_size += 4;
 	}
-  
-	/* 
+
+	/*
 	 * This is Matti Tahvonen's fix for handling laps with interval mode.
 	 * Applies to the S625X and the S725/S720i.
 	 */
@@ -813,7 +813,7 @@ workout_allocate_sample_space (workout_t *w)
 		log_error("workout_allocate_sample_space: invalid number of samples (%d)", w->samples);
 		return 0;
 	}
-	
+
 #define  MAKEBUF(a, b)											\
 	if ((w->a = calloc(w->samples, sizeof(b))) == NULL) {		\
 		log_error("%s: calloc(%d,%ld): %s",					    \
@@ -857,7 +857,7 @@ alpha_map(unsigned char c)
 	char a = '?';
 
 	switch (c) {
-	case 0: case 1: case 2: case 3: case 4: 
+	case 0: case 1: case 2: case 3: case 4:
 	case 5: case 6: case 7: case 8: case 9:
 		a = '0' + c;
 		break;
@@ -892,6 +892,6 @@ alpha_map(unsigned char c)
 	case 72: a = '?'; break;
 	default:          break;
 	}
-  
+
 	return a;
 }

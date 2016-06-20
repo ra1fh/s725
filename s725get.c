@@ -138,10 +138,10 @@ main(int argc, char **argv)
 	}
 
 	if (! (opt_time || opt_user)) {
-		if (opt_format == FORMAT_UNKNOWN) 
+		if (opt_format == FORMAT_UNKNOWN)
 			fatalx("no output format specified");
 	}
-	
+
 	log_info("driver name: %s", driver_type_to_name(opt_driver_type));
 	log_info("driver type: %d", opt_driver_type);
 	log_info("device name: %s", opt_device_name ? opt_device_name : "");
@@ -160,16 +160,16 @@ main(int argc, char **argv)
 
 	if (!opt_directory_name)
 		fatalx("could not resolve path. check -f");
-	
+
 	if (access(opt_directory_name, R_OK | W_OK | X_OK) != 0)
 		fatalx("unable to access directory: %s", opt_directory_name);
-	
+
 	if (stat(opt_directory_name, &s) != 0)
 		fatalx("unable to stat directory: %s", opt_directory_name);
 
 	if (! S_ISDIR(s.st_mode))
 		fatalx("not a directory directory: %s", opt_directory_name);
-	
+
 	if (driver_open() < 0)
 		fatalx("unable to open port: %s", strerror(errno));
 
@@ -214,7 +214,7 @@ write_hrm_data(BUF *files, const char* directory, int format)
 	int count;
 
 	suffix = format_to_str(format);
-	
+
 	buf = buf_alloc(0);
 	offset = 0;
 	count = 0;

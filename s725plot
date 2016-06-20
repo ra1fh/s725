@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 
 # Copyright (C) 2016  Ralf Horstmann
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -40,7 +40,7 @@ def col2type(name):
         return (name, '|S7')
     else:
         return (name, 'f4')
-    
+
 def read_txt(filename, header):
     dd = list(map(col2type, header))
     cf = bytespdate2num("%H:%M:%S")
@@ -91,11 +91,11 @@ def plothr(data, filename, output, laps=[]):
     time = data['Time']
     hr = data['HR']
     xmin, xmax = xborder(time)
-    
+
     fig, ax = plt.subplots()
     fig.set_figwidth(8.0)
     fig.set_figheight(5.0)
-    
+
     ax.plot_date(x=time, y=hr, label='HR', fmt="r-", color='#700000')
     ax.axhline(np.mean(hr), xmin=0, xmax=1, linestyle='--', color='#505050')
     for lap in laps:
@@ -115,11 +115,11 @@ def plotalt(data, filename, output, laps=[]):
     time = data['Time']
     alt = data['Alt']
     xmin, xmax = xborder(time)
-    
+
     fig, ax = plt.subplots()
     fig.set_figwidth(8.0)
     fig.set_figheight(5.0)
-    
+
     ax.plot_date(x=time, y=alt, fmt="r-", color='#007000')
     for lap in laps:
         ax.axvline(lap, ymin=0, ymax=1, linestyle='--', color='#505050')
@@ -137,11 +137,11 @@ def plotspd(data, filename, output, laps=[]):
     time = data['Time']
     spd = data['Spd']
     xmin, xmax = xborder(time)
-    
+
     fig, ax = plt.subplots()
     fig.set_figwidth(8.0)
     fig.set_figheight(5.0)
-    
+
     ax.plot_date(x=time, y=spd, fmt="r-", color='#007000')
     for lap in laps:
         ax.axvline(lap, ymin=0, ymax=1, linestyle='--', color='#505050')
@@ -154,12 +154,12 @@ def plotspd(data, filename, output, laps=[]):
     fig.savefig(output, dpi=90)
     print(output)
 
-    
+
 def plotaltdist(data, filename, output, laps=[]):
     dist = data['Dist']
     alt = data['Alt']
     xmin, xmax = xborder(dist)
-    
+
     fig, ax = plt.subplots()
     fig.set_figwidth(8.0)
     fig.set_figheight(5.0)
@@ -173,18 +173,18 @@ def plotaltdist(data, filename, output, laps=[]):
     ax.grid(True)
     fig.savefig(output, dpi=90)
     print(output)
-    
+
 def plothist(data, filename, output):
     x = data['HR']
     y = data['Time']
     bins = [ 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205 ]
     ticks = [40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
     weight = [round(((y[1] - y[0]) * 60 * 24), 2) for i in x]
-    
+
     fig, ax = plt.subplots()
     fig.set_figwidth(8.0)
     fig.set_figheight(5.0)
-    
+
     n, bins, patches = ax.hist(x, bins, weights=weight, normed=False, facecolor='blue', alpha=0.5)
     ax.set_xticks(ticks)
     ax.set_xlim([30,210])
@@ -199,7 +199,7 @@ if __name__ == "__main__":
     usage = "s725plot <INPUT> <OUTPUT DIRECTORY>"
     parser = optparse.OptionParser(usage)
     opts, args = parser.parse_args(sys.argv[1:])
-    
+
     if len(args) < 2:
         parser.print_help()
         sys.exit(1)

@@ -134,9 +134,9 @@ transmission, framing and checksums. After enabling the infrared
 interface on the Linux host and running irattach, the watch should
 appear in /proc/net/irda/discovery:
 
-	$ cat /proc/net/irda/discovery 
+	$ cat /proc/net/irda/discovery
 	IrLMP: Discovery log:
-	
+
 	nickname: Polar S725X, hint: 0x8204, saddr: 0xa1a6cc7c, daddr: 0x3fcbdfde
 
 When this works, the s725get tool can be used like this:

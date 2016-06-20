@@ -2,7 +2,7 @@
 
 /*
  * Copyright (C) 2016  Ralf Horstmann
- * Copyright (C) 2007  Dave Bailey  
+ * Copyright (C) 2007  Dave Bailey
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ static packet_t gPacket[] = {
 	/* note that checksum values are calculated at packet assembly time.  */
 
 	/* name                type          id    len checksum data          */
-	
+
 	/* S725_GET_OVERVIEW */
 	{ "get overview",      S725_REQUEST, 0x15, 0, 0, { 0 } },
 
@@ -107,7 +107,7 @@ static packet_t gPacket[] = {
 	{ "get reminder 7",    S725_REQUEST, 0x0e, 1, 0, { 0x06 } },
 
 	/* S725_GET_FILES */
-	{ "get files",         S725_REQUEST, 0x0b, 0, 0, { 0 } },   
+	{ "get files",         S725_REQUEST, 0x0b, 0, 0, { 0 } },
 
 	/* S725_CONTINUE_TRANSFER */
 	{ "continue transfer", S725_REQUEST, 0x16, 0, 0, { 0 } },
@@ -208,7 +208,7 @@ packet_get_response(S725_Packet_Index request)
 				return(recv);
 		}
 	}
-	
+
 	send = packet_get(request);
 
 	if (send != NULL && packet_send(send) > 0)
@@ -236,10 +236,10 @@ static int packet_recv_short(unsigned short *s);
 static unsigned short packet_checksum(packet_t *p);
 static int packet_serialize(packet_t *p, BUF *buf);
 
-/* 
+/*
  * send a packet via the S725 driver
  */
-int 
+int
 packet_send(packet_t *p)
 {
 	int  ret = 1;
@@ -280,7 +280,7 @@ packet_recv_noframes()
 	packet_t *p = NULL;
 
 	buf = buf_alloc(1024);
-	
+
 	if (driver_read(buf) <= 0) {
 		log_info("packet_recv_noframes: driver_read returned no data");
 		goto error;
@@ -339,7 +339,7 @@ packet_recv_frames()
 	r = driver_read_byte(&id);
 	if (r <= 0)
 		goto error;
-	
+
 	buf_putc(buf, id);
 	log_info("packet_recv: subtype=%02hhx", id);
 	packet_crc_process(&crc, id);
@@ -350,7 +350,7 @@ packet_recv_frames()
 	packet_crc_process(&crc, c);
 	buf_putc(buf, c);
 	log_info("packet_recv: first=%02x remaining=%02x", c & 0x80, c & 0x7f);
-	
+
 	r = packet_recv_short(&len);
 	if (r <= 0)
 		goto error;
@@ -383,7 +383,7 @@ packet_recv_frames()
 
 	if (p == NULL)
 		goto error;
-	
+
 	r = packet_recv_short(&p->checksum);
 	if (r <= 0) {
 		log_error("packet_recv: recv_short failed");
@@ -399,11 +399,11 @@ packet_recv_frames()
 		log_info("packet_recv: hexdump len=%zu", buf_len(buf));
 		log_hexdump(buf_get(buf), buf_len(buf));
 	}
-	
+
 	if (crc != p->checksum) {
 		/* discard the whole transmission on crc mismatch,
 		   there is no way to retransmit a single packet   */
-		log_error("packet_recv: CRC failed [id %d, length %d]", 
+		log_error("packet_recv: CRC failed [id %d, length %d]",
 				  p->id, p->length );
 		log_info("packet_recv: reading remaining bytes");
 		while (1) {
@@ -420,7 +420,7 @@ packet_recv_frames()
 	log_info("packet_recv: crc correct");
 	buf_free(buf);
 	return p;
-	
+
 error:
 	log_info("packet_recv: error");
 	buf_free(buf);
@@ -482,7 +482,7 @@ packet_serialize(packet_t *p, BUF *buf)
 	return buf_len(buf);
 }
 
-/* 
+/*
  * Thanks to Stefan Kleditzsch for decoding the checksum algorithm!
  */
 

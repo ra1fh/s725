@@ -219,7 +219,7 @@ int
 buf_getbcd(BUF *b, size_t pos)
 {
 	u_char val;
-	
+
 	if (pos >= b->cb_len) {
 		b->cb_readerr = 1;
 		b->cb_readerr_offset = pos;
@@ -236,7 +236,7 @@ int
 buf_getbcd_masked(BUF *b, size_t pos, unsigned char mask)
 {
 	u_char val;
-	
+
 	if (pos >= b->cb_len) {
 		b->cb_readerr = 1;
 		b->cb_readerr_offset = pos;

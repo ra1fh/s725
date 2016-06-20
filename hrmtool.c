@@ -109,7 +109,7 @@ main(int argc, char **argv)
 		usage();
 		return 1;
 	}
-	
+
 	w = workout_read(opt_input_file);
 	if (w != NULL) {
 		f = fopen(opt_output_file, "w");

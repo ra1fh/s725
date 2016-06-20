@@ -10,7 +10,7 @@ BIN_OWNER= bin
 BIN_GROUP= root
 
 INCDIRS= -I$(PREFIX)/include
-LDFLAGS= -L$(PREFIX)/lib 
+LDFLAGS= -L$(PREFIX)/lib
 
 INSTALLDIR= install -d
 INSTALLBIN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 555
@@ -81,4 +81,3 @@ examples:
 	./s725plot tests/20150608T203912.txt examples/
 
 -include .depend
-

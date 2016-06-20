@@ -52,12 +52,6 @@ def read_meta(filename):
     regex.append(('laptime','^#\s+Lap cumulative:\s+([0-9:]+)'))
     regex.append(('lapdist','^#\s+Lap cumulat\. dist:\s+([0-9\.]+)'))
     regex.append(('ascent', '^#\s+Ascent:\s+([0-9]+)'))
-    regex.append(('mintemp','^#\s+Minimum temperature:\s+([0-9]+)'))
-    regex.append(('avgtemp','^#\s+Average temperature:\s+([0-9]+)'))
-    regex.append(('maxtemp','^#\s+Maximum temperature:\s+([0-9]+)'))
-    regex.append(('avghr',  '^#\s+Average heart rate:\s+([0-9]+)'))
-    regex.append(('maxhr',  '^#\s+Maximum heart rate:\s+([0-9]+)'))
-    regex.append(('mode',   '^#\s+Mode:\s+(.+)'))
     regex.append(('header', '^#\s+(Time\s+HR.+)'))
     regex.append(('date',   '^#\s+Workout date:\s+(.+)'))
     meta = dict()
@@ -97,7 +91,7 @@ def xborder(x):
     border = 0.03
     return (x[0] - diff * border, x[-1] + diff * border)
 
-def plot_time_alt(data, filename, output, laps=[], title=None):
+def plot_time_alt(data, filename, output, laps=[], title=None, meta=None):
     time = data['Time']
     alt = data['Alt']
     xmin, xmax = xborder(time)
@@ -118,6 +112,9 @@ def plot_time_alt(data, filename, output, laps=[], title=None):
     ax.set_xlim([xmin, xmax])
     ax.set_ylabel("Altitude (m)")
     ax.set_ylim([min(alt) - 50, max(alt) + 50])
+    ax.text(max(time), min(alt) - 40, "Ascent: " + meta['ascent'] + "m",
+            verticalalignment='bottom', horizontalalignment='right',
+            color='#505050', fontsize=14)
     ax.grid(True)
     fig.savefig(output, dpi=90)
     print(output)
@@ -221,7 +218,7 @@ def plot_hist(data, filename, output, title=None):
     fig.savefig(output, dpi=90)
     print(output)
 
-def plot_dist_alt(data, filename, output, laps=[], title=None):
+def plot_dist_alt(data, filename, output, laps=[], title=None, meta=None):
     dist = data['Dist']
     alt = data['Alt']
     xmin, xmax = xborder(dist)
@@ -237,10 +234,13 @@ def plot_dist_alt(data, filename, output, laps=[], title=None):
         ax.set_title(title)
     else:
         ax.set_title(os.path.basename(filename))
-    ax.set_xlabel("Dist (km)")
+    ax.set_xlabel("Distance (km)")
     ax.set_xlim([xmin, xmax])
     ax.set_ylabel("Altitude (m)")
     ax.set_ylim([min(alt) - 50, max(alt) + 50])
+    ax.text(max(dist), min(alt) - 40, "Ascent: " + meta['ascent'] + "m",
+            verticalalignment='bottom', horizontalalignment='right',
+            color='#505050', fontsize=14)
     ax.grid(True)
     fig.savefig(output, dpi=90)
     print(output)
@@ -261,7 +261,7 @@ def plot_dist_hr(data, filename, output, laps=[], title=None):
         ax.set_title(title)
     else:
         ax.set_title(os.path.basename(filename))
-    ax.set_xlabel("Dist (km)")
+    ax.set_xlabel("Distance (km)")
     ax.set_xlim([xmin, xmax])
     ax.set_ylabel("Hear Rate (bpm)")
     ax.set_ylim([30,210])
@@ -286,7 +286,7 @@ def plot_dist_spd(data, filename, output, laps=[], title=None):
         ax.set_title(title)
     else:
         ax.set_title(os.path.basename(filename))
-    ax.set_xlabel("Dist (km)")
+    ax.set_xlabel("Distance (km)")
     ax.set_xlim([xmin, xmax])
     ax.set_ylabel("Speed (km/h)")
     ax.grid(True)
@@ -328,7 +328,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     if 'Alt' in header and max(data['Alt']) > 0:
-        plot_time_alt(data, filename, directory + base + "-time-alt.png", laps=laptime, title=title)
+        plot_time_alt(data, filename, directory + base + "-time-alt.png", laps=laptime, title=title, meta=meta)
     if 'HR' in header and max(data['HR']) > 0:
         plot_time_hr(data, filename, directory + base + "-time-hr.png", laps=laptime, title=title)
     if 'Spd' in header and max(data['Spd']) > 0:
@@ -341,7 +341,7 @@ if __name__ == "__main__":
 
     if 'Dist' in header and max(data['Dist'] > 0):
         if 'Alt' in header and max(data['Spd']) > 0:
-            plot_dist_alt(data, filename, directory + base + "-dist-alt.png", laps=lapdist, title=title)
+            plot_dist_alt(data, filename, directory + base + "-dist-alt.png", laps=lapdist, title=title, meta=meta)
         if 'HR' in header and max(data['HR']) > 0:
             plot_dist_hr(data, filename, directory + base + "-dist-hr.png", laps=lapdist, title=title)
         if 'Spd' in header and max(data['Spd']) > 0:

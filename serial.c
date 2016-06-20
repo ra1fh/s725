@@ -155,7 +155,6 @@ serial_init(struct s725_driver *d)
 	t.c_cflag &= ~PARENB;
 
 	/* 2 stop bits */
-	// t.c_cflag |= CSTOPB;
 	t.c_cflag &= ~CSTOPB;
 
 	/* no flow control */

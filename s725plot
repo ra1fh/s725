@@ -228,7 +228,7 @@ if __name__ == "__main__":
         plothist(data, filename, directory + base + "-hist.png")
     if 'Alt' in header:
         plotalt(data, filename, directory + base + "-alt.png", laps=laps)
-    if 'Spd' in header:
-        plotspd(data, filename, directory + base + "-spd.png", laps=laps)
-    if 'Alt' in header and 'Dist' in header:
+    if 'Spd' in header and max(data['Spd'] > 0):
+            plotspd(data, filename, directory + base + "-spd.png", laps=laps)
+    if 'Alt' in header and 'Dist' in header and max(data['Dist']):
         plotaltdist(data, filename, directory + base + "-alt-dist.png", laps=laps)

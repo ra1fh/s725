@@ -164,6 +164,30 @@ def plot_time_spd(data, filename, output, laps=[], title=None):
     fig.savefig(output, dpi=90)
     print(output)
 
+def plot_time_vam(data, filename, output, laps=[], title=None):
+    time = data['Time']
+    vam = data['VAM']
+    xmin, xmax = xborder(time)
+
+    fig, ax = plt.subplots()
+    fig.set_figwidth(8.0)
+    fig.set_figheight(5.0)
+
+    ax.plot_date(x=time, y=vam, fmt="r-", color='#007000')
+    for lap in laps:
+        ax.axvline(lap, ymin=0, ymax=1, linestyle='--', color='#505050')
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+    if title:
+        ax.set_title(title)
+    else:
+        ax.set_title(os.path.basename(filename))
+    ax.set_xlabel("Time (h)")
+    ax.set_xlim([xmin, xmax])
+    ax.set_ylabel("VAM (m/h)")
+    ax.grid(True)
+    fig.savefig(output, dpi=90)
+    print(output)
+
 def plot_hist(data, filename, output, title=None):
     x = data['HR']
     y = data['Time']
@@ -294,6 +318,8 @@ if __name__ == "__main__":
         plot_time_hr(data, filename, directory + base + "-time-hr.png", laps=laps, title=title)
     if 'Spd' in header and max(data['Spd']) > 0:
         plot_time_spd(data, filename, directory + base + "-time-spd.png", laps=laps, title=title)
+    if 'VAM' in header and max(data['VAM']) > 0:
+        plot_time_vam(data, filename, directory + base + "-time-vam.png", laps=laps, title=title)
 
     if 'HR' in header and max(data['HR']) > 0:
         plot_hist(data, filename, directory + base + "-hist.png", title=title)

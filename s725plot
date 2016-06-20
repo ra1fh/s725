@@ -49,7 +49,8 @@ def read_txt(filename, header):
 
 def read_meta(filename):
     regex = []
-    regex.append(('laps',   '^#\s+Lap cumulative:\s+([0-9:]+)'))
+    regex.append(('laptime','^#\s+Lap cumulative:\s+([0-9:]+)'))
+    regex.append(('lapdist','^#\s+Lap cumulat\. dist:\s+([0-9\.]+)'))
     regex.append(('ascent', '^#\s+Ascent:\s+([0-9]+)'))
     regex.append(('mintemp','^#\s+Minimum temperature:\s+([0-9]+)'))
     regex.append(('avgtemp','^#\s+Average temperature:\s+([0-9]+)'))
@@ -71,11 +72,19 @@ def read_meta(filename):
                     meta[k].append(m.group(1))
                 else:
                     meta[k] = m.group(1)
-    # laps postprocessing
-    if meta.get('laps') and isinstance(meta['laps'], list):
-        meta['laps'] = meta['laps'][0:-1]
+
+    # laptime postprocessing
+    if meta.get('laptime') and isinstance(meta['laptime'], list):
+        meta['laptime'] = meta['laptime'][0:-1]
     else:
-        meta['laps'] = []
+        meta['laptime'] = []
+
+    # lapdist postprocessing
+    if meta.get('lapdist') and isinstance(meta['lapdist'], list):
+        meta['lapdist'] = meta['lapdist'][0:-1]
+    else:
+        meta['lapdist'] = []
+
     # header postprocessing
     if meta.get('header'):
         meta['header'] = re.split('\s+', meta['header'])
@@ -200,13 +209,13 @@ def plot_hist(data, filename, output, title=None):
     fig.set_figheight(5.0)
 
     n, bins, patches = ax.hist(x, bins, weights=weight, normed=False, facecolor='blue', alpha=0.5)
-    ax.set_xticks(ticks)
-    ax.set_xlim([30,210])
     if title:
         ax.set_title(title)
     else:
         ax.set_title(os.path.basename(filename))
     ax.set_xlabel("Heart Rate (bpm)")
+    ax.set_xlim([30,210])
+    ax.set_xticks(ticks)
     ax.set_ylabel("Histogram (minutes)")
     ax.grid(True)
     fig.savefig(output, dpi=90)
@@ -222,6 +231,8 @@ def plot_dist_alt(data, filename, output, laps=[], title=None):
     fig.set_figheight(5.0)
 
     ax.plot(dist, alt, label='Alt', color='#007000')
+    for lap in laps:
+        ax.axvline(lap, ymin=0, ymax=1, linestyle='--', color='#505050')
     if title:
         ax.set_title(title)
     else:
@@ -244,6 +255,8 @@ def plot_dist_hr(data, filename, output, laps=[], title=None):
     fig.set_figheight(5.0)
 
     ax.plot(dist, hr, label='HR', color='#700000')
+    for lap in laps:
+        ax.axvline(lap, ymin=0, ymax=1, linestyle='--', color='#505050')
     if title:
         ax.set_title(title)
     else:
@@ -267,6 +280,8 @@ def plot_dist_spd(data, filename, output, laps=[], title=None):
     fig.set_figheight(5.0)
 
     ax.plot(dist, spd, label='Spd', color='#000070')
+    for lap in laps:
+        ax.axvline(lap, ymin=0, ymax=1, linestyle='--', color='#505050')
     if title:
         ax.set_title(title)
     else:
@@ -277,7 +292,6 @@ def plot_dist_spd(data, filename, output, laps=[], title=None):
     ax.grid(True)
     fig.savefig(output, dpi=90)
     print(output)
-
 
 if __name__ == "__main__":
     usage = "s725plot <INPUT> <OUTPUT DIRECTORY>"
@@ -293,7 +307,8 @@ if __name__ == "__main__":
     base = os.path.splitext(os.path.basename(filename))[0]
 
     meta = read_meta(filename)
-    laps = list(map(mdates.strpdate2num("%H:%M:%S"), meta['laps']))
+    laptime = list(map(mdates.strpdate2num("%H:%M:%S"), meta['laptime']))
+    lapdist = list(map(float, meta['lapdist']))
     header = meta['header']
     if len(header) < 2:
         print("error: invalid header line: \"" + " ".join(header) + "\"")
@@ -313,22 +328,22 @@ if __name__ == "__main__":
         sys.exit(1)
 
     if 'Alt' in header and max(data['Alt']) > 0:
-        plot_time_alt(data, filename, directory + base + "-time-alt.png", laps=laps, title=title)
+        plot_time_alt(data, filename, directory + base + "-time-alt.png", laps=laptime, title=title)
     if 'HR' in header and max(data['HR']) > 0:
-        plot_time_hr(data, filename, directory + base + "-time-hr.png", laps=laps, title=title)
+        plot_time_hr(data, filename, directory + base + "-time-hr.png", laps=laptime, title=title)
     if 'Spd' in header and max(data['Spd']) > 0:
-        plot_time_spd(data, filename, directory + base + "-time-spd.png", laps=laps, title=title)
+        plot_time_spd(data, filename, directory + base + "-time-spd.png", laps=laptime, title=title)
     if 'VAM' in header and max(data['VAM']) > 0:
-        plot_time_vam(data, filename, directory + base + "-time-vam.png", laps=laps, title=title)
+        plot_time_vam(data, filename, directory + base + "-time-vam.png", laps=laptime, title=title)
 
     if 'HR' in header and max(data['HR']) > 0:
         plot_hist(data, filename, directory + base + "-hist.png", title=title)
 
     if 'Dist' in header and max(data['Dist'] > 0):
         if 'Alt' in header and max(data['Spd']) > 0:
-            plot_dist_alt(data, filename, directory + base + "-dist-alt.png", laps=laps, title=title)
+            plot_dist_alt(data, filename, directory + base + "-dist-alt.png", laps=lapdist, title=title)
         if 'HR' in header and max(data['HR']) > 0:
-            plot_dist_hr(data, filename, directory + base + "-dist-hr.png", laps=laps, title=title)
+            plot_dist_hr(data, filename, directory + base + "-dist-hr.png", laps=lapdist, title=title)
         if 'Spd' in header and max(data['Spd']) > 0:
-            plot_dist_spd(data, filename, directory + base + "-dist-spd.png", laps=laps, title=title)
+            plot_dist_spd(data, filename, directory + base + "-dist-spd.png", laps=lapdist, title=title)
 

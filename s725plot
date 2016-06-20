@@ -149,7 +149,7 @@ def plot_time_spd(data, filename, output, laps=[], title=None):
     fig.set_figwidth(8.0)
     fig.set_figheight(5.0)
 
-    ax.plot_date(x=time, y=spd, fmt="r-", color='#007000')
+    ax.plot_date(x=time, y=spd, fmt="r-", color='#000070')
     for lap in laps:
         ax.axvline(lap, ymin=0, ymax=1, linestyle='--', color='#505050')
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
@@ -173,7 +173,7 @@ def plot_time_vam(data, filename, output, laps=[], title=None):
     fig.set_figwidth(8.0)
     fig.set_figheight(5.0)
 
-    ax.plot_date(x=time, y=vam, fmt="r-", color='#007000')
+    ax.plot_date(x=time, y=vam, fmt="r-", color='#700000')
     for lap in laps:
         ax.axvline(lap, ymin=0, ymax=1, linestyle='--', color='#505050')
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
@@ -243,7 +243,7 @@ def plot_dist_hr(data, filename, output, laps=[], title=None):
     fig.set_figwidth(8.0)
     fig.set_figheight(5.0)
 
-    ax.plot(dist, hr, label='HR', color='#007000')
+    ax.plot(dist, hr, label='HR', color='#700000')
     if title:
         ax.set_title(title)
     else:
@@ -266,7 +266,7 @@ def plot_dist_spd(data, filename, output, laps=[], title=None):
     fig.set_figwidth(8.0)
     fig.set_figheight(5.0)
 
-    ax.plot(dist, spd, label='Spd', color='#007000')
+    ax.plot(dist, spd, label='Spd', color='#000070')
     if title:
         ax.set_title(title)
     else:

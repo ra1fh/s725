@@ -58,6 +58,7 @@ def read_meta(filename):
     regex.append(('maxhr',  '^#\s+Maximum heart rate:\s+([0-9]+)'))
     regex.append(('mode',   '^#\s+Mode:\s+(.+)'))
     regex.append(('header', '^#\s+(Time\s+HR.+)'))
+    regex.append(('date',   '^#\s+Workout date:\s+(.+)'))
     meta = dict()
     with open(filename, 'r') as file:
         data = file.read()
@@ -87,7 +88,7 @@ def xborder(x):
     border = 0.03
     return (x[0] - diff * border, x[-1] + diff * border)
 
-def plothr(data, filename, output, laps=[]):
+def plothr(data, filename, output, laps=[], title=None):
     time = data['Time']
     hr = data['HR']
     xmin, xmax = xborder(time)
@@ -101,7 +102,10 @@ def plothr(data, filename, output, laps=[]):
     for lap in laps:
         ax.axvline(lap, ymin=0, ymax=1, linestyle='--', color='#505050')
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-    ax.set_title(os.path.basename(filename))
+    if title:
+        ax.set_title(title)
+    else:
+        ax.set_title(os.path.basename(filename))
     ax.set_xlabel("Time (h)")
     ax.set_ylabel("Heart Rate (bpm)")
     ax.set_xlim([xmin, xmax])
@@ -111,7 +115,7 @@ def plothr(data, filename, output, laps=[]):
     fig.savefig(output, dpi=90)
     print(output)
 
-def plotalt(data, filename, output, laps=[]):
+def plotalt(data, filename, output, laps=[], title=None):
     time = data['Time']
     alt = data['Alt']
     xmin, xmax = xborder(time)
@@ -124,7 +128,10 @@ def plotalt(data, filename, output, laps=[]):
     for lap in laps:
         ax.axvline(lap, ymin=0, ymax=1, linestyle='--', color='#505050')
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-    ax.set_title(os.path.basename(filename))
+    if title:
+        ax.set_title(title)
+    else:
+        ax.set_title(os.path.basename(filename))
     ax.set_ylabel("Altitude (m)")
     ax.set_xlim([xmin, xmax])
     ax.set_ylim([min(alt) - 50, max(alt) + 50])
@@ -146,7 +153,10 @@ def plotspd(data, filename, output, laps=[]):
     for lap in laps:
         ax.axvline(lap, ymin=0, ymax=1, linestyle='--', color='#505050')
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-    ax.set_title(os.path.basename(filename))
+    if title:
+        ax.set_title(title)
+    else:
+        ax.set_title(os.path.basename(filename))
     ax.set_ylabel("Speed (km/h)")
     ax.set_xlim([xmin, xmax])
     ax.set_xlabel("Time (h)")
@@ -155,7 +165,7 @@ def plotspd(data, filename, output, laps=[]):
     print(output)
 
 
-def plotaltdist(data, filename, output, laps=[]):
+def plotaltdist(data, filename, output, laps=[], title=None):
     dist = data['Dist']
     alt = data['Alt']
     xmin, xmax = xborder(dist)
@@ -165,7 +175,10 @@ def plotaltdist(data, filename, output, laps=[]):
     fig.set_figheight(5.0)
 
     ax.plot(dist, alt, label='Alt', color='#007000')
-    ax.set_title(os.path.basename(filename))
+    if title:
+        ax.set_title(title)
+    else:
+        ax.set_title(os.path.basename(filename))
     ax.set_ylabel("Altitude (m)")
     ax.set_xlim([xmin, xmax])
     ax.set_ylim([min(alt) - 50, max(alt) + 50])
@@ -188,7 +201,10 @@ def plothist(data, filename, output):
     n, bins, patches = ax.hist(x, bins, weights=weight, normed=False, facecolor='blue', alpha=0.5)
     ax.set_xticks(ticks)
     ax.set_xlim([30,210])
-    ax.set_title(os.path.basename(filename))
+    if title:
+        ax.set_title(title)
+    else:
+        ax.set_title(os.path.basename(filename))
     ax.set_xlabel("Heart Rate (bpm)")
     ax.set_ylabel("Histogram (minutes)")
     ax.grid(True)
@@ -218,17 +234,22 @@ if __name__ == "__main__":
         print("error: data file does not contain time column")
         sys.exit(1)
 
+    if meta.get('date'):
+        title = meta['date']
+    else:
+        title = base
+
     data = read_txt(filename, header)
     if data.size < 2:
         print("error: data file contains less then two samples")
         sys.exit(1)
 
     if 'HR' in header:
-        plothr(data, filename, directory + base + "-hr.png", laps=laps)
+        plothr(data, filename, directory + base + "-hr.png", laps=laps, title=title)
         plothist(data, filename, directory + base + "-hist.png")
     if 'Alt' in header:
-        plotalt(data, filename, directory + base + "-alt.png", laps=laps)
+        plotalt(data, filename, directory + base + "-alt.png", laps=laps, title=title)
     if 'Spd' in header and max(data['Spd'] > 0):
-            plotspd(data, filename, directory + base + "-spd.png", laps=laps)
+            plotspd(data, filename, directory + base + "-spd.png", laps=laps, title=title)
     if 'Alt' in header and 'Dist' in header and max(data['Dist']):
-        plotaltdist(data, filename, directory + base + "-alt-dist.png", laps=laps)
+        plotaltdist(data, filename, directory + base + "-alt-dist.png", laps=laps, title=title)

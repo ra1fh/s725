@@ -1,6 +1,5 @@
 .*\.o$
 .*\.a$
-.*\.srd$
 .*~$
 cscope.out
 cscope.files

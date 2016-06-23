@@ -77,7 +77,6 @@ valgrind: hrmtool
 	@cd tests && $(SHELL) runtests "valgrind --error-exitcode=1 --leak-check=full"
 
 examples:
-	./s725plot tests/20160522T114225.txt examples/
-	./s725plot tests/20150608T203912.txt examples/
+	./s725plot tests/20160621T170047.txt examples/
 
 -include .depend

@@ -158,8 +158,10 @@ s725get or hrmtool.
 
 #### Examples
 
-![Heart Rate Diagram](examples/20160522T114225-hr.png)
+![Heart Rate Diagram](examples/20160621T170047-time-hr.png)
 
-![Altitude Diagram](examples/20160522T114225-alt.png)
+![Altitude Diagram](examples/20160621T170047-time-alt.png)
 
-![Histogram](examples/20160522T114225-hist.png)
+![Speed Diagram](examples/20160621T170047-time-spd.png)
+
+![Histogram](examples/20160621T170047-hist.png)

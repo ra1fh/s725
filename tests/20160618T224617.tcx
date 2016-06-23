@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<TrainingCenterDatabase
+    xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2
+    http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd">
+<Activities>
+  <Activity Sport="Running">
+    <Id>2016-06-18T22:46:17Z</Id>
+    <Lap StartTime="2016-06-18T22:46:17Z">
+      <TotalTimeSeconds>20.00000</TotalTimeSeconds>
+      <DistanceMeters>0.00000</DistanceMeters>
+      <MaximumSpeed>0.00000</MaximumSpeed>
+      <Calories>19287</Calories>
+      <AverageHeartRateBpm><Value>60</Value></AverageHeartRateBpm>
+      <MaximumHeartRateBpm><Value>60</Value></MaximumHeartRateBpm>
+      <Intensity>Active</Intensity>
+      <TriggerMethod>Manual</TriggerMethod>
+      <Track>
+        <Trackpoint>
+        <!-- sample #0 -->
+          <Time>2016-06-18T22:46:17Z</Time>
+          <AltitudeMeters>103.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>0</Value></HeartRateBpm>
+          <Cadence>0.000000</Cadence>
+        </Trackpoint>
+        <Trackpoint>
+        <!-- sample #1 -->
+          <Time>2016-06-18T22:46:32Z</Time>
+          <AltitudeMeters>102.000000</AltitudeMeters>
+          <DistanceMeters>0.000000</DistanceMeters>
+          <HeartRateBpm><Value>0</Value></HeartRateBpm>
+          <Cadence>0.000000</Cadence>
+        </Trackpoint>
+      </Track>
+    </Lap>
+  </Activity>
+</Activities>
+</TrainingCenterDatabase>
+<!-- output count:   2 -->
+<!-- data samples:   2 -->
+<!-- after end:      0 -->

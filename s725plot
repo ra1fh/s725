@@ -86,17 +86,30 @@ def read_meta(filename):
         meta['header'] = []
     return meta
 
-def timeticks(tmin, tmax):
-    res = []
-    if tmax - tmin < 3.0/24:
+def set_timeticks(ax, tmin, tmax):
+    tt = []
+    xmin,xmax = ax.get_xlim()
+    if tmax - tmin < 0.1/24:
+        tt = []
+    elif tmax - tmin < 1.5/24:
+        # < 3h
+        x = tmin
+        i = 0
+        while 1:
+            x = tmin + i * 1.0/24/6
+            if x > xmax:
+                break
+            tt.append(x)
+            i = i + 1
+    elif tmax - tmin < 3.0/24:
         # < 3h
         x = tmin
         i = 0
         while 1:
             x = tmin + i * 2.0/24/6
-            if x > tmax:
+            if x > xmax:
                 break
-            res.append(x)
+            tt.append(x)
             i = i + 1
     else:
         # > 3h
@@ -104,11 +117,12 @@ def timeticks(tmin, tmax):
         i = 0
         while 1:
             x = tmin + i * 1.0/24
-            if x > tmax:
+            if x > xmax:
                 break
-            res.append(x)
+            tt.append(x)
             i = i + 1
-    return res
+    if len(tt) > 0:
+        ax.set_xticks(tt)
 
 def plot_time_alt(data, filename, output, laps=[], title=None, meta=None):
     time = data['Time']
@@ -128,7 +142,8 @@ def plot_time_alt(data, filename, output, laps=[], title=None, meta=None):
         ax.set_title(os.path.basename(filename))
     ax.margins(x=0.03, y=0.15)
     ax.set_xlabel("Time (h)")
-    ax.set_xticks(timeticks(min(time), max(time)))
+    set_timeticks(ax, min(time), max(time))
+    # ax.set_xticks(timeticks(min(time), max(time)))
     ax.set_ylabel("Altitude (m)")
     ax.text(max(time), min(alt) * 0.9 , "Ascent: " + meta['ascent'] + "m",
             verticalalignment='top', horizontalalignment='right',
@@ -156,7 +171,7 @@ def plot_time_hr(data, filename, output, laps=[], title=None):
         ax.set_title(os.path.basename(filename))
     ax.margins(x=0.03)
     ax.set_xlabel("Time (h)")
-    ax.set_xticks(timeticks(min(time), max(time)))
+    set_timeticks(ax, min(time), max(time))
     ax.set_ylabel("Heart Rate (bpm)")
     ax.set_ylim([30,210])
     ax.set_yticks([40,60,80,100,120,140,160,180,200])
@@ -182,7 +197,7 @@ def plot_time_spd(data, filename, output, laps=[], title=None):
         ax.set_title(os.path.basename(filename))
     ax.margins(x=0.03)
     ax.set_xlabel("Time (h)")
-    ax.set_xticks(timeticks(min(time), max(time)))
+    set_timeticks(ax, min(time), max(time))
     ax.set_ylabel("Speed (km/h)")
     ax.grid(True)
     fig.savefig(output, dpi=90)
@@ -206,7 +221,7 @@ def plot_time_vam(data, filename, output, laps=[], title=None):
         ax.set_title(os.path.basename(filename))
     ax.margins(x=0.03)
     ax.set_xlabel("Time (h)")
-    ax.set_xticks(timeticks(min(time), max(time)))
+    set_timeticks(ax, min(time), max(time))
     ax.set_ylabel("VAM (m/h)")
     ax.grid(True)
     fig.savefig(output, dpi=90)

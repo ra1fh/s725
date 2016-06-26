@@ -68,7 +68,7 @@ clean:
 install:
 	$(INSTALLDIR) $(DESTDIR)$(PREFIX)/bin
 	$(INSTALLBIN) $(PROGS) $(DESTDIR)$(PREFIX)/bin
-	$(INSTALLBIN) s725html $(DESTDIR)$(PREFIX)/bin
+	$(INSTALLBIN) s725plot $(DESTDIR)$(PREFIX)/bin
 
 check: hrmtool
 	@cd tests && $(SHELL) runtests

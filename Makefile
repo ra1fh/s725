@@ -14,7 +14,7 @@ LDFLAGS= -L$(PREFIX)/lib
 
 INSTALLDIR= install -d
 INSTALLBIN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 555
-INSTALLMAN= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 444
+INSTALLDOC= install -g $(BIN_OWNER) -o $(BIN_GROUP) -m 444
 
 PROGS= s725get hrmtool
 
@@ -66,9 +66,11 @@ clean:
 	rm -rf $(CLEANFILES)
 
 install:
-	$(INSTALLDIR) $(DESTDIR)$(PREFIX)/bin
-	$(INSTALLBIN) $(PROGS) $(DESTDIR)$(PREFIX)/bin
-	$(INSTALLBIN) s725plot $(DESTDIR)$(PREFIX)/bin
+	$(INSTALLDIR) $(PREFIX)/bin
+	$(INSTALLBIN) $(PROGS) $(PREFIX)/bin
+	$(INSTALLBIN) s725plot $(PREFIX)/bin
+	$(INSTALLDIR) $(PREFIX)/share/doc/s725
+	$(INSTALLDOC) README.md $(PREFIX)/share/doc/s725/
 
 check: hrmtool
 	@cd tests && $(SHELL) runtests

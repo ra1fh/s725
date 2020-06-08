@@ -297,7 +297,7 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
 			if (S725_HAS_ALTITUDE(w->mode)) {
 				/* compute VAM as the average of the past 60 seconds... */
 				vam = 0.0;
-				if (w->recording_interval == 0.0) {
+				if (w->recording_interval != 0.0) {
 					j = (i >= 60/w->recording_interval) ? i-60/w->recording_interval : 0;
 					if (i > j) {
 						vam = (float)(w->alt_data[i] - w->alt_data[j]) * 3600.0 /

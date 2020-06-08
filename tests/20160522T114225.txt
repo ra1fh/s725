@@ -1,5 +1,5 @@
 # Workout date:          2016-05-22 11:42:25 (Sun, 22 May 2016)
-# HRM Type:              S625X
+# HRM Type:              S625
 # User ID:               0
 # Mode:                  HR, Altitude, Speed (Bike 2)
 # Exercise duration:     05:30:21.2

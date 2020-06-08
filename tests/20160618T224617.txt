@@ -1,5 +1,5 @@
 # Workout date:          2016-06-18 22:46:17 (Sat, 18 Jun 2016)
-# HRM Type:              S625X
+# HRM Type:              S625
 # User ID:               0
 # Mode:                  HR, Altitude, Speed (Bike 1), Power, Cadence
 # Exercise duration:     00:00:20.3

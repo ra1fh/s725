@@ -59,9 +59,8 @@ static char alpha_map(unsigned char c);
 /**********************************************************************/
 
 workout_t *
-workout_read_buf(BUF *buf)
+workout_read_buf(BUF *buf, S725_HRM_Type type)
 {
-	int type;
 	workout_t *w = NULL;
 	off_t size;
 
@@ -77,7 +76,9 @@ workout_read_buf(BUF *buf)
 		return NULL;
 	}
 
-	type = workout_detect_hrm_type(buf);
+	if (type == S725_HRM_AUTO) {
+		type = workout_detect_hrm_type(buf);
+	}
 
 	if (type == S725_HRM_UNKNOWN || buf_get_readerr(buf)) {
 		log_info("workout_read_buf: unable to auto-detect HRM type");
@@ -90,14 +91,14 @@ workout_read_buf(BUF *buf)
 }
 
 workout_t *
-workout_read(char *filename)
+workout_read(char *filename, S725_HRM_Type type)
 {
 	workout_t *w = NULL;
 	BUF *buf;
 
 	buf = buf_load(filename);
 	if (buf) {
-		w = workout_read_buf(buf);
+		w = workout_read_buf(buf, type);
 		buf_free(buf);
 	} else {
 		log_info("workout_read: load error");
@@ -176,7 +177,7 @@ workout_detect_hrm_type(BUF *buf)
 			 * the S625x header size.
 			 */
 			if (header == S725_HEADER_SIZE_S625X) {
-				return S725_HRM_S625X;
+				return S725_HRM_S625;
 			} else {
 				return S725_HRM_S725;
 			}
@@ -743,7 +744,7 @@ workout_header_size(workout_t *w)
 	case S725_HRM_S610:
 		size = S725_HEADER_SIZE_S610;
 		break;
-	case S725_HRM_S625X:
+	case S725_HRM_S625:
 		size = S725_HEADER_SIZE_S625X;
 		break;
 	case S725_HRM_S725:

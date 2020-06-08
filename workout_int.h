@@ -71,15 +71,6 @@ typedef struct S725_Time {
 typedef char S725_Label[8];
 
 typedef enum {
-	S725_HRM_AUTO    =  0,
-	S725_HRM_S610    = 11,  /* same as in hrm files */
-	S725_HRM_S725    = 12,  /* same as in hrm files */
-	S725_HRM_S810    = 13,  /* same as in hrm files */
-	S725_HRM_S625X   = 22,  /* same as in hrm files */
-	S725_HRM_UNKNOWN = 255
-} S725_HRM_Type;
-
-typedef enum {
 	S725_UNITS_METRIC,
 	S725_UNITS_ENGLISH
 } S725_Units;

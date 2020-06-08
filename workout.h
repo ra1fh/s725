@@ -31,10 +31,19 @@
 #define S725_WORKOUT_SAMPLES  4
 #define S725_WORKOUT_FULL     7
 
+typedef enum {
+	S725_HRM_AUTO    =  0,
+	S725_HRM_S610    = 11,  /* same as in hrm files */
+	S725_HRM_S725    = 12,  /* same as in hrm files */
+	S725_HRM_S810    = 13,  /* same as in hrm files */
+	S725_HRM_S625    = 22,  /* same as in hrm files */
+	S725_HRM_UNKNOWN = 255
+} S725_HRM_Type;
+
 typedef struct workout_t workout_t;
 
-workout_t*  workout_read_buf(BUF *buf);
-workout_t*	workout_read(char* filename);
+workout_t*  workout_read_buf(BUF *buf, S725_HRM_Type type);
+workout_t*	workout_read(char* filename, S725_HRM_Type type);
 void 		workout_free(workout_t * w);
 
 #endif	/* WORKOUT_H */

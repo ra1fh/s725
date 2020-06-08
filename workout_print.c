@@ -58,8 +58,8 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
 		case S725_HRM_S610:
 			hrm_type = "S610";
 			break;
-		case S725_HRM_S625X:
-			hrm_type = "S625X";
+		case S725_HRM_S625:
+			hrm_type = "S625";
 			break;
 		case S725_HRM_S725:
 			hrm_type = "S725";

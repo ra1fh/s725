@@ -41,8 +41,10 @@
 
 static void
 usage(void) {
-	printf("usage: hrmtool [options] [-i intype] [-o outtype] [-f infile] [-F outfile]\n");
-	printf("        -i intype      input file type: hrm, srd, tcx, txt\n");
+	printf("usage: hrmtool [options] [-i intype] [-s srdversion] [-o outtype] [-f infile] [-F outfile]\n");
+	printf("        -i intype      input file type: srd\n");
+	printf("        -I variant     input variant:\n");
+	printf("                           srd: S610, S625, S725 (default: auto)\n");
 	printf("        -o outtype     output file type: hrm, srd, tcx, txt\n");
 	printf("        -f infile      input file name\n");
 	printf("        -F outfile     output file name\n");
@@ -53,6 +55,7 @@ int
 main(int argc, char **argv)
 {
 	char *opt_input_file = NULL;
+	char *opt_input_variant = NULL;
 	char *opt_output_file = NULL;
 	char *opt_input_type = NULL;
 	char *opt_output_type = NULL;
@@ -60,10 +63,13 @@ main(int argc, char **argv)
 	workout_t *w;
 	FILE *f;
 
-	while ((ch = getopt(argc, argv, "i:o:f:F:vh")) != -1) {
+	while ((ch = getopt(argc, argv, "i:I:o:f:F:vh")) != -1) {
 		switch (ch) {
 		case 'i':
 			opt_input_type = optarg;
+			break;
+		case 'I':
+			opt_input_variant = optarg;
 			break;
 		case 'o':
 			opt_output_type = optarg;
@@ -94,10 +100,24 @@ main(int argc, char **argv)
 
 	int input_type = format_from_str(opt_input_type);
 	int output_type = format_from_str(opt_output_type);
+	int input_variant = S725_HRM_AUTO;
 
 	if (input_type != FORMAT_SRD) {
 		usage();
 		return 1;
+	}
+
+	if (opt_input_variant != NULL) {
+		if (!strcmp(opt_input_variant, "S610")) {
+			input_variant = S725_HRM_S610;
+		} else if (!strcmp(opt_input_variant, "S625")) {
+			input_variant = S725_HRM_S625;
+		} else if (!strcmp(opt_input_variant, "S725")) {
+			input_variant = S725_HRM_S725;
+		} else {
+			usage();
+			return 1;
+		}
 	}
 
 	if (output_type != FORMAT_TXT && output_type != FORMAT_TCX && output_type != FORMAT_HRM) {
@@ -110,7 +130,7 @@ main(int argc, char **argv)
 		return 1;
 	}
 
-	w = workout_read(opt_input_file);
+	w = workout_read(opt_input_file, input_variant);
 	if (w != NULL) {
 		f = fopen(opt_output_file, "w");
 		if (f) {

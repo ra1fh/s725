@@ -257,7 +257,7 @@ write_hrm_data(BUF *files, const char* directory, int format)
 							count, fnbuf, strerror(errno));
 			}
 		} else {
-			w = workout_read_buf(buf);
+			w = workout_read_buf(buf, S725_HRM_AUTO);
 			if (w) {
 				f = fopen(fnbuf, "w");
 				if (f) {

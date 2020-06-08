@@ -14,6 +14,8 @@
  * called by a name other than "ssh" or "Secure Shell".
  */
 
+#include <sys/types.h>
+
 #include <err.h>
 #include <limits.h>
 #include <stdarg.h>

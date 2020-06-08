@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/ra1fh/s725.svg?branch=master)](https://travis-ci.org/ra1fh/s725)
 
 s725
 ====

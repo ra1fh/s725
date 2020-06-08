@@ -238,7 +238,7 @@ def plot_hist(data, filename, output, title=None):
     fig.set_figwidth(8.0)
     fig.set_figheight(5.0)
 
-    n, bins, patches = ax.hist(x, bins, weights=weight, normed=False, facecolor='blue', alpha=0.5)
+    n, bins, patches = ax.hist(x, bins, weights=weight, density=False, facecolor='blue', alpha=0.5)
     if title:
         ax.set_title(title)
     else:

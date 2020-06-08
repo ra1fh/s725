@@ -123,7 +123,7 @@ This driver is known to work with:
 
 Script to plot heart rate over time, altitude over time and heart rate
 histogram. Requires Python 2.7 or Python 3, matplotlib (tested
-with 1.4) and numpy. Input has to be in 'txt' format as written by
+with 2.2) and numpy. Input has to be in 'txt' format as written by
 s725get or hrmtool.
 
 #### Usage

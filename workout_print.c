@@ -19,6 +19,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <math.h>
 #include <string.h>
 
 #include "log.h"
@@ -296,12 +297,13 @@ workout_print_txt(workout_t *w, FILE *fp, int what)
 
 			if (S725_HAS_ALTITUDE(w->mode)) {
 				/* compute VAM as the average of the past 60 seconds... */
-				j = (i >= 60/w->recording_interval) ? i-60/w->recording_interval : 0;
-				if (i > j) {
-					vam = (float)(w->alt_data[i] - w->alt_data[j]) * 3600.0 /
-						((i-j) * w->recording_interval);
-				} else {
-					vam = 0.0;
+				vam = 0.0;
+				if (fpclassify(w->recording_interval) != FP_ZERO) {
+					j = (i >= 60/w->recording_interval) ? i-60/w->recording_interval : 0;
+					if (i > j) {
+						vam = (float)(w->alt_data[i] - w->alt_data[j]) * 3600.0 /
+							((i-j) * w->recording_interval);
+					}
 				}
 				fprintf(fp, "\t%4d\t%7.1f", w->alt_data[i], vam);
 			}

@@ -22,7 +22,6 @@
 %token TOKDIRECTORY
 %token TOKDRIVER
 %token TOKSERIAL
-%token TOKIRDA
 %token TOKFORMAT
 %token TOKHRM
 %token TOKSRD
@@ -93,7 +92,6 @@ driver:			TOKDRIVER '=' driver_type
 				;
 
 driver_type:	TOKSERIAL { $$ = DRIVER_SERIAL; }
-		|		TOKIRDA   { $$ = DRIVER_IRDA; }
 				;
 
 format:			TOKFORMAT '=' format_type

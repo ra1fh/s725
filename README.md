@@ -45,8 +45,8 @@ The s725get utility downloads the data from the watch and writes it to
 disk in various selectable formats: srd, hrm, tcx, txt.
 
 The s725get utility takes a -d argument which specifies the driver
-type to be used to communicate with the watch.  Valid values are
-"serial" and "irda". The "serial" driver requires the device file to
+type to be used to communicate with the watch.  The only valid value
+is "serial". The "serial" driver requires the device file to
 be specified with -D.  The default is -d serial. See the "Drivers"
 section for more details.
 
@@ -70,7 +70,7 @@ the following settings:
 	# ~/.s725rc
 	#
 
-	# driver. possible values: serial, irda
+	# driver. possible values: serial
 	driver = serial
 
 	# device file name
@@ -118,32 +118,6 @@ This driver is known to work with:
    http://www.irxon.com/english/products/ir220_e.htm
  * Builtin Fujitsu Lifebook T4215 IR interface in IrDA mode (see BIOS
    setup) that is accessed like a standard serial port
-
-#### irda
-
-This driver uses the Linux IrDA stack to talk to a Polar HRM.
-
-The S725X has two modes. The basic IR mode used by the serial driver
-responds to raw request without IrDA protocol frames.
-
-In contrast, in IrDA mode the watch responds to discovery request from
-the IrDA host. The IrDA stack takes care of ensuring data
-transmission, framing and checksums. After enabling the infrared
-interface on the Linux host and running irattach, the watch should
-appear in /proc/net/irda/discovery:
-
-	$ cat /proc/net/irda/discovery
-	IrLMP: Discovery log:
-
-	nickname: Polar S725X, hint: 0x8204, saddr: 0xa1a6cc7c, daddr: 0x3fcbdfde
-
-When this works, the s725get tool can be used like this:
-
-	$ s725get -d irda -t
-	2016-05-07T10:24:46
-
-This driver is work in progress and currently only works for simple
-requests, (like -t to query the time and date).
 
 ### s725plot
 

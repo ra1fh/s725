@@ -44,7 +44,7 @@ static void write_hrm_data(BUF *files, const char *directory, int format);
 static void
 usage(void) {
 	printf("usage: s725get [-hvt] [-d driver] [-D device] [-f directory] [-o format]\n");
-	printf("        -d driver      driver type: serial, irda. (default: serial).\n");
+	printf("        -d driver      driver type: serial. (default: serial).\n");
 	printf("        -D device      device file. required for serial and ir driver.\n");
 	printf("        -f directory   directory where output files are written to.\n");
 	printf("                       default: current working directory\n");

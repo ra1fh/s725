@@ -21,7 +21,7 @@ PROGS= s725get hrmtool
 COMMON_SRCS= workout.c workout_print.c workout_time.c \
 	xmalloc.c buf.c log.c
 
-S725GET_SRCS= $(COMMON_SRCS) s725get.c driver.c files.c format.c irda.c \
+S725GET_SRCS= $(COMMON_SRCS) s725get.c driver.c files.c format.c \
 	misc.c packet.c serial.c
 
 HRMTOOL_SRCS= $(COMMON_SRCS) hrmtool.c format.c

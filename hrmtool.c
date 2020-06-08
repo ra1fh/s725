@@ -43,8 +43,7 @@ static void
 usage(void) {
 	printf("usage: hrmtool [options] [-i intype] [-s srdversion] [-o outtype] [-f infile] [-F outfile]\n");
 	printf("        -i intype      input file type: srd\n");
-	printf("        -I variant     input variant:\n");
-	printf("                           srd: S610, S625, S725 (default: auto)\n");
+	printf("        -I variant     input variant: S610, S625, S725 (default: auto)\n");
 	printf("        -o outtype     output file type: hrm, srd, tcx, txt\n");
 	printf("        -f infile      input file name\n");
 	printf("        -F outfile     output file name\n");

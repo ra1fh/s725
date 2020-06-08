@@ -363,7 +363,7 @@ workout_get_recording_interval(unsigned char b)
 {
 	int ri = 0;
 
-	switch (b) {
+	switch (b & 0x0f) {
 	case 0:  ri = 5;  break;
 	case 1:  ri = 15; break;
 	case 2:  ri = 60; break;

@@ -24,6 +24,8 @@
 
 #include <time.h>
 
+#include "workout.h"
+
 #define S725_HAS_FIELD(x,y)   (((x) & S725_MODE_##y) != 0)
 #define S725_HAS_CADENCE(x)   S725_HAS_FIELD(x,CADENCE)
 #define S725_HAS_POWER(x)     S725_HAS_FIELD(x,POWER)

@@ -779,7 +779,7 @@ workout_print_tcx(workout_t *w, FILE *fp)
 				fprintf(fp, "          <AltitudeMeters>%f</AltitudeMeters>\n", w->alt_data[j] * 1.0);
 
 			if ( w->dist_data != NULL )
-				fprintf(fp, "          <DistanceMeters>%f</DistanceMeters>\n", w->dist_data[j] * 1.0);
+				fprintf(fp, "          <DistanceMeters>%f</DistanceMeters>\n", w->dist_data[j] * 1000.0);
 
 			if ( w->hr_data != NULL )
 				fprintf(fp, "          <HeartRateBpm><Value>%hhu</Value></HeartRateBpm>\n", w->hr_data[j]);

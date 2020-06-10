@@ -119,6 +119,21 @@ This driver is known to work with:
  * Builtin Fujitsu Lifebook T4215 IR interface in IrDA mode (see BIOS
    setup) that is accessed like a standard serial port
 
+### hrmtool
+
+Convert Polar SRD files to HRM, TCX and TXT format. By default it tries
+to auto-detect the different SRD variants (S610, S625, S725).
+
+#### Usage
+
+	usage: hrmtool [options] [-i intype] [-s srdversion] [-o outtype] [-f infile] [-F outfile]
+	        -i intype      input file type: srd
+	        -I variant     input variant: S610, S625, S725 (default: auto)
+	        -o outtype     output file type: hrm, tcx, txt
+	        -f infile      input file name
+	        -F outfile     output file name
+	        -v             verbose output
+
 ### s725plot
 
 Script to plot heart rate over time, altitude over time and heart rate

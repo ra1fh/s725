@@ -10,10 +10,10 @@
     <Lap StartTime="2016-06-21T17:00:47Z">
       <TotalTimeSeconds>1381.00000</TotalTimeSeconds>
       <DistanceMeters>10800.00000</DistanceMeters>
-      <MaximumSpeed>851.00000</MaximumSpeed>
+      <MaximumSpeed>53.18750</MaximumSpeed>
       <Calories>0</Calories>
-      <AverageHeartRateBpm><Value>60</Value></AverageHeartRateBpm>
-      <MaximumHeartRateBpm><Value>60</Value></MaximumHeartRateBpm>
+      <AverageHeartRateBpm><Value>131</Value></AverageHeartRateBpm>
+      <MaximumHeartRateBpm><Value>147</Value></MaximumHeartRateBpm>
       <Intensity>Active</Intensity>
       <TriggerMethod>Manual</TriggerMethod>
       <Track>
@@ -673,10 +673,10 @@
     <Lap StartTime="2016-06-21T17:23:47Z">
       <TotalTimeSeconds>902.00000</TotalTimeSeconds>
       <DistanceMeters>5100.00000</DistanceMeters>
-      <MaximumSpeed>851.00000</MaximumSpeed>
+      <MaximumSpeed>53.18750</MaximumSpeed>
       <Calories>0</Calories>
-      <AverageHeartRateBpm><Value>60</Value></AverageHeartRateBpm>
-      <MaximumHeartRateBpm><Value>60</Value></MaximumHeartRateBpm>
+      <AverageHeartRateBpm><Value>160</Value></AverageHeartRateBpm>
+      <MaximumHeartRateBpm><Value>171</Value></MaximumHeartRateBpm>
       <Intensity>Active</Intensity>
       <TriggerMethod>Manual</TriggerMethod>
       <Track>
@@ -1105,10 +1105,10 @@
     <Lap StartTime="2016-06-21T17:38:47Z">
       <TotalTimeSeconds>1196.00000</TotalTimeSeconds>
       <DistanceMeters>9700.00000</DistanceMeters>
-      <MaximumSpeed>851.00000</MaximumSpeed>
+      <MaximumSpeed>53.18750</MaximumSpeed>
       <Calories>0</Calories>
-      <AverageHeartRateBpm><Value>60</Value></AverageHeartRateBpm>
-      <MaximumHeartRateBpm><Value>60</Value></MaximumHeartRateBpm>
+      <AverageHeartRateBpm><Value>129</Value></AverageHeartRateBpm>
+      <MaximumHeartRateBpm><Value>160</Value></MaximumHeartRateBpm>
       <Intensity>Active</Intensity>
       <TriggerMethod>Manual</TriggerMethod>
       <Track>
@@ -1670,10 +1670,10 @@
     <Lap StartTime="2016-06-21T17:58:32Z">
       <TotalTimeSeconds>1090.00000</TotalTimeSeconds>
       <DistanceMeters>7000.00000</DistanceMeters>
-      <MaximumSpeed>851.00000</MaximumSpeed>
+      <MaximumSpeed>53.18750</MaximumSpeed>
       <Calories>0</Calories>
-      <AverageHeartRateBpm><Value>60</Value></AverageHeartRateBpm>
-      <MaximumHeartRateBpm><Value>60</Value></MaximumHeartRateBpm>
+      <AverageHeartRateBpm><Value>144</Value></AverageHeartRateBpm>
+      <MaximumHeartRateBpm><Value>167</Value></MaximumHeartRateBpm>
       <Intensity>Active</Intensity>
       <TriggerMethod>Manual</TriggerMethod>
       <Track>
@@ -2193,10 +2193,10 @@
     <Lap StartTime="2016-06-21T18:16:47Z">
       <TotalTimeSeconds>1292.00000</TotalTimeSeconds>
       <DistanceMeters>11800.00000</DistanceMeters>
-      <MaximumSpeed>851.00000</MaximumSpeed>
+      <MaximumSpeed>53.18750</MaximumSpeed>
       <Calories>0</Calories>
-      <AverageHeartRateBpm><Value>60</Value></AverageHeartRateBpm>
-      <MaximumHeartRateBpm><Value>60</Value></MaximumHeartRateBpm>
+      <AverageHeartRateBpm><Value>125</Value></AverageHeartRateBpm>
+      <MaximumHeartRateBpm><Value>145</Value></MaximumHeartRateBpm>
       <Intensity>Active</Intensity>
       <TriggerMethod>Manual</TriggerMethod>
       <Track>

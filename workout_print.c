@@ -735,10 +735,13 @@ workout_print_tcx(workout_t *w, FILE *fp)
 				w->lap_data[i].split.hours * 3600.0 + w->lap_data[i].split.minutes * 60.0 + w->lap_data[i].split.seconds);
 		fprintf(fp, "      <DistanceMeters>%.5lf</DistanceMeters>\n",
 				w->lap_data[i].distance * 100.0);
-		fprintf(fp, "      <MaximumSpeed>%.5lf</MaximumSpeed>\n", w->max_speed * 1.0);
-		fprintf(fp, "      <Calories>%d</Calories>\n", w->total_energy);
-		fprintf(fp, "      <AverageHeartRateBpm><Value>60</Value></AverageHeartRateBpm>\n");
-		fprintf(fp, "      <MaximumHeartRateBpm><Value>60</Value></MaximumHeartRateBpm>\n");
+
+		/* TODO: maximum speed and calories should be calculated per lap */
+		fprintf(fp, "      <MaximumSpeed>%.5lf</MaximumSpeed>\n", w->max_speed / 16.0);
+		fprintf(fp, "      <Calories>%d</Calories>\n", w->total_energy / w->laps);
+
+		fprintf(fp, "      <AverageHeartRateBpm><Value>%d</Value></AverageHeartRateBpm>\n", w->lap_data[i].avg_hr);
+		fprintf(fp, "      <MaximumHeartRateBpm><Value>%d</Value></MaximumHeartRateBpm>\n", w->lap_data[i].max_hr);
 		fprintf(fp, "      <Intensity>Active</Intensity>\n");
 		fprintf(fp, "      <TriggerMethod>Manual</TriggerMethod>\n");
 		fprintf(fp, "      <Track>\n");

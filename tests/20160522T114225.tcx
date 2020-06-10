@@ -12,8 +12,8 @@
       <DistanceMeters>0.00000</DistanceMeters>
       <MaximumSpeed>0.00000</MaximumSpeed>
       <Calories>10255</Calories>
-      <AverageHeartRateBpm><Value>60</Value></AverageHeartRateBpm>
-      <MaximumHeartRateBpm><Value>60</Value></MaximumHeartRateBpm>
+      <AverageHeartRateBpm><Value>132</Value></AverageHeartRateBpm>
+      <MaximumHeartRateBpm><Value>178</Value></MaximumHeartRateBpm>
       <Intensity>Active</Intensity>
       <TriggerMethod>Manual</TriggerMethod>
       <Track>

@@ -31,7 +31,7 @@ yacc/byacc/bison:
 
 s725 has been tested on the following systems:
 
- * Ubuntu 18.04 amd64 via Travis CI
+ * Ubuntu 20.04 and 22.04 amd64 via Travis CI
  * Fedora 23 amd64 with both USB/FTDI/IRXON and builtin IR
  * Debian GNU/Linux 8.0 amd64 with USB/FTDI/IRXON
  * OpenBSD-current amd64 (May 2016) with USB/FTDI/IRXON

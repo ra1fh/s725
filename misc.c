@@ -23,7 +23,7 @@
 #include "log.h"
 #include "packet.h"
 
-int time_get() {
+int time_get(void) {
 	packet_t *p = NULL;
 
 	p = packet_get_response(S725_GET_WATCH);
@@ -43,7 +43,7 @@ int time_get() {
 	return 0;
 }
 
-int user_get() {
+int user_get(void) {
 	packet_t *p = NULL;
 
 	p = packet_get_response(S725_GET_USER);

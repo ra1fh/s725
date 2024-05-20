@@ -87,7 +87,7 @@ driver_read_byte(unsigned char *b)
 }
 
 int
-driver_open()
+driver_open(void)
 {
 	int ret = -1;
 
@@ -98,7 +98,7 @@ driver_open()
 }
 
 int
-driver_close()
+driver_close(void)
 {
 	int ret = 0;
 
@@ -111,7 +111,7 @@ driver_close()
 }
 
 int
-driver_uses_frames()
+driver_uses_frames(void)
 {
 	return driver->uses_frames;
 }

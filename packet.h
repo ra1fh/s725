@@ -72,10 +72,10 @@ typedef enum {
 } S725_Packet_Index;
 
 int       packet_send(packet_t *packet);
-packet_t *packet_recv();
+packet_t *packet_recv(void);
 packet_t *packet_get(S725_Packet_Index idx);
 packet_t *packet_get_response(S725_Packet_Index request);
-packet_t *packet_listen();
+packet_t *packet_listen(void);
 u_char   *packet_data(packet_t *p);
 u_short   packet_len(packet_t *p);
 u_char    packet_get_type(packet_t *p);

@@ -19,7 +19,7 @@
 #ifndef MISC_H
 #define MISC_H
 
-int time_get();
-int user_get();
+int time_get(void);
+int user_get(void);
 
 #endif	/* MISC_H */

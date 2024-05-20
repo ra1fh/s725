@@ -218,7 +218,7 @@ fatalx(const char *msg, ...)
 }
 
 void
-log_prep_hash_marks()
+log_prep_hash_marks(void)
 {
 	int i;
 

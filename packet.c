@@ -260,11 +260,11 @@ packet_send(packet_t *p)
 	return ret != -1;
 }
 
-packet_t * packet_recv_noframes();
-packet_t * packet_recv_frames();
+packet_t * packet_recv_noframes(void);
+packet_t * packet_recv_frames(void);
 
 packet_t *
-packet_recv()
+packet_recv(void)
 {
 	if (driver_uses_frames()) {
 		return packet_recv_frames();
@@ -274,7 +274,7 @@ packet_recv()
 }
 
 packet_t *
-packet_recv_noframes()
+packet_recv_noframes(void)
 {
 	BUF *buf = NULL;
 	packet_t *p = NULL;
@@ -310,7 +310,7 @@ error:
  * receive a packet from the S725 driver (allocates memory)
  */
 packet_t *
-packet_recv_frames()
+packet_recv_frames(void)
 {
 	BUF *buf;
 	int r;

@@ -30,5 +30,5 @@ void log_writeln(const char *, ...);
 void log_hexdump(void *, size_t);
 void __attribute__ ((format (printf, 1, 2))) fatal(const char *, ...);
 void __attribute__ ((format (printf, 1, 2))) fatalx(const char *, ...);
-void log_prep_hash_marks();
+void log_prep_hash_marks(void);
 void log_print_hash_marks(int pct, int bytes);
